@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <defs>
+    <linearGradient id="gradPUPR" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F59E0B" />
+      <stop offset="100%" stop-color="#D97706" />
+    </linearGradient>
+    <linearGradient id="gradNavy" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E3A8A" />
+      <stop offset="100%" stop-color="#0F172A" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.25" />
+    </filter>
+  </defs>
+  
+  <!-- Outer Badge / Shield -->
+  <path d="M 50,5 L 88,20 C 88,60 50,92 50,95 C 50,92 12,60 12,20 Z" 
+        fill="url(#gradNavy)" stroke="#F59E0B" stroke-width="2.5" filter="url(#shadow)" />
+  
+  <!-- Inner circular gear / emblem base -->
+  <circle cx="50" cy="46" r="26" fill="#0B132B" stroke="#F59E0B" stroke-width="1.8" stroke-dasharray="4 2" />
+  
+  <!-- Stylized PUPR Baling-Baling / Pualam Logo Symbol -->
+  <!-- 3 curved blades of Ministry of Public Works (Kuning Emas & Biru) -->
+  <g transform="translate(50, 46)">
+    <!-- Blade 1 -->
+    <path d="M 0,0 C -5,-12 0,-20 10,-18 C 16,-16 16,-8 0,0 Z" fill="#FBBF24" />
+    <!-- Blade 2 -->
+    <path d="M 0,0 C 12,-3 19,4 15,14 C 11,19 4,17 0,0 Z" fill="#F59E0B" />
+    <!-- Blade 3 -->
+    <path d="M 0,0 C -7,10 -15,8 -17,-2 C -19,-10 -10,-13 0,0 Z" fill="#D97706" />
+    <!-- Center core hub -->
+    <circle cx="0" cy="0" r="4.5" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.5" />
+  </g>
+  
+  <!-- Demak Islamic Mosque / Heritage Crown silhouette -->
+  <path d="M 38,21 L 50,13 L 62,21 L 58,24 L 50,19 L 42,24 Z" fill="#FBBF24" />
+  
+  <!-- Ribbons / Star -->
+  <polygon points="50,75 52,80 57,80 53,83 55,88 50,85 45,88 47,83 43,80 48,80" fill="#FBBF24" />
+  <text x="50" y="70" font-family="'Plus Jakarta Sans', sans-serif" font-size="5" font-weight="800" fill="#E2E8F0" text-anchor="middle" letter-spacing="1">DEMAK</text>
+  <text x="50" y="29" font-family="'Plus Jakarta Sans', sans-serif" font-size="4" font-weight="700" fill="#94A3B8" text-anchor="middle" letter-spacing="0.5">DINPUTARU</text>
+</svg>

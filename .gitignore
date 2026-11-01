@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment and IDE files
+.env
+.env.local
+.vscode/
+.idea/
+
+# Agent & temporary files
+.system_generated/
+.gemini/

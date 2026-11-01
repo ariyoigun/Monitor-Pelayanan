@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SIMOPEL DINPUTARU - Sistem Monitor Pelayanan Dinas PUTARU Kab. Demak</title>
+  <meta name="description" content="Sistem Informasi Monitoring Pelayanan Dinas Pekerjaan Umum dan Penataan Ruang Kabupaten Demak: KTTR, Validasi OSS, PBG, dan SLF.">
+  <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+  
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Custom Stylesheets -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+
+  <!-- =========================================================
+       1. TOP BAR: QUICK ROLE SWITCHER (Demo & Pimpinan Quick Access)
+       ========================================================= -->
+  <div class="role-quick-bar">
+    <div class="role-quick-left">
+      <span class="role-quick-badge">
+        <i class="fas fa-user-shield"></i> Role Aktif:
+      </span>
+      <span style="font-weight: 700; color: #ffffff;" class="dynamic-user-name">Memuat...</span>
+      <span style="color: #94a3b8; font-size: 0.75rem;" class="dynamic-user-role">(Memuat Role)</span>
+    </div>
+
+    <div class="role-quick-buttons">
+      <span style="font-size: 0.72rem; color: #94a3b8; margin-right: 0.25rem;">Beralih Peran:</span>
+      <button class="role-switch-btn" data-role-username="kepala_dinas" title="Login sebagai Kepala Dinas">
+        <i class="fas fa-crown"></i> Kepala Dinas
+      </button>
+      <button class="role-switch-btn" data-role-username="sekretaris" title="Login sebagai Sekretaris Dinas">
+        <i class="fas fa-briefcase"></i> Sekretaris
+      </button>
+      <button class="role-switch-btn" data-role-username="kabid_trp" title="Login sebagai Kabid Tata Ruang & Pertanahan">
+        <i class="fas fa-map-marked-alt"></i> Kabid TRP
+      </button>
+      <button class="role-switch-btn" data-role-username="kabid_ck" title="Login sebagai Kabid Cipta Karya">
+        <i class="fas fa-building"></i> Kabid CK
+      </button>
+      <button class="role-switch-btn" data-role-username="koordinator_trp" title="Login sebagai Koordinator Teknis TRP">
+        <i class="fas fa-drafting-compass"></i> Koordinator TRP
+      </button>
+      <button class="role-switch-btn" data-role-username="koordinator_ck" title="Login sebagai Koordinator Teknis CK">
+        <i class="fas fa-hard-hat"></i> Koordinator CK
+      </button>
+      <button class="role-switch-btn" data-role-username="admin" title="Login sebagai Superadmin">
+        <i class="fas fa-cogs"></i> Superadmin
+      </button>
+      <button id="btn-reset-demo-data" class="role-switch-btn" style="background: rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.4); color: #fca5a5;" title="Reset data simulasi ke awal">
+        <i class="fas fa-redo"></i> Reset Data
+      </button>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       2. MAIN NAVBAR
+       ========================================================= -->
+  <header class="main-navbar">
+    <div class="container navbar-inner">
+      <div class="brand-wrapper">
+        <img src="assets/logo.svg" alt="Logo DINPUTARU Demak" class="brand-logo-img">
+        <div class="brand-text">
+          <div class="brand-title">
+            SIMOPEL <span class="highlight">DINPUTARU</span>
+          </div>
+          <div class="brand-subtitle">
+            Dinas Pekerjaan Umum & Penataan Ruang Kab. Demak
+          </div>
+        </div>
+      </div>
+
+      <nav class="nav-center-menu">
+        <a href="#landing" class="nav-link" data-view="landing">
+          <i class="fas fa-home"></i> Beranda Publik
+        </a>
+        <a href="#dashboard" class="nav-link" data-view="dashboard">
+          <i class="fas fa-chart-line"></i> Monitoring Pelayanan
+        </a>
+        <a href="#users" class="nav-link superadmin-only" data-view="users" style="display: none;">
+          <i class="fas fa-users-cog"></i> Manajemen User
+        </a>
+      </nav>
+
+      <div class="nav-actions">
+        <div class="user-profile-badge" data-view="dashboard" title="Klik untuk membuka dashboard">
+          <img src="assets/logo.svg" alt="User" class="user-avatar dynamic-user-avatar">
+          <div class="user-info-text">
+            <span class="user-name dynamic-user-name">Dr. H. Akhmad Sugiharto, S.T., M.T.</span>
+            <span class="user-role-tag dynamic-user-role">Kepala Dinas</span>
+          </div>
+        </div>
+        <button class="btn btn-outline btn-sm btn-logout" title="Keluar Akun">
+          <i class="fas fa-sign-out-alt"></i> Keluar
+        </button>
+        <button class="btn btn-primary btn-sm btn-login" data-view="login" style="display: none;" title="Masuk Akun Petugas">
+          <i class="fas fa-sign-in-alt"></i> Masuk Petugas
+        </button>
+        <button class="mobile-menu-toggle" id="btn-mobile-menu" aria-label="Menu Navigasi Mobile">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- =========================================================
+       VIEW 1: LANDING PAGE (BERANDA PUBLIK & LACAK BERKAS)
+       ========================================================= -->
+  <main id="view-landing" class="view-section active">
+    <!-- Hero Section -->
+    <section class="landing-hero">
+      <div class="container hero-grid">
+        <div>
+          <div class="hero-pill-badge">
+            <i class="fas fa-shield-alt"></i> Sistem Pemantauan Resmi & Akuntabel Kabupaten Demak
+          </div>
+          <h1 class="hero-title">
+            Pantau Progres Layanan <br/>
+            <span class="text-gold">Tata Ruang & Cipta Karya</span> Lebih Terbuka
+          </h1>
+          <p class="hero-desc">
+            Sistem Informasi Monitoring Pelayanan (SIMOPEL) Dinas Pekerjaan Umum dan Penataan Ruang Kabupaten Demak. 
+            Memantau berkas pengajuan secara real-time, mendeteksi hambatan proses, dan menjamin kepastian waktu pelayanan bagi masyarakat serta pelaku usaha.
+          </p>
+          <div class="hero-cta-group">
+            <a href="#dashboard" class="btn btn-primary btn-lg" data-view="dashboard">
+              <i class="fas fa-tachometer-alt"></i> Masuk Dashboard Monitoring
+            </a>
+            <a href="#layanan-info" class="btn btn-outline btn-lg" style="color: #ffffff; border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.1);">
+              <i class="fas fa-info-circle"></i> Info Layanan & SOP
+            </a>
+          </div>
+        </div>
+
+        <!-- Public Fast Tracker Card -->
+        <div class="public-tracker-card">
+          <div class="tracker-card-header">
+            <div class="tracker-title">
+              <i class="fas fa-search-location" style="color: var(--primary-600);"></i> Lacak Berkas Mandiri
+            </div>
+            <div class="tracker-desc">
+              Masukkan Nomor Registrasi Berkas atau Nama Pemohon untuk melihat tahapan dan posisi berkas terkini.
+            </div>
+          </div>
+
+          <div class="tracker-search-box">
+            <input type="text" id="public-track-input" class="tracker-input" placeholder="Contoh: REG/TRP/2026/001 atau Nama" />
+            <button id="btn-public-track" class="btn btn-primary" style="width: 100%;">
+              <i class="fas fa-search"></i> Cek Status Pengajuan Sekarang
+            </button>
+          </div>
+
+          <div class="tracker-samples">
+            <span>Contoh Berkas:</span>
+            <span class="sample-tag">REG/TRP/2026/001</span>
+            <span class="sample-tag">REG/PBG/2026/001</span>
+            <span class="sample-tag">REG/SLF/2026/001</span>
+            <span class="sample-tag">REG/OSS/2026/001</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 Layanan Utama Showcase -->
+    <section id="layanan-info" class="services-section container">
+      <div class="section-header">
+        <div class="section-tag">Pelayanan Terpadu DINPUTARU</div>
+        <h2 class="section-title">4 Layanan Strategis dalam Satu Pemantauan</h2>
+        <p class="section-desc">
+          Terintegrasi penuh antara Bidang Tata Ruang dan Pertanahan serta Bidang Cipta Karya untuk mewujudkan kemudahan berusaha dan kelaikan bangunan gedung di Kabupaten Demak.
+        </p>
+      </div>
+
+      <div class="services-grid">
+        <!-- 1. KTTR -->
+        <div class="service-card">
+          <div class="service-card-top">
+            <div class="service-icon-box" style="background: #e0f2fe; color: #0284c7;">
+              <i class="fas fa-map-marked-alt"></i>
+            </div>
+            <span class="service-sla-badge"><i class="fas fa-stopwatch"></i> SLA: 5 Hari Kerja</span>
+          </div>
+          <div class="service-name">KTTR</div>
+          <div class="service-division">Bidang Tata Ruang & Pertanahan</div>
+          <p class="service-card-desc">
+            Keterangan Rencana Tata Ruang memberikan informasi ketentuan zonasi RTRW/RDTR, Garis Sempadan Bangunan (GSB), KDB, KLB, dan kesesuaian peruntukan ruang di Kabupaten Demak.
+          </p>
+          <div class="service-steps-preview">
+            <ul>
+              <li><i class="fas fa-check-circle" style="color: var(--success-500);"></i> Verifikasi Dokumen & Alas Hak</li>
+              <li><i class="fas fa-check-circle" style="color: var(--success-500);"></i> Analisis Geospasial RDTR & Lapangan</li>
+              <li><i class="fas fa-check-circle" style="color: var(--success-500);"></i> Draf Rekomtek & Pengesahan Kadin</li>
+            </ul>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="App.showView('dashboard'); Monitoring.filters.layanan='KTTR'; Monitoring.renderTable();">
+            Pantau Berkas KTTR &rarr;
+          </button>
+        </div>
+
+        <!-- 2. Validasi OSS -->
+        <div class="service-card">
+          <div class="service-card-top">
+            <div class="service-icon-box" style="background: #dcfce7; color: #16a34a;">
+              <i class="fas fa-network-wired"></i>
+            </div>
+            <span class="service-sla-badge"><i class="fas fa-stopwatch"></i> SLA: 10 Hari Kerja</span>
+          </div>
+          <div class="service-name">Validasi OSS (KKPR)</div>
+          <div class="service-division">Bidang Tata Ruang & Pertanahan</div>
+          <p class="service-card-desc">
+            Validasi Kesesuaian Kegiatan Pemanfaatan Ruang terintegrasi OSS RBA untuk perizinan investasi, pengecekan polygon SHP koordinat batas lahan, serta pertimbangan teknis pertanahan.
+          </p>
+          <div class="service-steps-preview">
+            <ul>
+              <li><i class="fas fa-check-circle" style="color: var(--success-500);"></i> Sinkronisasi OSS RBA & Cek Poligon SHP</li>
+              <li><i class="fas fa-check-circle" style="color: var(--success-500);"></i> Pertimbangan Teknis Pertanahan BPN</li>
+              <li><i class="fas fa-check-circle" style="color: var(--success-500);"></i> Penerbitan Persetujuan KKPR OSS</li>
+            </ul>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="App.showView('dashboard'); Monitoring.filters.layanan='OSS'; Monitoring.renderTable();">
+            Pantau Berkas Validasi OSS &rarr;
+          </button>
+        </div>
+
+        <!-- 3. PBG -->
+        <div class="service-card">
+          <div class="service-card-top">
+            <div class="service-icon-box" style="background: #fef3c7; color: #d97706;">
+              <i class="fas fa-building"></i>
+            </div>
+            <span class="service-sla-badge"><i class="fas fa-stopwatch"></i> SLA: 21 Hari Kerja</span>
+          </div>
+          <div class="service-name">PBG</div>
+          <div class="service-division">Bidang Cipta Karya</div>
+          <p class="service-card-desc">
+            Persetujuan Bangunan Gedung (pengganti IMB) untuk pembangunan gedung baru, renovasi, atau perluasan dengan penelaahan standar arsitektur, struktur tahan gempa, dan utilitas MEP.
+          </p>
+          <div class="service-steps-preview">
+            <ul>
+              <li><i class="fas fa-check-circle" style="color: var(--success-500);"></i> Verifikasi SIMBG & Gambar Teknis</li>
+              <li><i class="fas fa-check-circle" style="color: var(--success-500);"></i> Sidang Penilaian Tim Profesi Ahli (TPA)</li>
+              <li><i class="fas fa-check-circle" style="color: var(--success-500);"></i> Penetapan Retribusi & Penerbitan SK PBG</li>
+            </ul>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="App.showView('dashboard'); Monitoring.filters.layanan='PBG'; Monitoring.renderTable();">
+            Pantau Berkas PBG &rarr;
+          </button>
+        </div>
+
+        <!-- 4. SLF -->
+        <div class="service-card">
+          <div class="service-card-top">
+            <div class="service-icon-box" style="background: #f3e8ff; color: #9333ea;">
+              <i class="fas fa-award"></i>
+            </div>
+            <span class="service-sla-badge"><i class="fas fa-stopwatch"></i> SLA: 14 Hari Kerja</span>
+          </div>
+          <div class="service-name">SLF</div>
+          <div class="service-division">Bidang Cipta Karya</div>
+          <p class="service-card-desc">
+            Sertifikat Laik Fungsi untuk menjamin bahwa bangunan gedung yang telah selesai dibangun atau eksisting telah memenuhi persyaratan keselamatan kebakaran, struktur, dan kenyamanan.
+          </p>
+          <div class="service-steps-preview">
+            <ul>
+              <li><i class="fas fa-check-circle" style="color: var(--success-500);"></i> Pemeriksaan As-Built Drawing & SIMBG</li>
+              <li><i class="fas fa-check-circle" style="color: var(--success-500);"></i> Inspeksi Visual & Uji Petik Lapangan</li>
+              <li><i class="fas fa-check-circle" style="color: var(--success-500);"></i> Rapat Evaluasi TPT & Sertifikat SLF</li>
+            </ul>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="App.showView('dashboard'); Monitoring.filters.layanan='SLF'; Monitoring.renderTable();">
+            Pantau Berkas SLF &rarr;
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- =========================================================
+       VIEW 2: LOGIN VIEW (LOGIN PAGE)
+       ========================================================= -->
+  <main id="view-login" class="view-section">
+    <section class="login-section">
+      <div class="login-card">
+        <div class="login-header">
+          <img src="assets/logo.svg" alt="Logo DINPUTARU Demak" class="login-logo">
+          <h2 class="login-title">Masuk ke SIMOPEL</h2>
+          <div class="login-subtitle">Sistem Monitor Pelayanan Dinas PUTARU Kabupaten Demak</div>
+        </div>
+
+        <div class="login-body">
+          <!-- Demo Role Selector Quick Button -->
+          <div class="login-demo-selector">
+            <div class="demo-title">
+              <span>Akses Cepat Mode Uji Coba (Klik Role):</span>
+              <i class="fas fa-mouse-pointer" style="color: var(--primary-600);"></i>
+            </div>
+            <div class="demo-chips">
+              <button type="button" class="demo-chip-btn" onclick="document.getElementById('login-username').value='kepala_dinas'; document.getElementById('login-password').value='password123';">
+                <span class="demo-chip-name">Kepala Dinas</span>
+                <span class="demo-chip-role">Executive Monitor</span>
+              </button>
+              <button type="button" class="demo-chip-btn" onclick="document.getElementById('login-username').value='sekretaris'; document.getElementById('login-password').value='password123';">
+                <span class="demo-chip-name">Sekretaris Dinas</span>
+                <span class="demo-chip-role">Rekap & SLA</span>
+              </button>
+              <button type="button" class="demo-chip-btn" onclick="document.getElementById('login-username').value='kabid_trp'; document.getElementById('login-password').value='password123';">
+                <span class="demo-chip-name">Kabid TRP</span>
+                <span class="demo-chip-role">Validasi Tata Ruang</span>
+              </button>
+              <button type="button" class="demo-chip-btn" onclick="document.getElementById('login-username').value='kabid_ck'; document.getElementById('login-password').value='password123';">
+                <span class="demo-chip-name">Kabid CK</span>
+                <span class="demo-chip-role">Persetujuan Gedung</span>
+              </button>
+              <button type="button" class="demo-chip-btn" onclick="document.getElementById('login-username').value='koordinator_trp'; document.getElementById('login-password').value='password123';">
+                <span class="demo-chip-name">Koordinator TRP</span>
+                <span class="demo-chip-role">Teknis Zonasi</span>
+              </button>
+              <button type="button" class="demo-chip-btn" onclick="document.getElementById('login-username').value='admin'; document.getElementById('login-password').value='password123';">
+                <span class="demo-chip-name">Superadmin</span>
+                <span class="demo-chip-role">Manajemen User</span>
+              </button>
+            </div>
+          </div>
+
+          <form id="form-login">
+            <div class="form-group" style="margin-bottom: 1.15rem;">
+              <label class="form-label" for="login-username">Nama Pengguna (Username)</label>
+              <input type="text" id="login-username" class="form-control" placeholder="Masukkan username" required value="kepala_dinas">
+            </div>
+
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+              <label class="form-label" for="login-password">Kata Sandi (Password)</label>
+              <input type="password" id="login-password" class="form-control" placeholder="Masukkan kata sandi" required value="password123">
+              <span class="form-hint">Kata sandi default semua akun simulasi: <strong>password123</strong></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.8rem;">
+              <i class="fas fa-sign-in-alt"></i> Masuk ke Dashboard
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- =========================================================
+       VIEW 3: DASHBOARD MONITORING (PIMPINAN & PETUGAS)
+       ========================================================= -->
+  <main id="view-dashboard" class="view-section">
+    <div class="container dashboard-container">
+      
+      <!-- Executive Greeting & Action Bar -->
+      <div class="executive-header">
+        <div class="exec-info-left">
+          <img src="assets/logo.svg" alt="User" class="exec-avatar-big dynamic-user-avatar">
+          <div class="exec-details">
+            <h2>Dashboard Pemantauan Pelayanan</h2>
+            <div class="exec-role-text">
+              <i class="fas fa-user-circle"></i> <span class="dynamic-user-name">Dr. H. Akhmad Sugiharto, S.T., M.T.</span> 
+              &bull; <span class="dynamic-user-role">Kepala Dinas</span>
+            </div>
+            <div class="exec-nip">Dinas Pekerjaan Umum dan Penataan Ruang Kabupaten Demak</div>
+          </div>
+        </div>
+
+        <div class="exec-actions-right">
+          <button class="btn btn-accent btn-sm" onclick="Monitoring.openNewSubmissionModal()">
+            <i class="fas fa-plus-circle"></i> Tambah Pengajuan Baru
+          </button>
+          <button class="btn btn-outline btn-sm" onclick="Tracker.printExecutiveReport()">
+            <i class="fas fa-file-pdf"></i> Cetak Rekap Eksekutif (PDF)
+          </button>
+        </div>
+      </div>
+
+      <!-- =====================================================
+           KOTAK KHUSUS PIMPINAN: "Pengajuan Belum Selesai & Kendalanya"
+           ===================================================== -->
+      <div class="leadership-focus-box">
+        <div class="focus-box-header">
+          <div>
+            <div class="focus-title">
+              <i class="fas fa-exclamation-triangle"></i> Sorotan Pimpinan: Berkas Tertahan & Perlu Perhatian Segera
+            </div>
+            <div class="focus-desc">
+              Daftar pengajuan belum selesai yang membutuhkan tindak lanjut, koordinasi lintas instansi, atau kelengkapan pemohon.
+            </div>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="Monitoring.filters.status='BELUM_SELESAI'; Monitoring.renderTable();" style="border-color: #fdba74; color: #9a3412;">
+            Lihat Semua Berkas Belum Selesai &rarr;
+          </button>
+        </div>
+
+        <div id="leadership-focus-container" class="focus-cards-grid">
+          <!-- Dynamic focus items rendered by JS -->
+        </div>
+      </div>
+
+      <!-- KPI METRIC CARDS -->
+      <div class="kpi-grid">
+        <!-- 1. Total Pengajuan -->
+        <div class="kpi-card">
+          <div class="kpi-card-header">
+            <span class="kpi-title">Total Pengajuan</span>
+            <div class="kpi-icon-wrapper kpi-icon-blue">
+              <i class="fas fa-folder-open"></i>
+            </div>
+          </div>
+          <div class="kpi-value-row">
+            <span id="kpi-total-pengajuan" class="kpi-value">0</span>
+          </div>
+          <div class="kpi-subtext">Akumulasi pengajuan TRP & CK</div>
+          <div class="kpi-accent-bar" style="background: var(--primary-500);"></div>
+        </div>
+
+        <!-- 2. Selesai / Terbit -->
+        <div class="kpi-card">
+          <div class="kpi-card-header">
+            <span class="kpi-title">Selesai / Terbit</span>
+            <div class="kpi-icon-wrapper kpi-icon-green">
+              <i class="fas fa-check-double"></i>
+            </div>
+          </div>
+          <div class="kpi-value-row">
+            <span id="kpi-selesai" class="kpi-value">0</span>
+          </div>
+          <div class="kpi-subtext">SK Rekomtek & Dokumen Terbit</div>
+          <div class="kpi-accent-bar" style="background: var(--success-500);"></div>
+        </div>
+
+        <!-- 3. Sedang Berjalan -->
+        <div class="kpi-card">
+          <div class="kpi-card-header">
+            <span class="kpi-title">Proses Berjalan</span>
+            <div class="kpi-icon-wrapper kpi-icon-amber">
+              <i class="fas fa-spinner fa-spin"></i>
+            </div>
+          </div>
+          <div class="kpi-value-row">
+            <span id="kpi-proses" class="kpi-value">0</span>
+          </div>
+          <div class="kpi-subtext">Verifikasi teknis & telaah zonasi</div>
+          <div class="kpi-accent-bar" style="background: var(--warning-500);"></div>
+        </div>
+
+        <!-- 4. Belum Selesai (Pending/Kendala) -->
+        <div class="kpi-card">
+          <div class="kpi-card-header">
+            <span class="kpi-title">Belum Selesai</span>
+            <div class="kpi-icon-wrapper kpi-icon-purple">
+              <i class="fas fa-hourglass-half"></i>
+            </div>
+          </div>
+          <div class="kpi-value-row">
+            <span id="kpi-belum-selesai" class="kpi-value">0</span>
+          </div>
+          <div class="kpi-subtext">Menunggu kelengkapan/sidang</div>
+          <div class="kpi-accent-bar" style="background: var(--purple-600);"></div>
+        </div>
+
+        <!-- 5. Overdue SLA -->
+        <div class="kpi-card">
+          <div class="kpi-card-header">
+            <span class="kpi-title">Overdue SLA</span>
+            <div class="kpi-icon-wrapper kpi-icon-red">
+              <i class="fas fa-bell"></i>
+            </div>
+          </div>
+          <div class="kpi-value-row">
+            <span id="kpi-overdue" class="kpi-value" style="color: var(--danger-600);">0</span>
+          </div>
+          <div class="kpi-subtext">Melebihi target waktu standar</div>
+          <div class="kpi-accent-bar" style="background: var(--danger-500);"></div>
+        </div>
+      </div>
+
+      <!-- MAIN MONITORING TABLE CARD -->
+      <div class="table-card">
+        <!-- Toolbar Filters -->
+        <div class="table-toolbar">
+          <div class="search-input-wrapper">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input type="text" id="monitoring-search-input" class="search-input" placeholder="Cari nama pemohon, no. registrasi, lokasi, atau keterangan..." />
+          </div>
+
+          <div class="table-filter-group">
+            <select id="filter-bidang" class="filter-select">
+              <option value="ALL">Semua Bidang (TRP & CK)</option>
+              <option value="TRP">Bidang Tata Ruang & Pertanahan (TRP)</option>
+              <option value="CK">Bidang Cipta Karya (CK)</option>
+            </select>
+
+            <select id="filter-layanan" class="filter-select">
+              <option value="ALL">Semua Layanan</option>
+              <option value="KTTR">KTTR (Tata Ruang)</option>
+              <option value="OSS">Validasi OSS (Tata Ruang)</option>
+              <option value="PBG">PBG (Cipta Karya)</option>
+              <option value="SLF">SLF (Cipta Karya)</option>
+            </select>
+
+            <span id="table-count-badge" class="badge badge-proses" style="font-size: 0.75rem;">
+              Memuat data...
+            </span>
+          </div>
+        </div>
+
+        <!-- Status Filter Chips -->
+        <div class="filter-tabs-wrapper">
+          <button class="filter-chip active" data-status="ALL">
+            Semua Status
+          </button>
+          <button class="filter-chip" data-status="BELUM_SELESAI">
+            <i class="fas fa-exclamation-circle" style="color: var(--warning-500);"></i> Belum Selesai (Prioritas Pimpinan)
+          </button>
+          <button class="filter-chip" data-status="PROSES">
+            <i class="fas fa-sync fa-spin"></i> On Progress
+          </button>
+          <button class="filter-chip" data-status="PENDING_PEMOHON">
+            <i class="fas fa-user-clock"></i> Tertahan Pemohon
+          </button>
+          <button class="filter-chip" data-status="SIDANG_SURVEY">
+            <i class="fas fa-users"></i> Sidang / Uji Lapangan
+          </button>
+          <button class="filter-chip" data-status="OVERDUE">
+            <i class="fas fa-fire" style="color: var(--danger-500);"></i> Overdue SLA
+          </button>
+          <button class="filter-chip" data-status="SELESAI">
+            <i class="fas fa-check-circle" style="color: var(--success-500);"></i> Selesai / Terbit
+          </button>
+        </div>
+
+        <!-- Responsive Table Container -->
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width: 12%;">No. Reg & Layanan</th>
+                <th style="width: 22%;">Pemohon & Kegiatan</th>
+                <th style="width: 15%;">Lokasi di Demak</th>
+                <th style="width: 17%;">Tahapan & Posisi Meja</th>
+                <th style="width: 20%;">Keterangan Kendala / Catatan</th>
+                <th style="width: 8%;">Status & SLA</th>
+                <th style="width: 6%; text-align: right;">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="monitoring-table-body">
+              <!-- Dynamically populated rows -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- =========================================================
+       VIEW 4: USER MANAGEMENT VIEW (SUPERADMIN ONLY)
+       ========================================================= -->
+  <main id="view-users" class="view-section">
+    <div class="container dashboard-container">
+      <div class="user-management-panel">
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title">
+              <i class="fas fa-users-cog" style="color: var(--primary-600);"></i> Manajemen Pengguna & Hak Akses
+            </h2>
+            <div style="font-size: 0.82rem; color: var(--slate-500); margin-top: 0.2rem;">
+              Kelola akun staf, koordinator bidang, kepala bidang, sekretaris, dan kepala dinas.
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="UserManagement.openAddModal()">
+            <i class="fas fa-user-plus"></i> Tambah Pengguna Baru
+          </button>
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Nama Pegawai & NIP</th>
+                <th>Username & Email</th>
+                <th>Peran / Role</th>
+                <th>Bidang & Jabatan</th>
+                <th>Status</th>
+                <th style="text-align: right;">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="user-management-tbody">
+              <!-- Populated by UserManagement.js -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- =========================================================
+       FOOTER
+       ========================================================= -->
+  <footer class="main-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem;">
+            <img src="assets/logo.svg" alt="DINPUTARU Demak" style="width: 32px; height: 32px;">
+            <strong style="color: #ffffff; font-size: 1.05rem;">DINPUTARU KABUPATEN DEMAK</strong>
+          </div>
+          <p style="line-height: 1.6; max-width: 440px;">
+            Dinas Pekerjaan Umum dan Penataan Ruang Kabupaten Demak berkomitmen memberikan pelayanan tata ruang dan persetujuan bangunan yang cepat, pasti, dan transparan.
+          </p>
+        </div>
+
+        <div>
+          <strong style="color: #ffffff; display: block; margin-bottom: 0.75rem;">Layanan Bidang</strong>
+          <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.4rem;">
+            <li><a href="#dashboard" onclick="Monitoring.filters.layanan='KTTR'; Monitoring.renderTable();">KTTR (Keterangan Rencana Tata Ruang)</a></li>
+            <li><a href="#dashboard" onclick="Monitoring.filters.layanan='OSS'; Monitoring.renderTable();">Validasi KKPR OSS-RBA</a></li>
+            <li><a href="#dashboard" onclick="Monitoring.filters.layanan='PBG'; Monitoring.renderTable();">PBG (Persetujuan Bangunan Gedung)</a></li>
+            <li><a href="#dashboard" onclick="Monitoring.filters.layanan='SLF'; Monitoring.renderTable();">SLF (Sertifikat Laik Fungsi)</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <strong style="color: #ffffff; display: block; margin-bottom: 0.75rem;">Kontak Kantor</strong>
+          <p style="line-height: 1.6;">
+            Jl. Kyai Singkil No. 7, Bintoro, Demak 59511<br/>
+            Telp: (0291) 685112 | Fax: (0291) 685112<br/>
+            Email: dinputaru@demakkab.go.id<br/>
+            Website: dinputaru.demakkab.go.id
+          </p>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>&copy; 2026 Dinas Pekerjaan Umum dan Penataan Ruang Kabupaten Demak. Hak Cipta Dilindungi.</div>
+        <div style="color: #cbd5e1;">SIMOPEL v2.0 - Standar Pelayanan Publik Demak Bermartabat</div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- =========================================================
+       MODAL 1: DETAIL PENGAJUAN & JEJAK BERKAS (TIMELINE STEPPER)
+       ========================================================= -->
+  <div id="modal-detail-submission" class="modal-overlay">
+    <div class="modal-dialog modal-dialog-lg">
+      <div class="modal-header">
+        <div>
+          <div class="modal-title">
+            <i class="fas fa-file-invoice" style="color: var(--primary-600);"></i> Detail Monitoring Berkas Pelayanan
+          </div>
+          <div class="modal-subtitle">Pantau posisi berkas, kendala, data teknis, dan log jejak pemeriksaan</div>
+        </div>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body" id="detail-modal-content">
+        <!-- Rendered by Monitoring.openDetailModal() -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline modal-cancel-btn">Tutup</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       MODAL 2: UPDATE STATUS & KENDALA PENGAJUAN
+       ========================================================= -->
+  <div id="modal-update-status" class="modal-overlay">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div>
+          <div class="modal-title">
+            <i class="fas fa-edit" style="color: var(--primary-600);"></i> Perbarui Status & Keterangan Berkas
+          </div>
+          <div class="modal-subtitle" id="update-modal-reg">REG/TRP/2026/...</div>
+        </div>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+      <form id="form-update-status">
+        <input type="hidden" id="update-modal-sub-id" />
+        <div class="modal-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label" for="update-status-select">Status Pengajuan <span class="required">*</span></label>
+              <select id="update-status-select" class="form-control" required>
+                <option value="PROSES">On Progress (Sedang Berjalan)</option>
+                <option value="PENDING_PEMOHON">Menunggu Kelengkapan / Revisi Pemohon</option>
+                <option value="SIDANG_SURVEY">Dalam Sidang TPA / Tinjauan Lapangan</option>
+                <option value="MENUNGGU_APPROVAL">Menunggu Persetujuan / Paraf Pejabat</option>
+                <option value="SELESAI">Selesai / Terbit Dokumen</option>
+                <option value="DITOLAK">Ditolak / Dikembalikan</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="update-sla-select">Status SLA Waktu <span class="required">*</span></label>
+              <select id="update-sla-select" class="form-control" required>
+                <option value="ON_TRACK">Aman / Sesuai Jadwal (On Track)</option>
+                <option value="WARNING">Mendekati Batas Waktu (Warning)</option>
+                <option value="OVERDUE">Melebihi Waktu Standar (Overdue)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="update-tahap-input">Tahap Saat Ini <span class="required">*</span></label>
+              <input type="text" id="update-tahap-input" class="form-control" placeholder="Contoh: Sidang Penilaian Teknis Tahap 2" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="update-posisi-input">Posisi Meja / Petugas PIC <span class="required">*</span></label>
+              <input type="text" id="update-posisi-input" class="form-control" placeholder="Contoh: Meja Kabid Cipta Karya" required />
+            </div>
+
+            <div class="form-group col-span-2">
+              <label class="form-label" for="update-keterangan-input">Keterangan Kendala / Alasan Belum Selesai <span class="required">*</span></label>
+              <textarea id="update-keterangan-input" class="form-control" placeholder="Tuliskan dengan jelas kendala yang dihadapi berkas ini agar terpantau pimpinan..." required></textarea>
+              <span class="form-hint">Contoh: Pemohon belum menyerahkan bukti pembayaran retribusi, revisi gambar struktur lantai 2 belum diupload, dsb.</span>
+            </div>
+
+            <div class="form-group col-span-2">
+              <label class="form-label" for="update-catatan-input">Catatan / Arahan Pimpinan (Opsional)</label>
+              <input type="text" id="update-catatan-input" class="form-control" placeholder="Arahan Kepala Dinas / Sekretaris / Kabid" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="update-sk-input">Nomor SK / Sertifikat (Jika Selesai)</label>
+              <input type="text" id="update-sk-input" class="form-control" placeholder="Contoh: 650/KTTR/2026/0199 atau SK-PBG..." />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="update-log-note">Catatan Log Jejak Baru</label>
+              <input type="text" id="update-log-note" class="form-control" placeholder="Tindakan verifikasi yang baru dilakukan" />
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline modal-cancel-btn">Batal</button>
+          <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Simpan Perubahan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       MODAL 3: TAMBAH PENGAJUAN BARU
+       ========================================================= -->
+  <div id="modal-new-submission" class="modal-overlay">
+    <div class="modal-dialog modal-dialog-lg">
+      <div class="modal-header">
+        <div>
+          <div class="modal-title">
+            <i class="fas fa-file-plus" style="color: var(--primary-600);"></i> Registrasi Permohonan Pelayanan Baru
+          </div>
+          <div class="modal-subtitle">Input data pemohon dan rincian kegiatan permohonan TRP atau Cipta Karya</div>
+        </div>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+      <form id="form-new-submission">
+        <div class="modal-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label" for="new-sub-layanan">Jenis Layanan <span class="required">*</span></label>
+              <select id="new-sub-layanan" class="form-control" required>
+                <option value="KTTR">KTTR - Keterangan Rencana Tata Ruang (Bidang TRP)</option>
+                <option value="OSS">Validasi KKPR OSS-RBA (Bidang TRP)</option>
+                <option value="PBG">PBG - Persetujuan Bangunan Gedung (Bidang Cipta Karya)</option>
+                <option value="SLF">SLF - Sertifikat Laik Fungsi (Bidang Cipta Karya)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="new-sub-jenis-pemohon">Kategori Pemohon <span class="required">*</span></label>
+              <select id="new-sub-jenis-pemohon" class="form-control" required>
+                <option value="Perorangan">Perorangan / Warga</option>
+                <option value="Badan Usaha / PT">Badan Usaha (PT / CV)</option>
+                <option value="Pengembang / Developer">Pengembang Perumahan (Developer)</option>
+                <option value="Instansi Pemerintah Daerah">Instansi Pemerintah</option>
+                <option value="BUMD / Perbankan">BUMD / BUMN</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="new-sub-pemohon">Nama Lengkap Pemohon / Penanggung Jawab <span class="required">*</span></label>
+              <input type="text" id="new-sub-pemohon" class="form-control" placeholder="Contoh: PT Demak Maju Bersama (Bpk. H. Sutrisno)" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="new-sub-nik">NIK / NIB Pemohon <span class="required">*</span></label>
+              <input type="text" id="new-sub-nik" class="form-control" placeholder="Contoh: NIB: 9120003418291 atau NIK 16 digit" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="new-sub-hp">Nomor HP / WhatsApp Aktif <span class="required">*</span></label>
+              <input type="text" id="new-sub-hp" class="form-control" placeholder="08xxxxxxxxxx" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="new-sub-email">Alamat Email</label>
+              <input type="email" id="new-sub-email" class="form-control" placeholder="pemohon@email.com" />
+            </div>
+
+            <div class="form-group col-span-2">
+              <label class="form-label" for="new-sub-kegiatan">Nama Rencana Usaha / Pembangunan Kegiatan <span class="required">*</span></label>
+              <input type="text" id="new-sub-kegiatan" class="form-control" placeholder="Contoh: Pembangunan Gudang Pengolahan Padi dan Kantor" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="new-sub-kecamatan">Kecamatan di Demak <span class="required">*</span></label>
+              <select id="new-sub-kecamatan" class="form-control" required>
+                <option value="Demak">Kecamatan Demak</option>
+                <option value="Sayung">Kecamatan Sayung</option>
+                <option value="Mranggen">Kecamatan Mranggen</option>
+                <option value="Karangtengah">Kecamatan Karangtengah</option>
+                <option value="Karanganyar">Kecamatan Karanganyar</option>
+                <option value="Guntur">Kecamatan Guntur</option>
+                <option value="Karangawen">Kecamatan Karangawen</option>
+                <option value="Bonang">Kecamatan Bonang</option>
+                <option value="Wedung">Kecamatan Wedung</option>
+                <option value="Wonosalam">Kecamatan Wonosalam</option>
+                <option value="Dempet">Kecamatan Dempet</option>
+                <option value="Gajah">Kecamatan Gajah</option>
+                <option value="Mijen">Kecamatan Mijen</option>
+                <option value="Kebonagung">Kecamatan Kebonagung</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="new-sub-lokasi">Alamat Lengkap Proyek <span class="required">*</span></label>
+              <input type="text" id="new-sub-lokasi" class="form-control" placeholder="Nama Jalan, Desa/Kelurahan, RT/RW" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="new-sub-luas-lahan">Luas Lahan (m²)</label>
+              <input type="number" id="new-sub-luas-lahan" class="form-control" placeholder="Contoh: 5000" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="new-sub-luas-bangunan">Luas Bangunan (m²)</label>
+              <input type="number" id="new-sub-luas-bangunan" class="form-control" placeholder="Contoh: 2400" />
+            </div>
+
+            <div class="form-group col-span-2">
+              <label class="form-label" for="new-sub-keterangan">Keterangan Awal Pengajuan</label>
+              <textarea id="new-sub-keterangan" class="form-control" placeholder="Catatan awal kelengkapan dokumen..."></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline modal-cancel-btn">Batal</button>
+          <button type="submit" class="btn btn-primary"><i class="fas fa-check"></i> Daftarkan Pengajuan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       MODAL 4: TAMBAH / EDIT USER (MANAJEMEN USER SUPERADMIN)
+       ========================================================= -->
+  <div id="modal-user-form" class="modal-overlay">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div>
+          <div class="modal-title" id="modal-user-title">
+            <i class="fas fa-user-cog" style="color: var(--primary-600);"></i> Form Pengguna Sistem
+          </div>
+          <div class="modal-subtitle">Atur hak akses, bidang, dan jabatan pegawai</div>
+        </div>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+      <form id="form-user">
+        <input type="hidden" id="user-form-id" />
+        <div class="modal-body">
+          <div class="form-grid">
+            <div class="form-group col-span-2">
+              <label class="form-label" for="user-input-nama">Nama Lengkap & Gelar <span class="required">*</span></label>
+              <input type="text" id="user-input-nama" class="form-control" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="user-input-nip">NIP Pegawai</label>
+              <input type="text" id="user-input-nip" class="form-control" placeholder="19xxxxxxxx xxxxxx x xxx" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="user-input-username">Username <span class="required">*</span></label>
+              <input type="text" id="user-input-username" class="form-control" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="user-input-role">Peran / Role <span class="required">*</span></label>
+              <select id="user-input-role" class="form-control" required>
+                <option value="superadmin">Superadmin</option>
+                <option value="kepala_dinas">Kepala Dinas</option>
+                <option value="sekretaris">Sekretaris Dinas</option>
+                <option value="kepala_bidang">Kepala Bidang</option>
+                <option value="koordinator_bidang">Koordinator Bidang</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="user-input-bidang">Lingkup Bidang <span class="required">*</span></label>
+              <select id="user-input-bidang" class="form-control" required>
+                <option value="Semua Bidang">Semua Bidang (TRP & CK)</option>
+                <option value="TRP">Bidang Tata Ruang & Pertanahan (TRP)</option>
+                <option value="CK">Bidang Cipta Karya (CK)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="user-input-jabatan">Jabatan Struktural / Fungsional</label>
+              <input type="text" id="user-input-jabatan" class="form-control" placeholder="Contoh: Penata Ruang Ahli Muda" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="user-input-status">Status Akun</label>
+              <select id="user-input-status" class="form-control">
+                <option value="Aktif">Aktif</option>
+                <option value="Nonaktif">Nonaktif</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="user-input-email">Email Dinas</label>
+              <input type="email" id="user-input-email" class="form-control" placeholder="pegawai@demakkab.go.id" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="user-input-hp">No. Handphone / WA</label>
+              <input type="text" id="user-input-hp" class="form-control" placeholder="08xxxxxxxxxx" />
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline modal-cancel-btn">Batal</button>
+          <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Simpan Data Pengguna</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/monitoring.js"></script>
+  <script src="js/userManagement.js"></script>
+  <script src="js/tracker.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

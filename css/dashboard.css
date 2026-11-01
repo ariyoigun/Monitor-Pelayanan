@@ -1,0 +1,645 @@
+/**
+ * SIMOPEL DINPUTARU DEMAK - Dashboard, Landing Page, Login & Executive Views
+ */
+
+/* =========================================================
+   PAGE VIEW SWITCHING
+   ========================================================= */
+.view-section {
+  display: none;
+}
+
+.view-section.active {
+  display: block;
+}
+
+/* =========================================================
+   PUBLIC LANDING PAGE
+   ========================================================= */
+.landing-hero {
+  background: linear-gradient(135deg, #091325 0%, #1e3a8a 50%, #0f172a 100%);
+  color: #ffffff;
+  padding: 4.5rem 0 4rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.landing-hero::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image: radial-gradient(rgba(245, 158, 11, 0.12) 1px, transparent 1px);
+  background-size: 24px 24px;
+  opacity: 0.6;
+}
+
+.hero-grid {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 3rem;
+  align-items: center;
+}
+
+.hero-pill-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 0.35rem 0.9rem;
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #fbbf24;
+  margin-bottom: 1.25rem;
+}
+
+.hero-title {
+  font-size: 2.75rem;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  margin-bottom: 1rem;
+}
+
+.hero-title .text-gold {
+  color: #fbbf24;
+  background: linear-gradient(135deg, #fde047 0%, #f59e0b 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-desc {
+  font-size: 1.05rem;
+  color: #cbd5e1;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+  max-width: 580px;
+}
+
+.hero-cta-group {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Public Fast Tracker Card */
+.public-tracker-card {
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: var(--radius-xl);
+  padding: 2rem;
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.4);
+  color: var(--slate-800);
+}
+
+.tracker-card-header {
+  margin-bottom: 1.25rem;
+}
+
+.tracker-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tracker-desc {
+  font-size: 0.82rem;
+  color: var(--slate-500);
+  margin-top: 0.35rem;
+}
+
+.tracker-search-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.tracker-input {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--slate-200);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #0f172a;
+  transition: all 0.2s;
+}
+
+.tracker-input:focus {
+  border-color: var(--primary-600);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+}
+
+.tracker-samples {
+  font-size: 0.75rem;
+  color: var(--slate-500);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.sample-tag {
+  background: var(--slate-100);
+  padding: 0.15rem 0.45rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  color: var(--primary-700);
+  font-weight: 600;
+}
+
+.sample-tag:hover {
+  background: var(--primary-100);
+}
+
+/* Services Showcase on Landing */
+.services-section {
+  padding: 4.5rem 0;
+}
+
+.section-header {
+  text-align: center;
+  max-width: 680px;
+  margin: 0 auto 3rem;
+}
+
+.section-tag {
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--primary-600);
+  margin-bottom: 0.5rem;
+}
+
+.section-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--slate-900);
+  letter-spacing: -0.02em;
+  margin-bottom: 0.75rem;
+}
+
+.section-desc {
+  font-size: 0.95rem;
+  color: var(--slate-600);
+  line-height: 1.5;
+}
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.service-card {
+  background: #ffffff;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-xl);
+  padding: 1.75rem;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.service-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--primary-300);
+}
+
+.service-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.service-icon-box {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+}
+
+.service-sla-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: var(--slate-100);
+  color: var(--slate-700);
+  padding: 0.25rem 0.6rem;
+  border-radius: var(--radius-full);
+}
+
+.service-name {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--slate-900);
+  margin-bottom: 0.35rem;
+}
+
+.service-division {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--primary-600);
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+}
+
+.service-card-desc {
+  font-size: 0.85rem;
+  color: var(--slate-600);
+  line-height: 1.5;
+  margin-bottom: 1.25rem;
+  flex: 1;
+}
+
+.service-steps-preview {
+  background: var(--slate-50);
+  border-radius: var(--radius-md);
+  padding: 0.75rem;
+  font-size: 0.75rem;
+  color: var(--slate-700);
+  margin-bottom: 1.25rem;
+  border: 1px solid var(--slate-200);
+}
+
+.service-steps-preview ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.service-steps-preview li {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* =========================================================
+   LOGIN VIEW
+   ========================================================= */
+.login-section {
+  min-height: calc(100vh - var(--header-height));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.5rem;
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+}
+
+.login-card {
+  background: #ffffff;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
+  border: 1px solid var(--slate-200);
+  width: 100%;
+  max-width: 480px;
+  overflow: hidden;
+}
+
+.login-header {
+  background: linear-gradient(135deg, #091325 0%, #1e3a8a 100%);
+  color: #ffffff;
+  padding: 2rem 2rem 1.75rem;
+  text-align: center;
+}
+
+.login-logo {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 0.75rem;
+}
+
+.login-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.login-subtitle {
+  font-size: 0.8rem;
+  color: #cbd5e1;
+  margin-top: 0.25rem;
+}
+
+.login-body {
+  padding: 2rem;
+}
+
+.login-demo-selector {
+  background: var(--slate-50);
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-lg);
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.demo-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--slate-500);
+  margin-bottom: 0.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.demo-chips {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.45rem;
+}
+
+.demo-chip-btn {
+  background: #ffffff;
+  border: 1px solid var(--slate-300);
+  border-radius: var(--radius-md);
+  padding: 0.45rem 0.6rem;
+  font-size: 0.75rem;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.2s;
+}
+
+.demo-chip-btn:hover {
+  border-color: var(--primary-500);
+  background: var(--primary-50);
+}
+
+.demo-chip-name {
+  font-weight: 700;
+  color: var(--slate-800);
+}
+
+.demo-chip-role {
+  font-size: 0.68rem;
+  color: var(--primary-700);
+}
+
+/* =========================================================
+   DASHBOARD MONITORING VIEW
+   ========================================================= */
+.dashboard-container {
+  padding: 2rem 0 3.5rem;
+}
+
+/* Dashboard Top Executive Greeting */
+.executive-header {
+  background: #ffffff;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--slate-200);
+  padding: 1.5rem 1.75rem;
+  margin-bottom: 1.75rem;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.exec-info-left {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.exec-avatar-big {
+  width: 58px;
+  height: 58px;
+  border-radius: var(--radius-full);
+  object-fit: cover;
+  border: 3px solid var(--primary-200);
+  box-shadow: var(--shadow-sm);
+}
+
+.exec-details h2 {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--slate-900);
+  line-height: 1.2;
+}
+
+.exec-details .exec-role-text {
+  font-size: 0.85rem;
+  color: var(--primary-700);
+  font-weight: 700;
+}
+
+.exec-details .exec-nip {
+  font-size: 0.75rem;
+  color: var(--slate-400);
+}
+
+.exec-actions-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* Leadership Focus Widget */
+.leadership-focus-box {
+  background: #ffffff;
+  border: 1px solid #fed7aa;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+  margin-bottom: 2rem;
+  overflow: hidden;
+}
+
+.focus-box-header {
+  background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+  padding: 1.15rem 1.5rem;
+  border-bottom: 1px solid #fed7aa;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.focus-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #9a3412;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.focus-desc {
+  font-size: 0.78rem;
+  color: #c2410c;
+}
+
+.focus-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  background: #ffffff;
+}
+
+.focus-item-card {
+  border: 1px solid var(--slate-200);
+  border-left: 4px solid #ea580c;
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  background: #fafaf9;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  transition: all 0.2s;
+}
+
+.focus-item-card:hover {
+  background: #ffffff;
+  box-shadow: var(--shadow-md);
+  border-left-color: #c2410c;
+}
+
+.focus-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.focus-applicant {
+  font-weight: 700;
+  color: var(--slate-900);
+  font-size: 0.88rem;
+}
+
+.focus-project-name {
+  font-size: 0.78rem;
+  color: var(--slate-600);
+  line-height: 1.35;
+}
+
+.focus-bottleneck-detail {
+  background: #fff7ed;
+  border: 1px dashed #fdba74;
+  padding: 0.5rem 0.65rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  color: #9a3412;
+  line-height: 1.4;
+}
+
+.focus-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  color: var(--slate-500);
+  padding-top: 0.4rem;
+  border-top: 1px solid var(--slate-200);
+}
+
+/* =========================================================
+   USER MANAGEMENT SECTION (SUPERADMIN)
+   ========================================================= */
+.user-management-panel {
+  background: #ffffff;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--slate-200);
+  padding: 1.75rem;
+  margin-top: 2rem;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--slate-200);
+}
+
+.panel-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--slate-900);
+}
+
+/* =========================================================
+   PRINT STYLES FOR EXECUTIVE SUMMARY
+   ========================================================= */
+@media print {
+  body {
+    background: #ffffff !important;
+    font-size: 11pt !important;
+    color: #000000 !important;
+  }
+  .role-quick-bar,
+  .main-navbar,
+  .main-footer,
+  .table-toolbar,
+  .btn,
+  .modal-overlay,
+  .filter-tabs-wrapper {
+    display: none !important;
+  }
+  .table-card, .data-table {
+    box-shadow: none !important;
+    border: 1px solid #000000 !important;
+  }
+  .data-table th, .data-table td {
+    border-bottom: 1px solid #cccccc !important;
+    padding: 6px 8px !important;
+  }
+  .print-header {
+    display: block !important;
+    text-align: center;
+    margin-bottom: 20px;
+    border-bottom: 2px double #000;
+    padding-bottom: 10px;
+  }
+}
+
+.print-header {
+  display: none;
+}
+
+@media (max-width: 992px) {
+  .hero-grid {
+    grid-template-columns: 1fr;
+    gap: 2.25rem;
+  }
+  .hero-title {
+    font-size: 2.1rem;
+  }
+  .executive-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  .exec-actions-right {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+}
