@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SIMOPEL DINPUTARU - Sistem Monitor Pelayanan Dinas PUTARU Kab. Demak</title>
-  <meta name="description" content="Sistem Informasi Monitoring Pelayanan Dinas Pekerjaan Umum dan Penataan Ruang Kabupaten Demak: KTTR, Validasi OSS, PBG, dan SLF.">
+  <title>SILAN DINPUTARU - Sistem Monitoring Layanan Dinas PUTARU Kab. Demak</title>
+  <meta name="description" content="SILAN (Sistem Monitoring Layanan) Dinas Pekerjaan Umum dan Penataan Ruang Kabupaten Demak: Infografis Pelayanan KTTR, Validasi OSS, PBG, dan SLF.">
   <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
   
   <!-- Font Awesome Icons -->
@@ -18,48 +18,7 @@
 <body>
 
   <!-- =========================================================
-       1. TOP BAR: QUICK ROLE SWITCHER (Demo & Pimpinan Quick Access)
-       ========================================================= -->
-  <div class="role-quick-bar">
-    <div class="role-quick-left">
-      <span class="role-quick-badge">
-        <i class="fas fa-user-shield"></i> Role Aktif:
-      </span>
-      <span style="font-weight: 700; color: #ffffff;" class="dynamic-user-name">Memuat...</span>
-      <span style="color: #94a3b8; font-size: 0.75rem;" class="dynamic-user-role">(Memuat Role)</span>
-    </div>
-
-    <div class="role-quick-buttons">
-      <span style="font-size: 0.72rem; color: #94a3b8; margin-right: 0.25rem;">Beralih Peran:</span>
-      <button class="role-switch-btn" data-role-username="kepala_dinas" title="Login sebagai Kepala Dinas">
-        <i class="fas fa-crown"></i> Kepala Dinas
-      </button>
-      <button class="role-switch-btn" data-role-username="sekretaris" title="Login sebagai Sekretaris Dinas">
-        <i class="fas fa-briefcase"></i> Sekretaris
-      </button>
-      <button class="role-switch-btn" data-role-username="kabid_trp" title="Login sebagai Kabid Tata Ruang & Pertanahan">
-        <i class="fas fa-map-marked-alt"></i> Kabid TRP
-      </button>
-      <button class="role-switch-btn" data-role-username="kabid_ck" title="Login sebagai Kabid Cipta Karya">
-        <i class="fas fa-building"></i> Kabid CK
-      </button>
-      <button class="role-switch-btn" data-role-username="koordinator_trp" title="Login sebagai Koordinator Teknis TRP">
-        <i class="fas fa-drafting-compass"></i> Koordinator TRP
-      </button>
-      <button class="role-switch-btn" data-role-username="koordinator_ck" title="Login sebagai Koordinator Teknis CK">
-        <i class="fas fa-hard-hat"></i> Koordinator CK
-      </button>
-      <button class="role-switch-btn" data-role-username="admin" title="Login sebagai Superadmin">
-        <i class="fas fa-cogs"></i> Superadmin
-      </button>
-      <button id="btn-reset-demo-data" class="role-switch-btn" style="background: rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.4); color: #fca5a5;" title="Reset data simulasi ke awal">
-        <i class="fas fa-redo"></i> Reset Data
-      </button>
-    </div>
-  </div>
-
-  <!-- =========================================================
-       2. MAIN NAVBAR
+       1. MAIN NAVBAR
        ========================================================= -->
   <header class="main-navbar">
     <div class="container navbar-inner">
@@ -67,40 +26,49 @@
         <img src="assets/logo.svg" alt="Logo DINPUTARU Demak" class="brand-logo-img">
         <div class="brand-text">
           <div class="brand-title">
-            SIMOPEL <span class="highlight">DINPUTARU</span>
+            SILAN <span class="highlight">DINPUTARU</span>
           </div>
           <div class="brand-subtitle">
-            Dinas Pekerjaan Umum & Penataan Ruang Kab. Demak
+            Sistem Monitoring Layanan - Kab. Demak
           </div>
         </div>
       </div>
 
+      <!-- Navigation Menu -->
       <nav class="nav-center-menu">
         <a href="#landing" class="nav-link" data-view="landing">
-          <i class="fas fa-home"></i> Beranda Publik
+          <i class="fas fa-chart-pie"></i> Infografis Publik
         </a>
-        <a href="#dashboard" class="nav-link" data-view="dashboard">
-          <i class="fas fa-chart-line"></i> Monitoring Pelayanan
+        <a href="#dashboard" class="nav-link internal-only" data-view="dashboard" style="display: none;">
+          <i class="fas fa-tachometer-alt"></i> Monitoring Internal
         </a>
         <a href="#users" class="nav-link superadmin-only" data-view="users" style="display: none;">
-          <i class="fas fa-users-cog"></i> Manajemen User
+          <i class="fas fa-users-cog"></i> Manajemen Pengguna
         </a>
       </nav>
 
+      <!-- Navigation Actions -->
       <div class="nav-actions">
-        <div class="user-profile-badge" data-view="dashboard" title="Klik untuk membuka dashboard">
+        <!-- Logged-in Profile Badge -->
+        <div class="user-profile-badge internal-only" data-view="dashboard" title="Klik untuk membuka dashboard" style="display: none;">
           <img src="assets/logo.svg" alt="User" class="user-avatar dynamic-user-avatar">
           <div class="user-info-text">
-            <span class="user-name dynamic-user-name">Dr. H. Akhmad Sugiharto, S.T., M.T.</span>
-            <span class="user-role-tag dynamic-user-role">Kepala Dinas</span>
+            <span class="user-name dynamic-user-name">Memuat...</span>
+            <span class="user-role-tag dynamic-user-role">Memuat Role</span>
           </div>
         </div>
-        <button class="btn btn-outline btn-sm btn-logout" title="Keluar Akun">
+
+        <!-- Logout Button (Internal Only) -->
+        <button class="btn btn-outline btn-sm btn-logout internal-only" title="Keluar Akun" style="display: none;">
           <i class="fas fa-sign-out-alt"></i> Keluar
         </button>
-        <button class="btn btn-primary btn-sm btn-login" data-view="login" style="display: none;" title="Masuk Akun Petugas">
-          <i class="fas fa-sign-in-alt"></i> Masuk Petugas
-        </button>
+
+        <!-- Login Internal Button (Public Mode) -->
+        <a href="#login" class="btn btn-primary btn-sm btn-login" data-view="login" title="Masuk Akun Petugas Internal">
+          <i class="fas fa-lock"></i> Login Internal
+        </a>
+
+        <!-- Mobile Menu Toggle Button -->
         <button class="mobile-menu-toggle" id="btn-mobile-menu" aria-label="Menu Navigasi Mobile">
           <i class="fas fa-bars"></i>
         </button>
@@ -109,240 +77,265 @@
   </header>
 
   <!-- =========================================================
-       VIEW 1: LANDING PAGE (BERANDA PUBLIK & LACAK BERKAS)
+       VIEW 1: LANDING PAGE - HALAMAN PUBLIK (RANGKUMAN LAYANAN)
        ========================================================= -->
   <main id="view-landing" class="view-section active">
-    <!-- Hero Section -->
-    <section class="landing-hero">
-      <div class="container hero-grid">
-        <div>
-          <div class="hero-pill-badge">
-            <i class="fas fa-shield-alt"></i> Sistem Pemantauan Resmi & Akuntabel Kabupaten Demak
-          </div>
-          <h1 class="hero-title">
-            Pantau Progres Layanan <br/>
-            <span class="text-gold">Tata Ruang & Cipta Karya</span> Lebih Terbuka
-          </h1>
-          <p class="hero-desc">
-            Sistem Informasi Monitoring Pelayanan (SIMOPEL) Dinas Pekerjaan Umum dan Penataan Ruang Kabupaten Demak. 
-            Memantau berkas pengajuan secara real-time, mendeteksi hambatan proses, dan menjamin kepastian waktu pelayanan bagi masyarakat serta pelaku usaha.
-          </p>
-          <div class="hero-cta-group">
-            <a href="#dashboard" class="btn btn-primary btn-lg" data-view="dashboard">
-              <i class="fas fa-tachometer-alt"></i> Masuk Dashboard Monitoring
-            </a>
-            <a href="#layanan-info" class="btn btn-outline btn-lg" style="color: #ffffff; border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.1);">
-              <i class="fas fa-info-circle"></i> Info Layanan & SOP
-            </a>
-          </div>
+    <!-- Infografis Hero Banner -->
+    <section class="infografis-hero">
+      <div class="container infografis-hero-inner">
+        <div class="infografis-badge">
+          <i class="fas fa-shield-alt"></i> Portal Keterbukaan Informasi Pelayanan Publik DINPUTARU Kabupaten Demak
         </div>
+        <h1 class="infografis-title">
+          Rangkuman Layanan <span class="text-gold">SILAN 2026</span>
+        </h1>
+        <p class="infografis-desc">
+          Infografis agregat permohonan layanan publik Dinas Pekerjaan Umum dan Penataan Ruang Kabupaten Demak. 
+          Pantau volume permohonan masuk, tingkat penyelesaian berkas, dan kepastian standar waktu pelayanan (SLA) secara terbuka.
+        </p>
 
-        <!-- Public Fast Tracker Card -->
-        <div class="public-tracker-card">
-          <div class="tracker-card-header">
-            <div class="tracker-title">
-              <i class="fas fa-search-location" style="color: var(--primary-600);"></i> Lacak Berkas Mandiri
+        <!-- Month Filter Selector Bar -->
+        <div class="month-selector-wrapper">
+          <div class="month-selector-header">
+            <div class="month-selector-title">
+              <i class="fas fa-calendar-check" style="color: var(--primary-600);"></i> Filter Periode Bulan (Tahun 2026):
             </div>
-            <div class="tracker-desc">
-              Masukkan Nomor Registrasi Berkas atau Nama Pemohon untuk melihat tahapan dan posisi berkas terkini.
+            <div id="infografis-periode-title" style="font-size: 0.8rem; font-weight: 700; color: var(--primary-700);">
+              <i class="fas fa-calendar-alt"></i> Periode Terpilih: <strong>Memuat...</strong>
             </div>
           </div>
 
-          <div class="tracker-search-box">
-            <input type="text" id="public-track-input" class="tracker-input" placeholder="Contoh: REG/TRP/2026/001 atau Nama" />
-            <button id="btn-public-track" class="btn btn-primary" style="width: 100%;">
-              <i class="fas fa-search"></i> Cek Status Pengajuan Sekarang
-            </button>
+          <!-- Desktop Pills -->
+          <div class="month-pills-row" id="month-selector-container">
+            <!-- Populated by Infografis.js -->
           </div>
 
-          <div class="tracker-samples">
-            <span>Contoh Berkas:</span>
-            <span class="sample-tag">REG/TRP/2026/001</span>
-            <span class="sample-tag">REG/PBG/2026/001</span>
-            <span class="sample-tag">REG/SLF/2026/001</span>
-            <span class="sample-tag">REG/OSS/2026/001</span>
+          <!-- Mobile Dropdown -->
+          <div class="mobile-month-select-wrap">
+            <select id="mobile-month-select" class="form-control" style="font-weight: 600;">
+              <option value="ALL">Sepanjang Tahun 2026 (Jan - Nov)</option>
+              <option value="1">Januari 2026</option>
+              <option value="2">Februari 2026</option>
+              <option value="3">Maret 2026</option>
+              <option value="4">April 2026</option>
+              <option value="5">Mei 2026</option>
+              <option value="6">Juni 2026</option>
+              <option value="7">Juli 2026</option>
+              <option value="8">Agustus 2026</option>
+              <option value="9">September 2026</option>
+              <option value="10">Oktober 2026</option>
+              <option value="11">November 2026</option>
+            </select>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- 4 Layanan Utama Showcase -->
-    <section id="layanan-info" class="services-section container">
-      <div class="section-header">
-        <div class="section-tag">Pelayanan Terpadu DINPUTARU</div>
-        <h2 class="section-title">4 Layanan Strategis dalam Satu Pemantauan</h2>
+    <!-- Infografis Main Content Section -->
+    <section class="container" style="padding-top: 2rem; padding-bottom: 3.5rem;">
+      <!-- 4 Aggregate Metric Cards -->
+      <div class="kpi-grid">
+        <!-- 1. Total Permohonan Masuk -->
+        <div class="kpi-card">
+          <div class="kpi-card-header">
+            <span class="kpi-title">Total Permohonan Masuk</span>
+            <div class="kpi-icon-wrapper kpi-icon-blue">
+              <i class="fas fa-folder-open"></i>
+            </div>
+          </div>
+          <div class="kpi-value-row">
+            <span id="pub-kpi-total" class="kpi-value">0</span>
+          </div>
+          <div class="kpi-subtext">Akumulasi pengajuan seluruh kategori</div>
+          <div class="kpi-accent-bar" style="background: var(--primary-500);"></div>
+        </div>
+
+        <!-- 2. Permohonan Selesai / Terbit -->
+        <div class="kpi-card">
+          <div class="kpi-card-header">
+            <span class="kpi-title">Sudah Selesai / SK Terbit</span>
+            <div class="kpi-icon-wrapper kpi-icon-green">
+              <i class="fas fa-check-circle"></i>
+            </div>
+          </div>
+          <div class="kpi-value-row">
+            <span id="pub-kpi-selesai" class="kpi-value" style="color: #059669;">0</span>
+          </div>
+          <div class="kpi-subtext">Rekomtek, SK & Sertifikat telah terbit</div>
+          <div class="kpi-accent-bar" style="background: var(--success-500);"></div>
+        </div>
+
+        <!-- 3. Dalam Proses / Belum Selesai -->
+        <div class="kpi-card">
+          <div class="kpi-card-header">
+            <span class="kpi-title">Belum Selesai / On Progress</span>
+            <div class="kpi-icon-wrapper kpi-icon-amber">
+              <i class="fas fa-hourglass-half"></i>
+            </div>
+          </div>
+          <div class="kpi-value-row">
+            <span id="pub-kpi-belum" class="kpi-value" style="color: #d97706;">0</span>
+          </div>
+          <div class="kpi-subtext">Verifikasi teknis, sidang, atau telaah</div>
+          <div class="kpi-accent-bar" style="background: var(--warning-500);"></div>
+        </div>
+
+        <!-- 4. Rasio Penyelesaian (%) -->
+        <div class="kpi-card">
+          <div class="kpi-card-header">
+            <span class="kpi-title">Tingkat Penyelesaian</span>
+            <div class="kpi-icon-wrapper kpi-icon-purple">
+              <i class="fas fa-chart-line"></i>
+            </div>
+          </div>
+          <div class="kpi-value-row">
+            <span id="pub-kpi-persen" class="kpi-value" style="color: #7c3aed;">0%</span>
+          </div>
+          <div class="kpi-subtext">Persentase keberhasilan pelayanan</div>
+          <div class="kpi-accent-bar" style="background: var(--purple-600);"></div>
+        </div>
+      </div>
+
+      <!-- Section Title for 4 Service Categories -->
+      <div class="section-header" style="margin-top: 1.5rem; margin-bottom: 0.5rem;">
+        <div class="section-tag">Rincian Per Kategori Layanan</div>
+        <h2 class="section-title">Infografis & Status 4 Layanan Utama DINPUTARU</h2>
         <p class="section-desc">
-          Terintegrasi penuh antara Bidang Tata Ruang dan Pertanahan serta Bidang Cipta Karya untuk mewujudkan kemudahan berusaha dan kelaikan bangunan gedung di Kabupaten Demak.
+          Data real-time jumlah permohonan masuk, berkas yang telah rampung, dan berkas dalam proses untuk masing-masing kategori layanan sesuai periode bulan yang Anda pilih.
         </p>
       </div>
 
-      <div class="services-grid">
-        <!-- 1. KTTR -->
-        <div class="service-card">
-          <div class="service-card-top">
-            <div class="service-icon-box" style="background: #e0f2fe; color: #0284c7;">
-              <i class="fas fa-map-marked-alt"></i>
+      <!-- 4 Cards Grid (KTTR, OSS, PBG, SLF) -->
+      <div id="pub-services-cards-grid" class="infographic-cards-grid">
+        <!-- Rendered dynamically by Infografis.js -->
+      </div>
+
+      <!-- Comparative Bar Chart Card -->
+      <div class="comparison-card">
+        <div class="comparison-header">
+          <div>
+            <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--slate-900);">
+              <i class="fas fa-chart-bar" style="color: var(--primary-600);"></i> Grafik Komparasi Volume & Penyelesaian Antar Layanan
+            </h3>
+            <div style="font-size: 0.8rem; color: var(--slate-500); margin-top: 0.2rem;">
+              Perbandingan proporsional volume pengajuan selesai vs dalam proses pada periode terpilih
             </div>
-            <span class="service-sla-badge"><i class="fas fa-stopwatch"></i> SLA: 5 Hari Kerja</span>
           </div>
-          <div class="service-name">KTTR</div>
-          <div class="service-division">Bidang Tata Ruang & Pertanahan</div>
-          <p class="service-card-desc">
-            Keterangan Rencana Tata Ruang memberikan informasi ketentuan zonasi RTRW/RDTR, Garis Sempadan Bangunan (GSB), KDB, KLB, dan kesesuaian peruntukan ruang di Kabupaten Demak.
-          </p>
-          <div class="service-steps-preview">
-            <ul>
-              <li><i class="fas fa-check-circle" style="color: var(--success-500);"></i> Verifikasi Dokumen & Alas Hak</li>
-              <li><i class="fas fa-check-circle" style="color: var(--success-500);"></i> Analisis Geospasial RDTR & Lapangan</li>
-              <li><i class="fas fa-check-circle" style="color: var(--success-500);"></i> Draf Rekomtek & Pengesahan Kadin</li>
-            </ul>
+
+          <div class="chart-legend">
+            <div class="legend-item">
+              <span class="legend-dot" style="background: #10b981;"></span>
+              <span>Sudah Selesai</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot" style="background: #f59e0b;"></span>
+              <span>Belum Selesai / On Progress</span>
+            </div>
           </div>
-          <button class="btn btn-outline btn-sm" onclick="App.showView('dashboard'); Monitoring.filters.layanan='KTTR'; Monitoring.renderTable();">
-            Pantau Berkas KTTR &rarr;
-          </button>
         </div>
 
-        <!-- 2. Validasi OSS -->
-        <div class="service-card">
-          <div class="service-card-top">
-            <div class="service-icon-box" style="background: #dcfce7; color: #16a34a;">
-              <i class="fas fa-network-wired"></i>
-            </div>
-            <span class="service-sla-badge"><i class="fas fa-stopwatch"></i> SLA: 10 Hari Kerja</span>
-          </div>
-          <div class="service-name">Validasi OSS (KKPR)</div>
-          <div class="service-division">Bidang Tata Ruang & Pertanahan</div>
-          <p class="service-card-desc">
-            Validasi Kesesuaian Kegiatan Pemanfaatan Ruang terintegrasi OSS RBA untuk perizinan investasi, pengecekan polygon SHP koordinat batas lahan, serta pertimbangan teknis pertanahan.
-          </p>
-          <div class="service-steps-preview">
-            <ul>
-              <li><i class="fas fa-check-circle" style="color: var(--success-500);"></i> Sinkronisasi OSS RBA & Cek Poligon SHP</li>
-              <li><i class="fas fa-check-circle" style="color: var(--success-500);"></i> Pertimbangan Teknis Pertanahan BPN</li>
-              <li><i class="fas fa-check-circle" style="color: var(--success-500);"></i> Penerbitan Persetujuan KKPR OSS</li>
-            </ul>
-          </div>
-          <button class="btn btn-outline btn-sm" onclick="App.showView('dashboard'); Monitoring.filters.layanan='OSS'; Monitoring.renderTable();">
-            Pantau Berkas Validasi OSS &rarr;
-          </button>
+        <div id="pub-comparative-bars">
+          <!-- Populated by Infografis.js -->
         </div>
+      </div>
 
-        <!-- 3. PBG -->
-        <div class="service-card">
-          <div class="service-card-top">
-            <div class="service-icon-box" style="background: #fef3c7; color: #d97706;">
-              <i class="fas fa-building"></i>
-            </div>
-            <span class="service-sla-badge"><i class="fas fa-stopwatch"></i> SLA: 21 Hari Kerja</span>
-          </div>
-          <div class="service-name">PBG</div>
-          <div class="service-division">Bidang Cipta Karya</div>
-          <p class="service-card-desc">
-            Persetujuan Bangunan Gedung (pengganti IMB) untuk pembangunan gedung baru, renovasi, atau perluasan dengan penelaahan standar arsitektur, struktur tahan gempa, dan utilitas MEP.
+      <!-- Quick Fast Action Banner for Internal Staff -->
+      <div style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: #ffffff; border-radius: var(--radius-xl); padding: 2rem; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap;">
+        <div>
+          <h4 style="font-size: 1.2rem; font-weight: 800; margin-bottom: 0.35rem; color: #fbbf24;">
+            <i class="fas fa-lock"></i> Petugas / Pimpinan DINPUTARU?
+          </h4>
+          <p style="font-size: 0.88rem; color: #cbd5e1; max-width: 600px; margin: 0;">
+            Akses dashboard monitoring internal untuk melihat rincian pemohon, disposisi posisi meja, rekapitulasi kendala, dan manajemen proses layanan.
           </p>
-          <div class="service-steps-preview">
-            <ul>
-              <li><i class="fas fa-check-circle" style="color: var(--success-500);"></i> Verifikasi SIMBG & Gambar Teknis</li>
-              <li><i class="fas fa-check-circle" style="color: var(--success-500);"></i> Sidang Penilaian Tim Profesi Ahli (TPA)</li>
-              <li><i class="fas fa-check-circle" style="color: var(--success-500);"></i> Penetapan Retribusi & Penerbitan SK PBG</li>
-            </ul>
-          </div>
-          <button class="btn btn-outline btn-sm" onclick="App.showView('dashboard'); Monitoring.filters.layanan='PBG'; Monitoring.renderTable();">
-            Pantau Berkas PBG &rarr;
-          </button>
         </div>
-
-        <!-- 4. SLF -->
-        <div class="service-card">
-          <div class="service-card-top">
-            <div class="service-icon-box" style="background: #f3e8ff; color: #9333ea;">
-              <i class="fas fa-award"></i>
-            </div>
-            <span class="service-sla-badge"><i class="fas fa-stopwatch"></i> SLA: 14 Hari Kerja</span>
-          </div>
-          <div class="service-name">SLF</div>
-          <div class="service-division">Bidang Cipta Karya</div>
-          <p class="service-card-desc">
-            Sertifikat Laik Fungsi untuk menjamin bahwa bangunan gedung yang telah selesai dibangun atau eksisting telah memenuhi persyaratan keselamatan kebakaran, struktur, dan kenyamanan.
-          </p>
-          <div class="service-steps-preview">
-            <ul>
-              <li><i class="fas fa-check-circle" style="color: var(--success-500);"></i> Pemeriksaan As-Built Drawing & SIMBG</li>
-              <li><i class="fas fa-check-circle" style="color: var(--success-500);"></i> Inspeksi Visual & Uji Petik Lapangan</li>
-              <li><i class="fas fa-check-circle" style="color: var(--success-500);"></i> Rapat Evaluasi TPT & Sertifikat SLF</li>
-            </ul>
-          </div>
-          <button class="btn btn-outline btn-sm" onclick="App.showView('dashboard'); Monitoring.filters.layanan='SLF'; Monitoring.renderTable();">
-            Pantau Berkas SLF &rarr;
-          </button>
-        </div>
+        <a href="#login" class="btn btn-primary btn-lg" data-view="login">
+          <i class="fas fa-sign-in-alt"></i> Masuk ke Dashboard Internal &rarr;
+        </a>
       </div>
     </section>
   </main>
 
   <!-- =========================================================
-       VIEW 2: LOGIN VIEW (LOGIN PAGE)
+       VIEW 2: LOGIN VIEW (HALAMAN LOGIN MINIMALIS & KEAMANAN CAPTCHA)
        ========================================================= -->
   <main id="view-login" class="view-section">
     <section class="login-section">
       <div class="login-card">
         <div class="login-header">
           <img src="assets/logo.svg" alt="Logo DINPUTARU Demak" class="login-logo">
-          <h2 class="login-title">Masuk ke SIMOPEL</h2>
-          <div class="login-subtitle">Sistem Monitor Pelayanan Dinas PUTARU Kabupaten Demak</div>
+          <h2 class="login-title">Masuk ke SILAN</h2>
+          <div class="login-subtitle">Sistem Monitoring Layanan Dinas PUTARU Kabupaten Demak</div>
         </div>
 
         <div class="login-body">
-          <!-- Demo Role Selector Quick Button -->
-          <div class="login-demo-selector">
-            <div class="demo-title">
-              <span>Akses Cepat Mode Uji Coba (Klik Role):</span>
-              <i class="fas fa-mouse-pointer" style="color: var(--primary-600);"></i>
-            </div>
-            <div class="demo-chips">
-              <button type="button" class="demo-chip-btn" onclick="document.getElementById('login-username').value='kepala_dinas'; document.getElementById('login-password').value='password123';">
-                <span class="demo-chip-name">Kepala Dinas</span>
-                <span class="demo-chip-role">Executive Monitor</span>
-              </button>
-              <button type="button" class="demo-chip-btn" onclick="document.getElementById('login-username').value='sekretaris'; document.getElementById('login-password').value='password123';">
-                <span class="demo-chip-name">Sekretaris Dinas</span>
-                <span class="demo-chip-role">Rekap & SLA</span>
-              </button>
-              <button type="button" class="demo-chip-btn" onclick="document.getElementById('login-username').value='kabid_trp'; document.getElementById('login-password').value='password123';">
-                <span class="demo-chip-name">Kabid TRP</span>
-                <span class="demo-chip-role">Validasi Tata Ruang</span>
-              </button>
-              <button type="button" class="demo-chip-btn" onclick="document.getElementById('login-username').value='kabid_ck'; document.getElementById('login-password').value='password123';">
-                <span class="demo-chip-name">Kabid CK</span>
-                <span class="demo-chip-role">Persetujuan Gedung</span>
-              </button>
-              <button type="button" class="demo-chip-btn" onclick="document.getElementById('login-username').value='koordinator_trp'; document.getElementById('login-password').value='password123';">
-                <span class="demo-chip-name">Koordinator TRP</span>
-                <span class="demo-chip-role">Teknis Zonasi</span>
-              </button>
-              <button type="button" class="demo-chip-btn" onclick="document.getElementById('login-username').value='admin'; document.getElementById('login-password').value='password123';">
-                <span class="demo-chip-name">Superadmin</span>
-                <span class="demo-chip-role">Manajemen User</span>
-              </button>
-            </div>
-          </div>
-
           <form id="form-login">
-            <div class="form-group" style="margin-bottom: 1.15rem;">
-              <label class="form-label" for="login-username">Nama Pengguna (Username)</label>
-              <input type="text" id="login-username" class="form-control" placeholder="Masukkan username" required value="kepala_dinas">
+            <div class="form-group" style="margin-bottom: 1.1rem;">
+              <label class="form-label" for="login-username">Nama Pengguna (Username) <span class="required">*</span></label>
+              <input type="text" id="login-username" class="form-control" placeholder="Masukkan username pegawai" required autocomplete="username">
             </div>
 
-            <div class="form-group" style="margin-bottom: 1.5rem;">
-              <label class="form-label" for="login-password">Kata Sandi (Password)</label>
-              <input type="password" id="login-password" class="form-control" placeholder="Masukkan kata sandi" required value="password123">
-              <span class="form-hint">Kata sandi default semua akun simulasi: <strong>password123</strong></span>
+            <div class="form-group" style="margin-bottom: 1.1rem;">
+              <label class="form-label" for="login-password">Kata Sandi (Password) <span class="required">*</span></label>
+              <input type="password" id="login-password" class="form-control" placeholder="Masukkan kata sandi" required autocomplete="current-password">
             </div>
 
-            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.8rem;">
-              <i class="fas fa-sign-in-alt"></i> Masuk ke Dashboard
+            <!-- Keamanan Tambahan: CAPTCHA Perhitungan Matematika Sederhana -->
+            <div class="captcha-container">
+              <label class="form-label" for="login-captcha-input">
+                <i class="fas fa-shield-alt" style="color: var(--primary-600);"></i> Keamanan CAPTCHA: Selesaikan Hitungan <span class="required">*</span>
+              </label>
+              <div class="captcha-row">
+                <span id="captcha-question-text" class="captcha-badge">Memuat soal...</span>
+                <button type="button" id="btn-refresh-captcha" class="btn-refresh-captcha" title="Ganti soal perhitungan matematika">
+                  <i class="fas fa-sync-alt"></i>
+                </button>
+                <input type="number" id="login-captcha-input" class="form-control" placeholder="Hasil hitung" required style="font-weight: 700; font-size: 1rem;">
+              </div>
+              <span class="form-hint" style="margin-top: 0.35rem; display: block;">
+                Jawab perhitungan acak di atas (tambah, kurang, kali, bagi) untuk verifikasi keamanan.
+              </span>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.85rem; font-weight: 700; font-size: 0.95rem;">
+              <i class="fas fa-sign-in-alt"></i> Masuk ke Dashboard Internal
             </button>
           </form>
+
+          <!-- Back to Public Link -->
+          <div style="text-align: center; margin-top: 1.25rem;">
+            <a href="#landing" data-view="landing" style="font-size: 0.85rem; color: var(--primary-600); font-weight: 600; text-decoration: none;">
+              <i class="fas fa-arrow-left"></i> Kembali ke Infografis Publik
+            </a>
+          </div>
+
+          <!-- Bantuan Pengujian Akun Petugas (Minimalist Info) -->
+          <div style="margin-top: 1.5rem; padding-top: 1.15rem; border-top: 1px dashed var(--slate-200); font-size: 0.76rem; color: var(--slate-500);">
+            <div style="font-weight: 700; margin-bottom: 0.45rem; color: var(--slate-600);">
+              <i class="fas fa-key"></i> Bantuan Masuk Akun Simulasi (Klik Akun):
+            </div>
+            <div style="display: flex; flex-wrap: wrap; gap: 0.35rem;">
+              <button type="button" class="btn btn-outline btn-sm" style="font-size: 0.72rem; padding: 0.25rem 0.55rem;" onclick="document.getElementById('login-username').value='kepala_dinas'; document.getElementById('login-password').value='password123';">
+                Kepala Dinas
+              </button>
+              <button type="button" class="btn btn-outline btn-sm" style="font-size: 0.72rem; padding: 0.25rem 0.55rem;" onclick="document.getElementById('login-username').value='sekretaris'; document.getElementById('login-password').value='password123';">
+                Sekretaris
+              </button>
+              <button type="button" class="btn btn-outline btn-sm" style="font-size: 0.72rem; padding: 0.25rem 0.55rem;" onclick="document.getElementById('login-username').value='kabid_trp'; document.getElementById('login-password').value='password123';">
+                Kabid TRP
+              </button>
+              <button type="button" class="btn btn-outline btn-sm" style="font-size: 0.72rem; padding: 0.25rem 0.55rem;" onclick="document.getElementById('login-username').value='kabid_ck'; document.getElementById('login-password').value='password123';">
+                Kabid CK
+              </button>
+              <button type="button" class="btn btn-outline btn-sm" style="font-size: 0.72rem; padding: 0.25rem 0.55rem;" onclick="document.getElementById('login-username').value='koordinator_trp'; document.getElementById('login-password').value='password123';">
+                Koordinator TRP
+              </button>
+              <button type="button" class="btn btn-outline btn-sm" style="font-size: 0.72rem; padding: 0.25rem 0.55rem;" onclick="document.getElementById('login-username').value='admin'; document.getElementById('login-password').value='password123';">
+                Superadmin
+              </button>
+            </div>
+            <span style="display: block; margin-top: 0.35rem; color: var(--slate-400);">Kata sandi default: <strong>password123</strong></span>
+          </div>
         </div>
       </div>
     </section>
@@ -637,7 +630,7 @@
 
       <div class="footer-bottom">
         <div>&copy; 2026 Dinas Pekerjaan Umum dan Penataan Ruang Kabupaten Demak. Hak Cipta Dilindungi.</div>
-        <div style="color: #cbd5e1;">SIMOPEL v2.0 - Standar Pelayanan Publik Demak Bermartabat</div>
+        <div style="color: #cbd5e1;">SILAN - Sistem Monitoring Layanan DINPUTARU Demak Bermartabat</div>
       </div>
     </div>
   </footer>
@@ -944,6 +937,7 @@
   <!-- Scripts -->
   <script src="js/data.js"></script>
   <script src="js/auth.js"></script>
+  <script src="js/infografis.js"></script>
   <script src="js/monitoring.js"></script>
   <script src="js/userManagement.js"></script>
   <script src="js/tracker.js"></script>

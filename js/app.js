@@ -1,5 +1,6 @@
 /**
- * SIMOPEL DINPUTARU DEMAK - Main Application Controller
+ * SILAN DINPUTARU DEMAK - Main Application Controller
+ * Routing, Navigation & Authentication Guards
  */
 
 const App = {
@@ -9,23 +10,60 @@ const App = {
     // 1. Initialize Auth
     Auth.init();
 
-    // 2. Initialize Monitoring Engine
-    Monitoring.init();
+    // 2. Initialize Public Infographics Engine
+    if (typeof Infografis !== 'undefined') {
+      Infografis.init();
+    }
 
-    // 3. Initialize User Management
-    UserManagement.init();
+    // 3. Initialize Internal Monitoring Engine
+    if (typeof Monitoring !== 'undefined') {
+      Monitoring.init();
+    }
 
-    // 4. Setup Global Nav & View Switcher
+    // 4. Initialize User Management
+    if (typeof UserManagement !== 'undefined') {
+      UserManagement.init();
+    }
+
+    // 5. Setup Global Navigation & Event Listeners
     this.setupNavigation();
 
-    // 5. Setup Quick Role Switcher in Top Bar
-    this.setupQuickRoleSwitcher();
-
-    // 6. Check URL hash or default view
+    // 6. Handle initial URL hash
     this.handleRouting();
   },
 
   showView(viewName) {
+    // Route Guards for Protected Internal Views
+    if (viewName === 'dashboard') {
+      if (!Auth.isLoggedIn()) {
+        alert('Akses Terbatas: Dashboard monitoring internal memerlukan autentikasi login petugas.');
+        this.showView('login');
+        window.location.hash = 'login';
+        return;
+      }
+      Monitoring.refreshData();
+    } else if (viewName === 'users') {
+      if (!Auth.isLoggedIn()) {
+        this.showView('login');
+        window.location.hash = 'login';
+        return;
+      }
+      if (!Auth.isSuperAdmin()) {
+        alert('Akses Terbatas: Hanya role Superadmin yang dapat mengakses Manajemen Pengguna.');
+        this.showView('dashboard');
+        window.location.hash = 'dashboard';
+        return;
+      }
+      UserManagement.refreshUsers();
+    } else if (viewName === 'login') {
+      // Regenerate CAPTCHA when visiting login page
+      Auth.generateCaptcha();
+    } else if (viewName === 'landing') {
+      if (typeof Infografis !== 'undefined') {
+        Infografis.renderInfographics();
+      }
+    }
+
     this.currentView = viewName;
 
     // Hide all view sections
@@ -48,17 +86,8 @@ const App = {
       }
     });
 
-    // Special checks per view
-    if (viewName === 'dashboard') {
-      Monitoring.refreshData();
-    } else if (viewName === 'users') {
-      if (!Auth.isSuperAdmin()) {
-        alert('Akses Terbatas: Hanya role Superadmin yang dapat mengakses Manajemen User.');
-        this.showView('dashboard');
-        return;
-      }
-      UserManagement.refreshUsers();
-    }
+    // Update UI elements based on auth state
+    Auth.updateUserUI();
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
   },
@@ -88,17 +117,18 @@ const App = {
       this.handleRouting();
     });
 
-    // Login Form Submission
+    // Login Form Submission with Mathematical CAPTCHA Verification
     const loginForm = document.getElementById('form-login');
     if (loginForm) {
       loginForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const username = document.getElementById('login-username').value.trim();
         const password = document.getElementById('login-password').value.trim();
+        const captchaInput = document.getElementById('login-captcha-input').value.trim();
 
-        const result = Auth.login(username, password);
+        const result = Auth.login(username, password, captchaInput);
         if (result.success) {
-          alert(`Selamat datang, ${result.user.nama} (${result.user.roleLabel})!`);
+          alert(`Selamat datang di SILAN, ${result.user.nama} (${result.user.roleLabel})!`);
           this.showView('dashboard');
           window.location.hash = 'dashboard';
         } else {
@@ -107,40 +137,22 @@ const App = {
       });
     }
 
+    // CAPTCHA Refresh Button
+    const btnRefreshCaptcha = document.getElementById('btn-refresh-captcha');
+    if (btnRefreshCaptcha) {
+      btnRefreshCaptcha.addEventListener('click', () => {
+        Auth.generateCaptcha();
+      });
+    }
+
     // Logout buttons
     document.querySelectorAll('.btn-logout').forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.preventDefault();
         Auth.logout();
-        alert('Anda telah keluar dari sesi.');
+        alert('Anda telah keluar dari sesi internal SILAN.');
         this.showView('landing');
         window.location.hash = 'landing';
-      });
-    });
-
-    // Fast Public Tracker button in Landing
-    const btnTrack = document.getElementById('btn-public-track');
-    const inputTrack = document.getElementById('public-track-input');
-    if (btnTrack && inputTrack) {
-      btnTrack.addEventListener('click', () => {
-        Tracker.trackPublicSubmission(inputTrack.value);
-      });
-
-      inputTrack.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          Tracker.trackPublicSubmission(inputTrack.value);
-        }
-      });
-    }
-
-    // Sample tags click in Public Tracker
-    document.querySelectorAll('.sample-tag').forEach(tag => {
-      tag.addEventListener('click', () => {
-        if (inputTrack) {
-          inputTrack.value = tag.textContent.trim();
-          Tracker.trackPublicSubmission(inputTrack.value);
-        }
       });
     });
 
@@ -169,38 +181,6 @@ const App = {
         });
       });
     }
-
-    // Reset Data Button (Developer / Demo helper)
-    const btnReset = document.getElementById('btn-reset-demo-data');
-    if (btnReset) {
-      btnReset.addEventListener('click', () => {
-        if (confirm('Kembalikan semua data ke kondisi default awal (16 pengajuan percontohan Demak)?')) {
-          resetToDefaultData();
-          Auth.init();
-          Monitoring.init();
-          UserManagement.init();
-          alert('Data percontohan berhasil direset!');
-        }
-      });
-    }
-  },
-
-  setupQuickRoleSwitcher() {
-    document.querySelectorAll('.role-switch-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const username = btn.dataset.roleUsername;
-        if (username) {
-          Auth.loginAs(username);
-          const currentUser = Auth.getCurrentUser();
-          Monitoring.refreshData();
-          if (this.currentView === 'users' && !Auth.isSuperAdmin()) {
-            this.showView('dashboard');
-          }
-          // Flash feedback
-          console.log(`Role dialihkan ke: ${currentUser.nama} (${currentUser.roleLabel})`);
-        }
-      });
-    });
   }
 };
 

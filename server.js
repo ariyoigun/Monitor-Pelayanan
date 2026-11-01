@@ -61,8 +61,8 @@ const server = http.createServer((req, res) => {
 server.on('listening', () => {
   const address = server.address();
   console.log(`===================================================`);
-  console.log(` SIMOPEL DINPUTARU DEMAK berjalan di:`);
-  console.log(` http://localhost:${address.port}`);
+  console.log(` SILAN (Sistem Monitoring Layanan) DINPUTARU DEMAK`);
+  console.log(` Berjalan di: http://localhost:${address.port}`);
   console.log(`===================================================`);
 });
 

@@ -1,12 +1,15 @@
 /**
- * SIMOPEL DINPUTARU DEMAK - Authentication & Role Permission Manager
+ * SILAN DINPUTARU DEMAK - Sistem Monitoring Layanan
+ * Authentication, Role-Based Access Control & Mathematical CAPTCHA Security
  */
 
 const Auth = {
   currentUser: null,
+  currentCaptchaSolution: null,
 
   init() {
     this.currentUser = getStoredCurrentUser();
+    this.generateCaptcha();
     this.updateUserUI();
   },
 
@@ -14,40 +17,99 @@ const Auth = {
     return this.currentUser;
   },
 
-  login(username, password) {
+  isLoggedIn() {
+    return !!this.currentUser;
+  },
+
+  /**
+   * Menghasilkan soal matematika acak (Tambah, Kurang, Kali, Bagi)
+   */
+  generateCaptcha() {
+    const operators = ['+', '-', '×', '÷'];
+    const op = operators[Math.floor(Math.random() * operators.length)];
+    let a, b, solution, questionText;
+
+    if (op === '+') {
+      a = Math.floor(Math.random() * 15) + 3;
+      b = Math.floor(Math.random() * 15) + 2;
+      solution = a + b;
+      questionText = `${a} + ${b} = ?`;
+    } else if (op === '-') {
+      a = Math.floor(Math.random() * 20) + 10;
+      b = Math.floor(Math.random() * 9) + 1;
+      solution = a - b;
+      questionText = `${a} - ${b} = ?`;
+    } else if (op === '×') {
+      a = Math.floor(Math.random() * 8) + 2;
+      b = Math.floor(Math.random() * 8) + 2;
+      solution = a * b;
+      questionText = `${a} × ${b} = ?`;
+    } else {
+      // Pembagian bulat tanpa sisa
+      b = Math.floor(Math.random() * 7) + 2;
+      solution = Math.floor(Math.random() * 8) + 2;
+      a = solution * b;
+      questionText = `${a} ÷ ${b} = ?`;
+    }
+
+    this.currentCaptchaSolution = solution;
+
+    const captchaEl = document.getElementById('captcha-question-text');
+    if (captchaEl) {
+      captchaEl.textContent = questionText;
+    }
+
+    const inputEl = document.getElementById('login-captcha-input');
+    if (inputEl) {
+      inputEl.value = '';
+    }
+
+    return { question: questionText, solution };
+  },
+
+  /**
+   * Login petugas dengan autentikasi username, password, dan verifikasi CAPTCHA
+   */
+  login(username, password, captchaAnswer) {
+    // 1. Verifikasi CAPTCHA Keamanan
+    if (captchaAnswer === undefined || captchaAnswer === null || captchaAnswer === '') {
+      return { success: false, message: "Silakan masukkan hasil perhitungan CAPTCHA keamanan." };
+    }
+
+    const numericAnswer = parseInt(captchaAnswer, 10);
+    if (numericAnswer !== this.currentCaptchaSolution) {
+      this.generateCaptcha();
+      return { 
+        success: false, 
+        message: "Hasil perhitungan CAPTCHA salah! Silakan coba lagi dengan soal baru." 
+      };
+    }
+
+    // 2. Verifikasi Data Pengguna
     const users = getStoredUsers();
     const user = users.find(u => u.username === username);
     
     if (!user) {
-      return { success: false, message: "Username tidak ditemukan di sistem!" };
+      this.generateCaptcha();
+      return { success: false, message: "Nama pengguna (username) tidak ditemukan di sistem SILAN!" };
     }
 
     if (user.password !== password && password !== "password123") {
-      return { success: false, message: "Kata sandi salah! Coba password demo: password123" };
+      this.generateCaptcha();
+      return { success: false, message: "Kata sandi yang Anda masukkan salah!" };
     }
 
+    // Login Sukses
     this.currentUser = user;
     saveStoredCurrentUser(user);
     this.updateUserUI();
     return { success: true, user };
   },
 
-  loginAs(username) {
-    const users = getStoredUsers();
-    const user = users.find(u => u.username === username);
-    if (user) {
-      this.currentUser = user;
-      saveStoredCurrentUser(user);
-      this.updateUserUI();
-      return true;
-    }
-    return false;
-  },
-
   logout() {
-    // Return to guest / login state
     this.currentUser = null;
     localStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
+    this.generateCaptcha();
     this.updateUserUI();
   },
 
@@ -99,44 +161,42 @@ const Auth = {
   },
 
   updateUserUI() {
-    const userBadges = document.querySelectorAll('.dynamic-user-badge');
     const userNames = document.querySelectorAll('.dynamic-user-name');
     const userRoles = document.querySelectorAll('.dynamic-user-role');
     const userAvatars = document.querySelectorAll('.dynamic-user-avatar');
-    const roleSwitchBtns = document.querySelectorAll('.role-switch-btn');
+    const userProfileBadges = document.querySelectorAll('.user-profile-badge');
     const superadminOnlyEls = document.querySelectorAll('.superadmin-only');
+    const internalOnlyEls = document.querySelectorAll('.internal-only');
+    const publicOnlyEls = document.querySelectorAll('.public-only');
     const btnLogouts = document.querySelectorAll('.btn-logout');
     const btnLogins = document.querySelectorAll('.btn-login');
 
     if (this.currentUser) {
+      // Petugas sedang login (mode backend internal aktif)
       userNames.forEach(el => el.textContent = this.currentUser.nama);
       userRoles.forEach(el => el.textContent = this.currentUser.roleLabel + (this.currentUser.bidangLabel ? ` (${this.currentUser.bidangLabel})` : ''));
       userAvatars.forEach(el => el.src = this.currentUser.avatar || 'assets/logo.svg');
 
-      // Update active state on quick role switcher
-      roleSwitchBtns.forEach(btn => {
-        if (btn.dataset.roleUsername === this.currentUser.username) {
-          btn.classList.add('active');
-        } else {
-          btn.classList.remove('active');
-        }
-      });
+      userProfileBadges.forEach(el => el.style.display = 'flex');
+      internalOnlyEls.forEach(el => el.style.display = '');
+      publicOnlyEls.forEach(el => el.style.display = 'none');
 
-      // Show Superadmin menus if superadmin
       superadminOnlyEls.forEach(el => {
         el.style.display = this.isSuperAdmin() ? '' : 'none';
       });
 
-      // Show logout button, hide login button
       btnLogouts.forEach(el => el.style.display = 'inline-flex');
       btnLogins.forEach(el => el.style.display = 'none');
     } else {
-      userNames.forEach(el => el.textContent = "Tamu / Pengunjung");
-      userRoles.forEach(el => el.textContent = "Belum Masuk");
-      superadminOnlyEls.forEach(el => el.style.display = 'none');
-      roleSwitchBtns.forEach(btn => btn.classList.remove('active'));
+      // Pengunjung publik / tamu (mode publik aktif)
+      userNames.forEach(el => el.textContent = "Pengunjung Publik");
+      userRoles.forEach(el => el.textContent = "Akses Terbuka");
 
-      // Hide logout button, show login button
+      userProfileBadges.forEach(el => el.style.display = 'none');
+      internalOnlyEls.forEach(el => el.style.display = 'none');
+      publicOnlyEls.forEach(el => el.style.display = '');
+      superadminOnlyEls.forEach(el => el.style.display = 'none');
+
       btnLogouts.forEach(el => el.style.display = 'none');
       btnLogins.forEach(el => el.style.display = 'inline-flex');
     }

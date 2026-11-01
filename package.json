@@ -1,7 +1,7 @@
 {
-  "name": "simopel-dinputaru-demak",
+  "name": "silan-dinputaru-demak",
   "version": "2.0.0",
-  "description": "Sistem Informasi Monitoring Pelayanan Terpadu Dinas Pekerjaan Umum dan Penataan Ruang (DINPUTARU) Kabupaten Demak: Pemantauan Berkas KTTR, Validasi OSS, PBG, dan SLF secara real-time.",
+  "description": "SILAN (Sistem Monitoring Layanan) Dinas Pekerjaan Umum dan Penataan Ruang (DINPUTARU) Kabupaten Demak: Infografis Pelayanan Publik & Monitoring Internal KTTR, Validasi OSS, PBG, dan SLF.",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -9,11 +9,12 @@
     "test": "node --check server.js js/*.js"
   },
   "keywords": [
-    "simopel",
+    "silan",
+    "sistem-monitoring-layanan",
     "dinputaru",
     "demak",
     "pelayanan-publik",
-    "monitoring-berkas",
+    "infografis-layanan",
     "kttr",
     "oss-rba",
     "pbg",

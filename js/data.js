@@ -769,11 +769,166 @@ const INITIAL_SUBMISSIONS = [
   }
 ];
 
+// Data Statistik Bulanan Tahun 2026 untuk Infografis Publik SILAN
+const MONTHLY_STATS_2026 = {
+  months: [
+    { key: "ALL", label: "Sepanjang Tahun 2026 (Jan - Nov)", shortLabel: "Semua Bulan" },
+    { key: "1", label: "Januari 2026", shortLabel: "Jan" },
+    { key: "2", label: "Februari 2026", shortLabel: "Feb" },
+    { key: "3", label: "Maret 2026", shortLabel: "Mar" },
+    { key: "4", label: "April 2026", shortLabel: "Apr" },
+    { key: "5", label: "Mei 2026", shortLabel: "Mei" },
+    { key: "6", label: "Juni 2026", shortLabel: "Jun" },
+    { key: "7", label: "Juli 2026", shortLabel: "Jul" },
+    { key: "8", label: "Agustus 2026", shortLabel: "Agu" },
+    { key: "9", label: "September 2026", shortLabel: "Sep" },
+    { key: "10", label: "Oktober 2026", shortLabel: "Okt" },
+    { key: "11", label: "November 2026", shortLabel: "Nov" }
+  ],
+  services: {
+    KTTR: {
+      nama: "KTTR (Keterangan Rencana Tata Ruang)",
+      bidang: "Tata Ruang & Pertanahan (TRP)",
+      sla: "5 Hari Kerja",
+      monthly: {
+        "1":  { total: 12, selesai: 12, belum: 0 },
+        "2":  { total: 14, selesai: 14, belum: 0 },
+        "3":  { total: 15, selesai: 15, belum: 0 },
+        "4":  { total: 11, selesai: 11, belum: 0 },
+        "5":  { total: 16, selesai: 16, belum: 0 },
+        "6":  { total: 13, selesai: 13, belum: 0 },
+        "7":  { total: 15, selesai: 14, belum: 1 },
+        "8":  { total: 14, selesai: 12, belum: 2 },
+        "9":  { total: 13, selesai: 11, belum: 2 },
+        "10": { total: 14, selesai: 9,  belum: 5 },
+        "11": { total: 13, selesai: 3,  belum: 10 }
+      }
+    },
+    OSS: {
+      nama: "Validasi KKPR OSS-RBA",
+      bidang: "Tata Ruang & Pertanahan (TRP)",
+      sla: "10 Hari Kerja",
+      monthly: {
+        "1":  { total: 8,  selesai: 8,  belum: 0 },
+        "2":  { total: 9,  selesai: 9,  belum: 0 },
+        "3":  { total: 10, selesai: 10, belum: 0 },
+        "4":  { total: 7,  selesai: 7,  belum: 0 },
+        "5":  { total: 9,  selesai: 9,  belum: 0 },
+        "6":  { total: 8,  selesai: 8,  belum: 0 },
+        "7":  { total: 10, selesai: 9,  belum: 1 },
+        "8":  { total: 9,  selesai: 8,  belum: 1 },
+        "9":  { total: 8,  selesai: 6,  belum: 2 },
+        "10": { total: 9,  selesai: 5,  belum: 4 },
+        "11": { total: 8,  selesai: 1,  belum: 7 }
+      }
+    },
+    PBG: {
+      nama: "PBG (Persetujuan Bangunan Gedung)",
+      bidang: "Cipta Karya (CK)",
+      sla: "21 Hari Kerja",
+      monthly: {
+        "1":  { total: 18, selesai: 18, belum: 0 },
+        "2":  { total: 20, selesai: 20, belum: 0 },
+        "3":  { total: 22, selesai: 22, belum: 0 },
+        "4":  { total: 16, selesai: 16, belum: 0 },
+        "5":  { total: 21, selesai: 21, belum: 0 },
+        "6":  { total: 19, selesai: 19, belum: 0 },
+        "7":  { total: 22, selesai: 20, belum: 2 },
+        "8":  { total: 20, selesai: 17, belum: 3 },
+        "9":  { total: 18, selesai: 13, belum: 5 },
+        "10": { total: 20, selesai: 9,  belum: 11 },
+        "11": { total: 14, selesai: 0,  belum: 14 }
+      }
+    },
+    SLF: {
+      nama: "SLF (Sertifikat Laik Fungsi)",
+      bidang: "Cipta Karya (CK)",
+      sla: "14 Hari Kerja",
+      monthly: {
+        "1":  { total: 5, selesai: 5, belum: 0 },
+        "2":  { total: 6, selesai: 6, belum: 0 },
+        "3":  { total: 7, selesai: 7, belum: 0 },
+        "4":  { total: 5, selesai: 5, belum: 0 },
+        "5":  { total: 6, selesai: 6, belum: 0 },
+        "6":  { total: 6, selesai: 6, belum: 0 },
+        "7":  { total: 7, selesai: 7, belum: 0 },
+        "8":  { total: 6, selesai: 5, belum: 1 },
+        "9":  { total: 5, selesai: 3, belum: 2 },
+        "10": { total: 6, selesai: 2, belum: 4 },
+        "11": { total: 6, selesai: 0, belum: 6 }
+      }
+    }
+  }
+};
+
+/**
+ * Mendapatkan agregat statistik infografis berdasarkan filter bulan ('ALL' atau 1..11)
+ */
+function getMonthlyInfographicData(monthKey = "ALL") {
+  const result = {
+    selectedMonth: monthKey,
+    monthLabel: MONTHLY_STATS_2026.months.find(m => m.key === String(monthKey))?.label || "Tahun 2026",
+    summary: {
+      total: 0,
+      selesai: 0,
+      belum: 0,
+      persenSelesai: 0
+    },
+    services: {}
+  };
+
+  const serviceKeys = Object.keys(MONTHLY_STATS_2026.services);
+
+  serviceKeys.forEach(sKey => {
+    const sObj = MONTHLY_STATS_2026.services[sKey];
+    let total = 0;
+    let selesai = 0;
+    let belum = 0;
+
+    if (monthKey === "ALL") {
+      // Akumulasi seluruh bulan (1 s.d. 11)
+      for (let m = 1; m <= 11; m++) {
+        const d = sObj.monthly[String(m)] || { total: 0, selesai: 0, belum: 0 };
+        total += d.total;
+        selesai += d.selesai;
+        belum += d.belum;
+      }
+    } else {
+      const d = sObj.monthly[String(monthKey)] || { total: 0, selesai: 0, belum: 0 };
+      total = d.total;
+      selesai = d.selesai;
+      belum = d.belum;
+    }
+
+    const persen = total > 0 ? Math.round((selesai / total) * 100) : 0;
+
+    result.services[sKey] = {
+      kode: sKey,
+      nama: sObj.nama,
+      bidang: sObj.bidang,
+      sla: sObj.sla,
+      total,
+      selesai,
+      belum,
+      persenSelesai: persen
+    };
+
+    result.summary.total += total;
+    result.summary.selesai += selesai;
+    result.summary.belum += belum;
+  });
+
+  result.summary.persenSelesai = result.summary.total > 0 ? 
+    Math.round((result.summary.selesai / result.summary.total) * 100) : 0;
+
+  return result;
+}
+
 // Helper functions for Data Storage in localStorage
 const STORAGE_KEYS = {
-  SUBMISSIONS: "simopel_submissions_v1",
-  USERS: "simopel_users_v1",
-  CURRENT_USER: "simopel_current_user_v1"
+  SUBMISSIONS: "silan_submissions_v1",
+  USERS: "silan_users_v1",
+  CURRENT_USER: "silan_current_user_v1"
 };
 
 function getStoredSubmissions() {
@@ -813,24 +968,25 @@ function saveStoredUsers(users) {
 function getStoredCurrentUser() {
   const data = localStorage.getItem(STORAGE_KEYS.CURRENT_USER);
   if (!data) {
-    // Default to Kepala Dinas for executive wow effect
-    const defaultUser = INITIAL_USERS.find(u => u.role === "kepala_dinas") || INITIAL_USERS[0];
-    localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(defaultUser));
-    return defaultUser;
+    return null; // Pengunjung publik secara default adalah guest/tamu
   }
   try {
     return JSON.parse(data);
   } catch (e) {
-    return INITIAL_USERS[1];
+    return null;
   }
 }
 
 function saveStoredCurrentUser(user) {
-  localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(user));
+  if (user) {
+    localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(user));
+  } else {
+    localStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
+  }
 }
 
 function resetToDefaultData() {
   localStorage.setItem(STORAGE_KEYS.SUBMISSIONS, JSON.stringify(INITIAL_SUBMISSIONS));
   localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(INITIAL_USERS));
-  localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(INITIAL_USERS.find(u => u.role === "kepala_dinas")));
+  localStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
 }
