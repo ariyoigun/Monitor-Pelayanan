@@ -70,6 +70,7 @@ function mapRowToSubmission(r) {
     id: r.id,
     noRegistrasi: r.no_registrasi,
     layanan: r.layanan,
+    kategori: r.kategori || r.layanan,
     bidang: r.bidang,
     namaPemohon: r.nama_pemohon,
     jenisPemohon: r.jenis_pemohon,
@@ -293,19 +294,37 @@ const server = http.createServer(async (req, res) => {
         return sendJson(res, 200, { success: true, message: `Pengajuan ${existing.no_registrasi} berhasil dihapus` });
       }
 
-      // 6. GET /api/stats (Live Aggregated Statistics)
+      // 6. GET /api/stats (Live Aggregated Statistics - 5 Metrics)
       if (pathname === '/api/stats' && method === 'GET') {
         const allSubs = db.prepare('SELECT id, layanan, status, tgl_pengajuan FROM submissions').all();
         const services = ['KTTR', 'OSS', 'PBG', 'SLF'];
         const stats = {
-          summary: { total: 0, selesai: 0, belum: 0, persenSelesai: 0 },
+          summary: { total: 0, sudahDilayani: 0, onProgress: 0, berkasDikembalikan: 0, tingkatPenyelesaian: 0, selesai: 0, belum: 0, persenSelesai: 0 },
           services: {}
         };
 
         services.forEach(s => {
-          stats.services[s] = { total: 0, selesai: 0, belum: 0, persenSelesai: 0, monthly: {} };
+          stats.services[s] = {
+            total: 0,
+            sudahDilayani: 0,
+            onProgress: 0,
+            berkasDikembalikan: 0,
+            tingkatPenyelesaian: 0,
+            selesai: 0,
+            belum: 0,
+            persenSelesai: 0,
+            monthly: {}
+          };
           for (let m = 1; m <= 11; m++) {
-            stats.services[s].monthly[String(m)] = { total: 0, selesai: 0, belum: 0 };
+            stats.services[s].monthly[String(m)] = {
+              total: 0,
+              sudahDilayani: 0,
+              onProgress: 0,
+              berkasDikembalikan: 0,
+              tingkatPenyelesaian: 0,
+              selesai: 0,
+              belum: 0
+            };
           }
         });
 
@@ -313,26 +332,35 @@ const server = http.createServer(async (req, res) => {
           const s = sub.layanan;
           if (!stats.services[s]) return;
           const isSelesai = sub.status === 'SELESAI';
+          const isDikembalikan = sub.status === 'BERKAS_DIKEMBALIKAN';
+          const isOnProgress = sub.status === 'PROSES' || (!isSelesai && !isDikembalikan);
+
           stats.services[s].total++;
           stats.summary.total++;
 
           if (isSelesai) {
-            stats.services[s].selesai++;
-            stats.summary.selesai++;
+            stats.services[s].sudahDilayani++;
+            stats.summary.sudahDilayani++;
+          } else if (isDikembalikan) {
+            stats.services[s].berkasDikembalikan++;
+            stats.summary.berkasDikembalikan++;
           } else {
-            stats.services[s].belum++;
-            stats.summary.belum++;
+            stats.services[s].onProgress++;
+            stats.summary.onProgress++;
           }
 
           if (sub.tgl_pengajuan) {
             const parts = sub.tgl_pengajuan.split('-');
             const m = parseInt(parts[1], 10);
             if (m >= 1 && m <= 11) {
-              stats.services[s].monthly[String(m)].total++;
+              const mObj = stats.services[s].monthly[String(m)];
+              mObj.total++;
               if (isSelesai) {
-                stats.services[s].monthly[String(m)].selesai++;
+                mObj.sudahDilayani++;
+              } else if (isDikembalikan) {
+                mObj.berkasDikembalikan++;
               } else {
-                stats.services[s].monthly[String(m)].belum++;
+                mObj.onProgress++;
               }
             }
           }
@@ -340,10 +368,26 @@ const server = http.createServer(async (req, res) => {
 
         services.forEach(s => {
           const itm = stats.services[s];
-          itm.persenSelesai = itm.total > 0 ? Math.round((itm.selesai / itm.total) * 100) : 0;
+          const sRampung = itm.sudahDilayani + itm.berkasDikembalikan;
+          itm.tingkatPenyelesaian = itm.total > 0 ? Math.round((sRampung / itm.total) * 100) : 0;
+          itm.selesai = itm.sudahDilayani;
+          itm.belum = itm.onProgress;
+          itm.persenSelesai = itm.tingkatPenyelesaian;
+
+          for (let m = 1; m <= 11; m++) {
+            const mObj = itm.monthly[String(m)];
+            const mRampung = mObj.sudahDilayani + mObj.berkasDikembalikan;
+            mObj.tingkatPenyelesaian = mObj.total > 0 ? Math.round((mRampung / mObj.total) * 100) : 0;
+            mObj.selesai = mObj.sudahDilayani;
+            mObj.belum = mObj.onProgress;
+          }
         });
 
-        stats.summary.persenSelesai = stats.summary.total > 0 ? Math.round((stats.summary.selesai / stats.summary.total) * 100) : 0;
+        const sumRampung = stats.summary.sudahDilayani + stats.summary.berkasDikembalikan;
+        stats.summary.tingkatPenyelesaian = stats.summary.total > 0 ? Math.round((sumRampung / stats.summary.total) * 100) : 0;
+        stats.summary.selesai = stats.summary.sudahDilayani;
+        stats.summary.belum = stats.summary.onProgress;
+        stats.summary.persenSelesai = stats.summary.tingkatPenyelesaian;
 
         return sendJson(res, 200, { success: true, data: stats });
       }
@@ -367,26 +411,76 @@ const server = http.createServer(async (req, res) => {
         }
       }
 
-      // 8. GET & POST & DELETE /api/users
-      if (pathname === '/api/users') {
-        if (method === 'GET') {
-          const rows = db.prepare('SELECT id, username, nama, nip, role, role_label, bidang, bidang_label, jabatan, avatar, email, no_hp, status FROM users').all();
-          return sendJson(res, 200, { success: true, data: rows });
+      // 8. GET, POST, PUT, DELETE /api/users
+      if (pathname === '/api/users' && method === 'GET') {
+        const rows = db.prepare('SELECT id, username, password, nama, nip, role, role_label, bidang, bidang_label, jabatan, avatar, email, no_hp, status FROM users').all();
+        return sendJson(res, 200, { success: true, data: rows });
+      }
+
+      if (pathname === '/api/users' && method === 'POST') {
+        const body = await parseBody(req);
+        const id = body.id || `USR-${String(Date.now()).slice(-4)}`;
+        db.prepare(`
+          INSERT INTO users (id, username, password, nama, nip, role, role_label, bidang, bidang_label, jabatan, avatar, email, no_hp, status, created_at)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `).run(
+          id,
+          body.username,
+          body.password || '*Dinput4ru_01',
+          body.nama || 'Petugas Dinputaru',
+          body.nip || '',
+          body.role || 'koordinator_bidang',
+          body.roleLabel || 'Koordinator Bidang',
+          body.bidang || 'TRP',
+          body.bidangLabel || (body.bidang === 'CK' ? 'Cipta Karya' : 'Tata Ruang & Pertanahan'),
+          body.jabatan || 'Aparatur Dinputaru',
+          body.avatar || 'assets/logo.svg',
+          body.email || `${body.username}@demakkab.go.id`,
+          body.noHp || '-',
+          body.status || 'Aktif',
+          new Date().toISOString()
+        );
+        return sendJson(res, 201, { success: true, message: 'Pengguna berhasil ditambahkan' });
+      }
+
+      if (pathname.startsWith('/api/users/') && method === 'PUT') {
+        const id = pathname.replace('/api/users/', '');
+        const body = await parseBody(req);
+        const existing = db.prepare('SELECT * FROM users WHERE id = ?').get(id);
+        if (!existing) {
+          return sendJson(res, 404, { success: false, message: 'User tidak ditemukan' });
         }
-        if (method === 'POST') {
-          const body = await parseBody(req);
-          const id = body.id || `USR-${String(Date.now()).slice(-3)}`;
-          db.prepare(`
-            INSERT INTO users (id, username, password, nama, nip, role, role_label, bidang, jabatan, avatar, email, no_hp, status, created_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-          `).run(
-            id, body.username, body.password || 'password123', body.nama, body.nip || '',
-            body.role || 'koordinator_bidang', body.roleLabel || 'Petugas', body.bidang || 'TRP',
-            body.jabatan || '', body.avatar || 'assets/logo.svg', body.email || '', body.noHp || '',
-            body.status || 'Aktif', new Date().toISOString()
-          );
-          return sendJson(res, 201, { success: true, message: 'Pengguna berhasil ditambahkan' });
-        }
+        db.prepare(`
+          UPDATE users SET
+            username = ?,
+            password = ?,
+            nama = ?,
+            nip = ?,
+            role = ?,
+            role_label = ?,
+            bidang = ?,
+            bidang_label = ?,
+            jabatan = ?,
+            email = ?,
+            no_hp = ?,
+            status = ?
+          WHERE id = ?
+        `).run(
+          body.username || existing.username,
+          body.password || existing.password,
+          body.nama || existing.nama,
+          body.nip !== undefined ? body.nip : existing.nip,
+          body.role || existing.role,
+          body.roleLabel || existing.role_label,
+          body.bidang !== undefined ? body.bidang : existing.bidang,
+          body.bidangLabel !== undefined ? body.bidangLabel : existing.bidang_label,
+          body.jabatan !== undefined ? body.jabatan : existing.jabatan,
+          body.email !== undefined ? body.email : existing.email,
+          body.noHp !== undefined ? body.noHp : existing.no_hp,
+          body.status !== undefined ? body.status : existing.status,
+          id
+        );
+        return sendJson(res, 200, { success: true, message: 'Pengguna berhasil diperbarui' });
       }
 
       if (pathname.startsWith('/api/users/') && method === 'DELETE') {

@@ -27,3 +27,4 @@ const backup = {
 const outPath = path.join(__dirname, 'silan_backup.json');
 fs.writeFileSync(outPath, JSON.stringify(backup, null, 2), 'utf8');
 console.log(`Database exported successfully to ${outPath} (${(fs.statSync(outPath).size / 1024).toFixed(1)} KB)`);
+

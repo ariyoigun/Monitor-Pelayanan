@@ -25,6 +25,7 @@ const Monitoring = {
   },
 
   renderAll() {
+    this.renderCategoryCards();
     this.renderKPIs();
     this.renderLeadershipFocus();
     this.renderInternalCharts();
@@ -32,29 +33,187 @@ const Monitoring = {
   },
 
   /* =========================================================
-     KPI METRICS
+     4 KATEGORI PENGAJUAN DENGAN WARNA BERBEDA
+     ========================================================= */
+  renderCategoryCards() {
+    const container = document.getElementById('dash-category-cards');
+    if (!container) return;
+
+    const categories = [
+      {
+        key: 'KTTR',
+        name: 'Keterangan Rencana Tata Ruang',
+        bidang: 'Tata Ruang & Pertanahan (TRP)',
+        sla: '5 Hari Kerja',
+        color: '#0284c7',
+        bg: '#e0f2fe',
+        border: '#0284c7',
+        icon: 'fa-map-marked-alt'
+      },
+      {
+        key: 'OSS',
+        name: 'Validasi Kesesuaian Tata Ruang (KKPR)',
+        bidang: 'Tata Ruang & Pertanahan (TRP)',
+        sla: '5 Hari Kerja',
+        color: '#16a34a',
+        bg: '#dcfce7',
+        border: '#16a34a',
+        icon: 'fa-network-wired'
+      },
+      {
+        key: 'PBG',
+        name: 'Persetujuan Bangunan Gedung',
+        bidang: 'Cipta Karya (CK)',
+        sla: '28 Hari Kerja',
+        color: '#d97706',
+        bg: '#fef3c7',
+        border: '#d97706',
+        icon: 'fa-building'
+      },
+      {
+        key: 'SLF',
+        name: 'Sertifikat Laik Fungsi',
+        bidang: 'Cipta Karya (CK)',
+        sla: '28 Hari Kerja',
+        color: '#9333ea',
+        bg: '#f3e8ff',
+        border: '#9333ea',
+        icon: 'fa-award'
+      }
+    ];
+
+    container.innerHTML = categories.map(cat => {
+      const subs = this.submissions.filter(s => s.layanan === cat.key || s.kategori === cat.key);
+      const total = subs.length;
+      const dilayani = subs.filter(s => s.status === 'SELESAI').length;
+      const kembali = subs.filter(s => s.status === 'BERKAS_DIKEMBALIKAN').length;
+      const progress = subs.filter(s => s.status === 'PROSES' || (!['SELESAI', 'BERKAS_DIKEMBALIKAN'].includes(s.status))).length;
+      const rate = total > 0 ? Math.round(((dilayani + kembali) / total) * 100) : 0;
+
+      const pDilayani = total > 0 ? (dilayani / total) * 100 : 0;
+      const pKembali = total > 0 ? (kembali / total) * 100 : 0;
+      const pProgress = total > 0 ? (progress / total) * 100 : 0;
+
+      const isSelected = this.filters.layanan === cat.key;
+
+      return `
+        <div class="dash-cat-card ${isSelected ? 'active-filter' : ''}" style="border-top: 4px solid ${cat.border}; cursor: pointer;" onclick="Monitoring.setCategoryFilter('${cat.key}')">
+          <div class="dash-cat-header">
+            <div style="display: flex; align-items: center; gap: 0.65rem;">
+              <div class="dash-cat-icon" style="background: ${cat.bg}; color: ${cat.color};">
+                <i class="fas ${cat.icon}"></i>
+              </div>
+              <div>
+                <h4 style="font-size: 1rem; font-weight: 800; color: var(--slate-900); margin: 0;">${cat.key}</h4>
+                <div style="font-size: 0.72rem; color: var(--slate-500);">${cat.bidang.split(' ')[0]} &bull; SLA ${cat.sla}</div>
+              </div>
+            </div>
+            <span class="badge" style="background: ${cat.bg}; color: ${cat.color}; font-weight: 700;">
+              ${cat.key}
+            </span>
+          </div>
+
+          <div class="dash-cat-title" style="font-size: 0.82rem; font-weight: 600; color: var(--slate-700); margin: 0.6rem 0;">
+            ${cat.name}
+          </div>
+
+          <!-- 5 Metrics Figures -->
+          <div class="dash-cat-stats-row">
+            <div class="dash-cat-stat">
+              <span class="lbl">Total Masuk</span>
+              <span class="val">${total.toLocaleString('id-ID')}</span>
+            </div>
+            <div class="dash-cat-stat">
+              <span class="lbl" style="color: #059669;">Dilayani</span>
+              <span class="val" style="color: #059669;">${dilayani.toLocaleString('id-ID')}</span>
+            </div>
+            <div class="dash-cat-stat">
+              <span class="lbl" style="color: #d97706;">On Progress</span>
+              <span class="val" style="color: #d97706;">${progress.toLocaleString('id-ID')}</span>
+            </div>
+            <div class="dash-cat-stat">
+              <span class="lbl" style="color: #4f46e5;">Dikembalikan</span>
+              <span class="val" style="color: #4f46e5;">${kembali.toLocaleString('id-ID')}</span>
+            </div>
+            <div class="dash-cat-stat">
+              <span class="lbl" style="color: #7e22ce;">Penyelesaian</span>
+              <span class="val" style="color: #9333ea;">${rate}%</span>
+            </div>
+          </div>
+
+          <!-- Visual Progress -->
+          <div class="visual-progress-block" style="margin-top: 0.65rem;">
+            <div class="progress-bar-track" style="height: 6px;">
+              <div class="progress-bar-fill fill-selesai" style="width: ${pDilayani}%;" title="Sudah Dilayani: ${dilayani}"></div>
+              <div class="progress-bar-fill" style="width: ${pKembali}%; background: #6366f1;" title="Berkas Dikembalikan: ${kembali}"></div>
+              <div class="progress-bar-fill fill-belum" style="width: ${pProgress}%;" title="On Progress: ${progress}"></div>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    // Update Category Badges in toolbar
+    const countAll = this.submissions.length;
+    const countKttr = this.submissions.filter(s => s.layanan === 'KTTR').length;
+    const countOss = this.submissions.filter(s => s.layanan === 'OSS').length;
+    const countPbg = this.submissions.filter(s => s.layanan === 'PBG').length;
+    const countSlf = this.submissions.filter(s => s.layanan === 'SLF').length;
+
+    const elAll = document.getElementById('cat-count-all');
+    const elKttr = document.getElementById('cat-count-kttr');
+    const elOss = document.getElementById('cat-count-oss');
+    const elPbg = document.getElementById('cat-count-pbg');
+    const elSlf = document.getElementById('cat-count-slf');
+
+    if (elAll) elAll.textContent = countAll.toLocaleString('id-ID');
+    if (elKttr) elKttr.textContent = countKttr.toLocaleString('id-ID');
+    if (elOss) elOss.textContent = countOss.toLocaleString('id-ID');
+    if (elPbg) elPbg.textContent = countPbg.toLocaleString('id-ID');
+    if (elSlf) elSlf.textContent = countSlf.toLocaleString('id-ID');
+  },
+
+  setCategoryFilter(categoryKey) {
+    this.filters.layanan = categoryKey;
+    const filterLayananSelect = document.getElementById('filter-layanan');
+    if (filterLayananSelect) {
+      filterLayananSelect.value = categoryKey;
+    }
+    document.querySelectorAll('.cat-filter-btn').forEach(btn => {
+      if (btn.dataset.category === categoryKey) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+    this.renderCategoryCards();
+    this.renderTable();
+  },
+
+  /* =========================================================
+     KPI METRICS (5 INDIKATOR INFORMASI)
      ========================================================= */
   renderKPIs() {
     const total = this.submissions.length;
     const selesai = this.submissions.filter(s => s.status === 'SELESAI').length;
-    const proses = this.submissions.filter(s => s.status === 'PROSES' || s.status === 'MENUNGGU_APPROVAL').length;
-    const pending = this.submissions.filter(s => s.status === 'PENDING_PEMOHON' || s.status === 'SIDANG_SURVEY').length;
-    const overdue = this.submissions.filter(s => s.slaStatus === 'OVERDUE' && s.status !== 'SELESAI' && s.status !== 'DITOLAK').length;
-    const belumSelesai = this.submissions.filter(s => s.status !== 'SELESAI' && s.status !== 'DITOLAK').length;
+    const dikembalikan = this.submissions.filter(s => s.status === 'BERKAS_DIKEMBALIKAN').length;
+    const onProgress = this.submissions.filter(s => s.status === 'PROSES' || (!['SELESAI', 'BERKAS_DIKEMBALIKAN'].includes(s.status))).length;
 
-    const rate = total > 0 ? Math.round((selesai / total) * 100) : 0;
+    const rate = total > 0 ? Math.round(((selesai + dikembalikan) / total) * 100) : 0;
 
     const elTotal = document.getElementById('kpi-total-pengajuan');
     const elSelesai = document.getElementById('kpi-selesai');
+    const elOnProgress = document.getElementById('kpi-onprogress');
     const elProses = document.getElementById('kpi-proses');
-    const elBelumSelesai = document.getElementById('kpi-belum-selesai');
-    const elOverdue = document.getElementById('kpi-overdue');
+    const elDikembalikan = document.getElementById('kpi-dikembalikan');
+    const elPersen = document.getElementById('kpi-persen-selesai');
 
     if (elTotal) elTotal.textContent = total.toLocaleString('id-ID');
-    if (elSelesai) elSelesai.innerHTML = `${selesai.toLocaleString('id-ID')} <span style="font-size: 1rem; color: #059669; font-weight: 700;">(${rate}%)</span>`;
-    if (elProses) elProses.textContent = proses.toLocaleString('id-ID');
-    if (elBelumSelesai) elBelumSelesai.textContent = belumSelesai.toLocaleString('id-ID');
-    if (elOverdue) elOverdue.textContent = overdue.toLocaleString('id-ID');
+    if (elSelesai) elSelesai.innerHTML = `${selesai.toLocaleString('id-ID')}`;
+    if (elOnProgress) elOnProgress.textContent = onProgress.toLocaleString('id-ID');
+    if (elProses) elProses.textContent = onProgress.toLocaleString('id-ID');
+    if (elDikembalikan) elDikembalikan.textContent = dikembalikan.toLocaleString('id-ID');
+    if (elPersen) elPersen.textContent = `${rate}%`;
   },
 
   /* =========================================================
@@ -425,7 +584,7 @@ const Monitoring = {
                 <i class="fas fa-print"></i>
               </button>
 
-              ${(Auth.isSuperAdmin() || Auth.isKepalaDinas()) ? `
+              ${Auth.canDeleteSubmission(item.bidang) ? `
                 <button class="btn btn-danger btn-sm" title="Hapus Berkas Pengajuan" onclick="Monitoring.deleteSubmission('${item.id}')" style="background: #fee2e2; border-color: #fca5a5; color: #dc2626; padding: 0.25rem 0.5rem;">
                   <i class="fas fa-trash-alt"></i>
                 </button>
@@ -747,8 +906,8 @@ const Monitoring = {
   },
 
   deleteSubmission(id) {
-    if (!Auth.isSuperAdmin() && !Auth.isKepalaDinas()) {
-      alert("Hanya Superadmin atau Kepala Dinas yang memiliki hak akses untuk menghapus data pengajuan.");
+    if (!Auth.canDeleteSubmission()) {
+      alert("Akses Terbatas: Hanya Koordinator Bidang dan Superadmin yang memiliki hak akses untuk menghapus data pengajuan.");
       return;
     }
     const item = this.submissions.find(s => s.id === id);
@@ -766,9 +925,11 @@ const Monitoring = {
   },
 
   openNewSubmissionModal() {
-    if (!Auth.getCurrentUser()) {
-      alert("Akses Terbatas: Silakan masuk (login) sebagai petugas terlebih dahulu untuk menambahkan pengajuan.");
+    if (!Auth.canAddSubmission()) {
+      alert("Akses Terbatas: Silakan masuk (login) sebagai Koordinator Bidang atau Superadmin untuk menambahkan pengajuan.");
       App.showView('login');
+      return;
+    }
       return;
     }
     const modal = document.getElementById('modal-new-submission');
@@ -876,6 +1037,17 @@ const Monitoring = {
       searchInput.addEventListener('input', (e) => {
         this.filters.search = e.target.value;
         this.renderTable();
+      });
+    }
+
+    // Category filter button delegation
+    const catTabs = document.getElementById('dash-category-tabs');
+    if (catTabs) {
+      catTabs.addEventListener('click', (e) => {
+        const btn = e.target.closest('.cat-filter-btn');
+        if (btn) {
+          this.setCategoryFilter(btn.dataset.category);
+        }
       });
     }
 

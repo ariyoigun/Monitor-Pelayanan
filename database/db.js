@@ -19,6 +19,7 @@ db.exec(`
     id TEXT PRIMARY KEY,
     no_registrasi TEXT,
     layanan TEXT,
+    kategori TEXT,
     bidang TEXT,
     nama_pemohon TEXT,
     jenis_pemohon TEXT,
@@ -92,3 +93,4 @@ db.exec(`
 `);
 
 module.exports = db;
+

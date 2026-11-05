@@ -55,16 +55,20 @@ const Infografis = {
       periodeBadge.innerHTML = `<i class="fas fa-calendar-alt"></i> Periode Terpilih: <strong>${data.monthLabel}</strong>`;
     }
 
-    // 2. Update KPI Summary Cards di Halaman Publik
+    // 2. Update KPI Summary Cards di Halaman Publik (5 Metrik Informasi)
     const elTotal = document.getElementById('pub-kpi-total');
     const elSelesai = document.getElementById('pub-kpi-selesai');
+    const elOnProgress = document.getElementById('pub-kpi-onprogress');
     const elBelum = document.getElementById('pub-kpi-belum');
+    const elDikembalikan = document.getElementById('pub-kpi-dikembalikan');
     const elPersen = document.getElementById('pub-kpi-persen');
 
     if (elTotal) elTotal.textContent = data.summary.total.toLocaleString('id-ID');
-    if (elSelesai) elSelesai.textContent = data.summary.selesai.toLocaleString('id-ID');
-    if (elBelum) elBelum.textContent = data.summary.belum.toLocaleString('id-ID');
-    if (elPersen) elPersen.textContent = `${data.summary.persenSelesai}%`;
+    if (elSelesai) elSelesai.textContent = data.summary.sudahDilayani.toLocaleString('id-ID');
+    if (elOnProgress) elOnProgress.textContent = data.summary.onProgress.toLocaleString('id-ID');
+    if (elBelum) elBelum.textContent = data.summary.onProgress.toLocaleString('id-ID');
+    if (elDikembalikan) elDikembalikan.textContent = data.summary.berkasDikembalikan.toLocaleString('id-ID');
+    if (elPersen) elPersen.textContent = `${data.summary.tingkatPenyelesaian}%`;
 
     // 3. Render 4 Kartu Layanan Strategis (KTTR, OSS, PBG, SLF)
     const cardsContainer = document.getElementById('pub-services-cards-grid');
@@ -79,9 +83,9 @@ const Infografis = {
           badgeBg: "#e0f2fe",
           sla: sysTexts.slaKttr || "5 Hari Kerja",
           desc: sysTexts.descKttr || "Keterangan kesesuaian ruang, zonasi RTRW/RDTR, Garis Sempadan Bangunan (GSB), KDB & KLB di Kabupaten Demak.",
-          isGoogleForm: true,
-          actionLabel: "Ajukan Permohonan KTTR",
-          bitly: sysTexts.urlFormKttrBitly || "https://bit.ly/pendaftaranKTTRDemak"
+          directUrl: "https://bit.ly/pendaftaranKTTRDemak",
+          btnColor: "#0284c7",
+          actionLabel: "Buka Pendaftaran KTTR (bit.ly)"
         },
         {
           key: "OSS",
@@ -91,9 +95,9 @@ const Infografis = {
           badgeBg: "#dcfce7",
           sla: sysTexts.slaOss || "5 Hari Kerja",
           desc: sysTexts.descOss || "Validasi Kesesuaian Kegiatan Pemanfaatan Ruang (KKPR) terintegrasi sistem perizinan berusaha OSS RBA & poligon SHP.",
-          isGoogleForm: true,
-          actionLabel: "Ajukan Validasi OSS",
-          bitly: sysTexts.urlFormOssBitly || "https://bit.ly/validasioss"
+          directUrl: "https://bit.ly/validasioss",
+          btnColor: "#16a34a",
+          actionLabel: "Buka Validasi OSS (bit.ly)"
         },
         {
           key: "PBG",
@@ -103,10 +107,9 @@ const Infografis = {
           badgeBg: "#fef3c7",
           sla: sysTexts.slaPbg || "28 Hari Kerja",
           desc: sysTexts.descPbg || "Persetujuan Bangunan Gedung (pengganti IMB) untuk bangunan baru atau renovasi dengan standar arsitektur & struktur TPA.",
-          isGoogleForm: false,
-          isSimbg: true,
-          actionLabel: "Buka Portal SIMBG (simbg.pu.go.id)",
-          url: sysTexts.urlSimbgWebsite || "https://simbg.pu.go.id"
+          directUrl: "https://simbg.pu.go.id",
+          btnColor: "#d97706",
+          actionLabel: "Buka Portal SIMBG (simbg.pu.go.id)"
         },
         {
           key: "SLF",
@@ -116,10 +119,9 @@ const Infografis = {
           badgeBg: "#f3e8ff",
           sla: sysTexts.slaSlf || "28 Hari Kerja",
           desc: sysTexts.descSlf || "Sertifikat Laik Fungsi pembuktian kelaikan gedung selesai terbangun dari aspek keselamatan kebakaran & kenyamanan.",
-          isGoogleForm: false,
-          isSimbg: true,
-          actionLabel: "Buka Portal SIMBG (simbg.pu.go.id)",
-          url: sysTexts.urlSimbgWebsite || "https://simbg.pu.go.id"
+          directUrl: "https://simbg.pu.go.id",
+          btnColor: "#9333ea",
+          actionLabel: "Buka Portal SIMBG (simbg.pu.go.id)"
         }
       ];
 
@@ -127,31 +129,15 @@ const Infografis = {
         const item = s[cfg.key];
         if (!item) return '';
 
-        const persenSelesai = item.persenSelesai;
-        const persenBelum = 100 - persenSelesai;
+        const total = item.total || 0;
+        const sudahDilayani = item.sudahDilayani || 0;
+        const onProgress = item.onProgress || 0;
+        const berkasDikembalikan = item.berkasDikembalikan || 0;
+        const persenSelesai = item.tingkatPenyelesaian || 0;
 
-        // Tombol aksi sesuai jenis layanan
-        let actionBtnHtml = '';
-        if (cfg.isGoogleForm) {
-          actionBtnHtml = `
-            <div style="margin-top: 1.15rem; padding-top: 0.85rem; border-top: 1px dashed var(--slate-200); display: flex; gap: 0.5rem; flex-wrap: wrap;">
-              <button type="button" class="btn btn-primary btn-sm btn-ajukan-layanan" data-layanan="${cfg.key}" style="flex: 1; justify-content: center;">
-                <i class="fas fa-file-signature"></i> ${cfg.actionLabel}
-              </button>
-              <a href="${cfg.bitly}" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm" title="Buka Google Form di Tab Baru" style="padding: 0.4rem 0.65rem;">
-                <i class="fas fa-external-link-alt"></i>
-              </a>
-            </div>
-          `;
-        } else if (cfg.isSimbg) {
-          actionBtnHtml = `
-            <div style="margin-top: 1.15rem; padding-top: 0.85rem; border-top: 1px dashed var(--slate-200);">
-              <a href="${cfg.url}" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem; text-decoration: none; font-weight: 700; color: #1e3a8a; border-color: #93c5fd; background: #eff6ff;">
-                <i class="fas fa-landmark"></i> ${cfg.actionLabel}
-              </a>
-            </div>
-          `;
-        }
+        const pDilayani = total > 0 ? (sudahDilayani / total) * 100 : 0;
+        const pKembali = total > 0 ? (berkasDikembalikan / total) * 100 : 0;
+        const pProgress = total > 0 ? (onProgress / total) * 100 : 0;
 
         return `
           <div class="infographic-service-card ${cfg.colorClass}">
@@ -172,38 +158,54 @@ const Infografis = {
 
             <p class="service-brief-desc">${cfg.desc}</p>
 
-            <!-- Metrics Figures Row -->
-            <div class="service-stat-row">
+            <!-- Metrics Figures Row (5 Indikator Lengkap) -->
+            <div class="service-stat-row service-stat-5-grid">
               <div class="stat-box stat-total">
                 <span class="stat-label">Total Masuk</span>
-                <span class="stat-number">${item.total.toLocaleString('id-ID')}</span>
+                <span class="stat-number">${total.toLocaleString('id-ID')}</span>
                 <span class="stat-sub">Pengajuan</span>
               </div>
               <div class="stat-box stat-selesai">
                 <span class="stat-label">Sudah Dilayani</span>
-                <span class="stat-number text-success">${item.selesai.toLocaleString('id-ID')}</span>
-                <span class="stat-sub badge-sub-success">${persenSelesai}%</span>
+                <span class="stat-number text-success">${sudahDilayani.toLocaleString('id-ID')}</span>
+                <span class="stat-sub badge-sub-success">Terbit</span>
               </div>
               <div class="stat-box stat-belum">
-                <span class="stat-label">Belum Diproses</span>
-                <span class="stat-number text-warning">${item.belum.toLocaleString('id-ID')}</span>
-                <span class="stat-sub badge-sub-warning">${persenBelum}%</span>
+                <span class="stat-label">On Progress</span>
+                <span class="stat-number text-warning">${onProgress.toLocaleString('id-ID')}</span>
+                <span class="stat-sub badge-sub-warning">Diproses</span>
+              </div>
+              <div class="stat-box" style="background: #eef2ff;">
+                <span class="stat-label" style="color: #4338ca;">Dikembalikan</span>
+                <span class="stat-number" style="color: #4f46e5;">${berkasDikembalikan.toLocaleString('id-ID')}</span>
+                <span class="stat-sub" style="background: #e0e7ff; color: #3730a3;">Revisi</span>
+              </div>
+              <div class="stat-box" style="background: #faf5ff;">
+                <span class="stat-label" style="color: #7e22ce;">Penyelesaian</span>
+                <span class="stat-number" style="color: #9333ea;">${persenSelesai}%</span>
+                <span class="stat-sub" style="background: #f3e8ff; color: #6b21a8;">Tingkat</span>
               </div>
             </div>
 
             <!-- Visual Bar Comparison -->
             <div class="visual-progress-block">
               <div class="progress-labels">
-                <span>Rasio Penyelesaian: <strong>${persenSelesai}%</strong></span>
-                <span>${item.selesai} Terbit / ${item.belum} On Progress</span>
+                <span>Tingkat Penyelesaian: <strong>${persenSelesai}%</strong></span>
+                <span>${sudahDilayani + berkasDikembalikan} Selesai / ${onProgress} On Progress</span>
               </div>
               <div class="progress-bar-track">
-                <div class="progress-bar-fill fill-selesai" style="width: ${persenSelesai}%;" title="Sudah Dilayani: ${item.selesai}"></div>
-                <div class="progress-bar-fill fill-belum" style="width: ${persenBelum}%;" title="Belum Diproses / On Progress: ${item.belum}"></div>
+                <div class="progress-bar-fill fill-selesai" style="width: ${pDilayani}%;" title="Sudah Dilayani / Terbit: ${sudahDilayani}"></div>
+                <div class="progress-bar-fill" style="width: ${pKembali}%; background: #6366f1;" title="Berkas Dikembalikan (Dianggap Selesai): ${berkasDikembalikan}"></div>
+                <div class="progress-bar-fill fill-belum" style="width: ${pProgress}%;" title="On Progress: ${onProgress}"></div>
               </div>
             </div>
 
-            ${actionBtnHtml}
+            <!-- Tombol Tautan Langsung Publik (Direct Destination) -->
+            <div style="margin-top: 1.15rem; padding-top: 0.85rem; border-top: 1px dashed var(--slate-200);">
+              <a href="${cfg.directUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem; text-decoration: none; font-weight: 700; background: ${cfg.btnColor}; border-color: ${cfg.btnColor};">
+                <i class="fas fa-external-link-alt"></i> ${cfg.actionLabel}
+              </a>
+            </div>
           </div>
         `;
       }).join('');
@@ -222,9 +224,15 @@ const Infografis = {
 
     chartContainer.innerHTML = Object.keys(s).map(key => {
       const item = s[key];
-      const widthPct = Math.round((item.total / maxVal) * 100);
-      const selesaiPct = item.total > 0 ? Math.round((item.selesai / item.total) * 100) : 0;
-      const belumPct = 100 - selesaiPct;
+      const total = item.total || 0;
+      const dilayani = item.sudahDilayani || 0;
+      const kembali = item.berkasDikembalikan || 0;
+      const progress = item.onProgress || 0;
+
+      const widthPct = Math.round((total / maxVal) * 100);
+      const dilayaniPct = total > 0 ? (dilayani / total) * 100 : 0;
+      const kembaliPct = total > 0 ? (kembali / total) * 100 : 0;
+      const progressPct = total > 0 ? (progress / total) * 100 : 0;
 
       return `
         <div class="chart-comparison-row">
@@ -235,17 +243,20 @@ const Infografis = {
 
           <div class="chart-bar-col">
             <div class="stacked-bar-wrapper" style="width: ${Math.max(widthPct, 15)}%;">
-              <div class="stacked-bar-fill bg-success" style="width: ${selesaiPct}%;" title="${key} Sudah Dilayani: ${item.selesai} (${selesaiPct}%)">
-                ${selesaiPct >= 15 ? `<span class="bar-inner-text">${item.selesai}</span>` : ''}
+              <div class="stacked-bar-fill bg-success" style="width: ${dilayaniPct}%;" title="${key} Sudah Dilayani: ${dilayani} (${Math.round(dilayaniPct)}%)">
+                ${dilayaniPct >= 12 ? `<span class="bar-inner-text">${dilayani}</span>` : ''}
               </div>
-              <div class="stacked-bar-fill bg-warning" style="width: ${belumPct}%;" title="${key} Belum Diproses: ${item.belum} (${belumPct}%)">
-                ${belumPct >= 15 ? `<span class="bar-inner-text">${item.belum}</span>` : ''}
+              <div class="stacked-bar-fill" style="width: ${kembaliPct}%; background: #6366f1;" title="${key} Berkas Dikembalikan: ${kembali} (${Math.round(kembaliPct)}%)">
+                ${kembaliPct >= 10 ? `<span class="bar-inner-text">${kembali}</span>` : ''}
+              </div>
+              <div class="stacked-bar-fill bg-warning" style="width: ${progressPct}%;" title="${key} On Progress: ${progress} (${Math.round(progressPct)}%)">
+                ${progressPct >= 12 ? `<span class="bar-inner-text">${progress}</span>` : ''}
               </div>
             </div>
           </div>
 
           <div class="chart-total-col">
-            <strong>${item.total.toLocaleString('id-ID')}</strong> <span style="font-size: 0.75rem; color: var(--slate-500);">Berkas</span>
+            <strong>${total.toLocaleString('id-ID')}</strong> <span style="font-size: 0.75rem; color: var(--slate-500);">Berkas</span>
           </div>
         </div>
       `;

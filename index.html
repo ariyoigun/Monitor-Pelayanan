@@ -42,9 +42,6 @@
         <a href="#landing" class="nav-link active" data-view="landing">
           <i class="fas fa-chart-pie"></i> Infografis Publik
         </a>
-        <a href="#portal" class="nav-link" data-view="portal">
-          <i class="fas fa-file-signature"></i> Pengajuan Layanan
-        </a>
         <a href="#dashboard" class="nav-link internal-only" data-view="dashboard" style="display: none;">
           <i class="fas fa-tachometer-alt"></i> Monitoring Internal
         </a>
@@ -72,9 +69,9 @@
           <i class="fas fa-sign-out-alt"></i> Keluar
         </button>
 
-        <!-- Login / Daftar Button -->
-        <a href="#login" class="btn btn-primary btn-sm btn-login" data-view="login" title="Masuk atau Daftar Akun">
-          <i class="fas fa-user-lock"></i> Masuk / Daftar
+        <!-- Login Button (Internal Only) -->
+        <a href="#login" class="btn btn-primary btn-sm btn-login" data-view="login" title="Akses Masuk Petugas Internal">
+          <i class="fas fa-lock"></i> Login Petugas
         </a>
 
         <!-- Mobile Menu Toggle Button -->
@@ -142,8 +139,8 @@
 
     <!-- Infografis Main Content Section -->
     <section class="container" style="padding-top: 2rem; padding-bottom: 3.5rem;">
-      <!-- 4 Aggregate Metric Cards -->
-      <div class="kpi-grid">
+      <!-- 5 Aggregate Metric Cards (Sesuai 5 Indikator Informasi) -->
+      <div class="kpi-grid kpi-grid-5">
         <!-- 1. Total Permohonan Masuk -->
         <div class="kpi-card">
           <div class="kpi-card-header">
@@ -159,7 +156,7 @@
           <div class="kpi-accent-bar" style="background: var(--primary-500);"></div>
         </div>
 
-        <!-- 2. Permohonan Sudah Dilayani / Selesai -->
+        <!-- 2. Permohonan Sudah Dilayani / Terbit -->
         <div class="kpi-card">
           <div class="kpi-card-header">
             <span class="kpi-title">Sudah Dilayani / Terbit</span>
@@ -174,22 +171,37 @@
           <div class="kpi-accent-bar" style="background: var(--success-500);"></div>
         </div>
 
-        <!-- 3. Belum Diproses / Dalam Proses -->
+        <!-- 3. On Progress (Ganti nama dari belum diproses) -->
         <div class="kpi-card">
           <div class="kpi-card-header">
-            <span class="kpi-title">Belum Diproses / On Progress</span>
+            <span class="kpi-title">On Progress</span>
             <div class="kpi-icon-wrapper kpi-icon-amber">
               <i class="fas fa-hourglass-half"></i>
             </div>
           </div>
           <div class="kpi-value-row">
-            <span id="pub-kpi-belum" class="kpi-value" style="color: #d97706;">0</span>
+            <span id="pub-kpi-onprogress" class="kpi-value" style="color: #d97706;">0</span>
           </div>
           <div class="kpi-subtext">Verifikasi teknis, sidang, atau telaah</div>
           <div class="kpi-accent-bar" style="background: var(--warning-500);"></div>
         </div>
 
-        <!-- 4. Rasio Penyelesaian (%) -->
+        <!-- 4. Berkas Dikembalikan (Kembali ke pemohon tetapi dianggap selesai) -->
+        <div class="kpi-card">
+          <div class="kpi-card-header">
+            <span class="kpi-title">Berkas Dikembalikan</span>
+            <div class="kpi-icon-wrapper" style="background: #e0e7ff; color: #4338ca;">
+              <i class="fas fa-undo-alt"></i>
+            </div>
+          </div>
+          <div class="kpi-value-row">
+            <span id="pub-kpi-dikembalikan" class="kpi-value" style="color: #4338ca;">0</span>
+          </div>
+          <div class="kpi-subtext">Kembali ke pemohon untuk dilengkapi</div>
+          <div class="kpi-accent-bar" style="background: #6366f1;"></div>
+        </div>
+
+        <!-- 5. Tingkat Penyelesaian (%) -->
         <div class="kpi-card">
           <div class="kpi-card-header">
             <span class="kpi-title">Tingkat Penyelesaian</span>
@@ -252,216 +264,24 @@
   </main>
 
   <!-- =========================================================
-       VIEW 2: PORTAL PENGAJUAN LAYANAN (PENGUNJUNG / PEMOHON)
-       ========================================================= -->
-  <main id="view-portal" class="view-section">
-    <!-- Portal Hero Header -->
-    <section class="portal-hero">
-      <div class="container">
-        <div class="infografis-badge" style="background: rgba(255, 255, 255, 0.15); color: #fde047;">
-          <i class="fas fa-user-check"></i> Portal Mandiri Pelayanan Perizinan & Tata Ruang
-        </div>
-        <h1 style="font-size: 2.2rem; font-weight: 800; margin-bottom: 0.5rem;">
-          Pengajuan Permohonan Layanan DINPUTARU
-        </h1>
-        <p style="font-size: 0.95rem; color: #e2e8f0; max-width: 680px; line-height: 1.6;">
-          Ajukan permohonan Keterangan Rencana Tata Ruang (KTTR) dan Validasi OSS-RBA secara daring langsung melalui sistem SILAN, serta akses integrasi perizinan gedung SIMBG.
-        </p>
-
-        <!-- User Profile Card -->
-        <div class="portal-profile-card">
-          <div style="display: flex; align-items: center; gap: 1rem;">
-            <div style="width: 54px; height: 54px; border-radius: 50%; background: #ffffff; color: var(--primary-700); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 800; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
-              <i class="fas fa-user"></i>
-            </div>
-            <div>
-              <div style="font-size: 1.2rem; font-weight: 800; color: #ffffff;" id="portal-user-name">Nama Pemohon</div>
-              <div style="font-size: 0.82rem; color: #cbd5e1;">
-                <span id="portal-user-email">email@pemohon.com</span> &bull; <span id="portal-user-hp">08xxxxxxxxxx</span>
-              </div>
-            </div>
-          </div>
-          <div>
-            <span class="badge" style="background: #10b981; color: #ffffff; font-size: 0.8rem; padding: 0.4rem 0.85rem;" id="portal-user-badge">
-              Akun Pemohon Terverifikasi
-            </span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Services Cards Grid for Visitor -->
-    <section class="container" style="padding-top: 2rem; padding-bottom: 3.5rem;">
-      <div class="section-header" style="margin-bottom: 1.5rem;">
-        <div class="section-tag">Pilih Menu Pengajuan</div>
-        <h2 class="section-title">Formulir Pendaftaran & Tautan Layanan</h2>
-        <p class="section-desc">
-          Klik tombol formulir pada layanan yang ingin Anda daftarkan. Pengajuan KTTR dan Validasi OSS ditampilkan langsung di halaman ini tanpa perlu membuka tab baru.
-        </p>
-      </div>
-
-      <div class="portal-services-grid">
-        <!-- 1. KTTR Card -->
-        <div class="portal-card" style="border-top: 4px solid #0284c7;">
-          <div>
-            <div class="portal-card-header">
-              <div class="portal-card-icon" style="background: #e0f2fe; color: #0284c7;">
-                <i class="fas fa-map-marked-alt"></i>
-              </div>
-              <div>
-                <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--slate-900);">KTTR</h3>
-                <div style="font-size: 0.78rem; color: var(--slate-500);">Tata Ruang & Pertanahan (TRP)</div>
-              </div>
-            </div>
-            <div style="margin-bottom: 0.85rem;">
-              <span class="badge" style="background: #e0f2fe; color: #0369a1; font-weight: 700;">
-                <i class="fas fa-clock"></i> SLA: 5 Hari Kerja
-              </span>
-            </div>
-            <p style="font-size: 0.86rem; color: var(--slate-600); line-height: 1.5; margin-bottom: 1.25rem;">
-              Permohonan informasi kesesuaian ruang, zonasi RTRW/RDTR, Garis Sempadan Bangunan (GSB), KDB, dan KLB untuk rencana perumahan atau non-berusaha.
-            </p>
-          </div>
-          <button type="button" class="btn btn-primary portal-service-btn" data-service="KTTR" style="width: 100%; justify-content: center; font-weight: 700;">
-            <i class="fas fa-file-signature"></i> Buka Formulir KTTR (Embed)
-          </button>
-        </div>
-
-        <!-- 2. OSS Card -->
-        <div class="portal-card" style="border-top: 4px solid #16a34a;">
-          <div>
-            <div class="portal-card-header">
-              <div class="portal-card-icon" style="background: #dcfce7; color: #16a34a;">
-                <i class="fas fa-network-wired"></i>
-              </div>
-              <div>
-                <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--slate-900);">Validasi KKPR OSS</h3>
-                <div style="font-size: 0.78rem; color: var(--slate-500);">Tata Ruang & Pertanahan (TRP)</div>
-              </div>
-            </div>
-            <div style="margin-bottom: 0.85rem;">
-              <span class="badge" style="background: #dcfce7; color: #15803d; font-weight: 700;">
-                <i class="fas fa-clock"></i> SLA: 5 Hari Kerja
-              </span>
-            </div>
-            <p style="font-size: 0.86rem; color: var(--slate-600); line-height: 1.5; margin-bottom: 1.25rem;">
-              Validasi Kesesuaian Kegiatan Pemanfaatan Ruang (KKPR) untuk perizinan berusaha berbasis risiko terintegrasi sistem OSS RBA & poligon SHP.
-            </p>
-          </div>
-          <button type="button" class="btn btn-primary portal-service-btn" data-service="OSS" style="width: 100%; justify-content: center; font-weight: 700; background: #16a34a; border-color: #16a34a;">
-            <i class="fas fa-file-signature"></i> Buka Formulir Validasi OSS (Embed)
-          </button>
-        </div>
-
-        <!-- 3. PBG Card -->
-        <div class="portal-card" style="border-top: 4px solid #d97706;">
-          <div>
-            <div class="portal-card-header">
-              <div class="portal-card-icon" style="background: #fef3c7; color: #d97706;">
-                <i class="fas fa-building"></i>
-              </div>
-              <div>
-                <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--slate-900);">PBG (SIMBG)</h3>
-                <div style="font-size: 0.78rem; color: var(--slate-500);">Cipta Karya (CK)</div>
-              </div>
-            </div>
-            <div style="margin-bottom: 0.85rem;">
-              <span class="badge" style="background: #fef3c7; color: #b45309; font-weight: 700;">
-                <i class="fas fa-clock"></i> SLA: 28 Hari Kerja
-              </span>
-            </div>
-            <p style="font-size: 0.86rem; color: var(--slate-600); line-height: 1.5; margin-bottom: 1.25rem;">
-              Persetujuan Bangunan Gedung (pengganti IMB) diselenggarakan secara terpusat melalui portal nasional SIMBG Kementerian PUPR.
-            </p>
-          </div>
-          <a href="https://simbg.pu.go.id" target="_blank" rel="noopener noreferrer" class="btn btn-outline" style="width: 100%; justify-content: center; font-weight: 700; color: #b45309; border-color: #f59e0b; text-decoration: none;">
-            <i class="fas fa-external-link-alt"></i> Masuk SIMBG PBG (simbg.pu.go.id)
-          </a>
-        </div>
-
-        <!-- 4. SLF Card -->
-        <div class="portal-card" style="border-top: 4px solid #9333ea;">
-          <div>
-            <div class="portal-card-header">
-              <div class="portal-card-icon" style="background: #f3e8ff; color: #9333ea;">
-                <i class="fas fa-award"></i>
-              </div>
-              <div>
-                <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--slate-900);">SLF (SIMBG)</h3>
-                <div style="font-size: 0.78rem; color: var(--slate-500);">Cipta Karya (CK)</div>
-              </div>
-            </div>
-            <div style="margin-bottom: 0.85rem;">
-              <span class="badge" style="background: #f3e8ff; color: #7e22ce; font-weight: 700;">
-                <i class="fas fa-clock"></i> SLA: 28 Hari Kerja
-              </span>
-            </div>
-            <p style="font-size: 0.86rem; color: var(--slate-600); line-height: 1.5; margin-bottom: 1.25rem;">
-              Sertifikat Laik Fungsi bangunan gedung yang telah selesai terbangun diajukan melalui akun pemohon pada portal resmi SIMBG.
-            </p>
-          </div>
-          <a href="https://simbg.pu.go.id" target="_blank" rel="noopener noreferrer" class="btn btn-outline" style="width: 100%; justify-content: center; font-weight: 700; color: #7e22ce; border-color: #a855f7; text-decoration: none;">
-            <i class="fas fa-external-link-alt"></i> Masuk SIMBG SLF (simbg.pu.go.id)
-          </a>
-        </div>
-      </div>
-
-      <!-- Embedded Google Form Container (KTTR & OSS) -->
-      <div id="portal-embed-section" class="portal-embed-box" style="display: none;">
-        <div class="portal-embed-header">
-          <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
-            <h3 id="portal-form-title" style="font-size: 1.1rem; font-weight: 800; color: var(--slate-900); margin: 0;">
-              Formulir Pendaftaran
-            </h3>
-            <span id="portal-form-badge" class="badge badge-proses" style="font-size: 0.75rem;">
-              SLA: 5 Hari Kerja
-            </span>
-          </div>
-          <div style="display: flex; align-items: center; gap: 0.5rem;">
-            <a id="portal-form-external-link" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm" title="Buka form di tab baru atau jendela penuh">
-              <i class="fas fa-external-link-alt"></i> Buka di Tab Baru
-            </a>
-            <button type="button" id="btn-close-portal-embed" class="btn btn-secondary btn-sm" title="Tutup formulir embed">
-              <i class="fas fa-times"></i> Tutup Form
-            </button>
-          </div>
-        </div>
-        <iframe id="portal-form-iframe" class="portal-embed-iframe" src="about:blank" title="Formulir Pendaftaran Google Form" allowfullscreen></iframe>
-      </div>
-    </section>
-  </main>
-
-  <!-- =========================================================
-       VIEW 3: LOGIN & REGISTRATION VIEW
+       VIEW 2: LOGIN VIEW (KHUSUS APARATUR INTERNAL)
        ========================================================= -->
   <main id="view-login" class="view-section">
     <section class="login-section">
-      <div class="login-card" style="max-width: 520px;">
+      <div class="login-card login-dialog-box">
         <div class="login-header">
           <img src="assets/logo.svg" alt="Logo DINPUTARU Demak" class="login-logo">
-          <h2 class="login-title">Akses Akun SILAN</h2>
-          <div class="login-subtitle">Sistem Informasi Monitoring Pelayanan - DINPUTARU Kab. Demak</div>
+          <h2 class="login-title">Masuk Portal Internal SILAN</h2>
+          <div class="login-subtitle">Khusus Aparatur & Petugas DINPUTARU Kab. Demak</div>
         </div>
 
-        <!-- Auth Tabs: Masuk vs Daftar Akun -->
-        <div class="auth-tabs-row">
-          <button type="button" id="tab-btn-login" class="auth-tab-btn active">
-            <i class="fas fa-sign-in-alt"></i> Masuk Akun
-          </button>
-          <button type="button" id="tab-btn-register" class="auth-tab-btn">
-            <i class="fas fa-user-plus"></i> Daftar Akun Pengunjung
-          </button>
-        </div>
-
-        <!-- TAB 1: FORM LOGIN (PENGUNJUNG ATAU INTERNAL) -->
-        <div id="auth-login-card-body" class="login-body">
+        <div class="login-body">
           <form id="form-login">
             <div class="form-group" style="margin-bottom: 1.1rem;">
               <label class="form-label" for="login-username">
-                Username / Email / No. Handphone <span class="required">*</span>
+                Username / NIP Petugas <span class="required">*</span>
               </label>
-              <input type="text" id="login-username" class="form-control" placeholder="Masukkan username petugas atau email/HP pemohon" required autocomplete="username">
-              <span class="form-hint">Petugas gunakan username, pengunjung gunakan email/no HP terdaftar.</span>
+              <input type="text" id="login-username" class="form-control" placeholder="Masukkan username atau NIP" required autocomplete="username">
             </div>
 
             <div class="form-group" style="margin-bottom: 1.1rem;">
@@ -469,7 +289,7 @@
               <input type="password" id="login-password" class="form-control" placeholder="Masukkan kata sandi akun" required autocomplete="current-password">
             </div>
 
-            <!-- Keamanan Tambahan: CAPTCHA Matematika -->
+            <!-- Keamanan: CAPTCHA Matematika -->
             <div class="captcha-container">
               <label class="form-label" for="login-captcha-input">
                 <i class="fas fa-shield-alt" style="color: var(--primary-600);"></i> Verifikasi Keamanan: Selesaikan Hitungan <span class="required">*</span>
@@ -483,96 +303,14 @@
               </div>
             </div>
 
-            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.85rem; font-weight: 700; font-size: 0.95rem; margin-top: 1rem;">
+            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.85rem; font-weight: 700; font-size: 0.95rem; margin-top: 1.25rem;">
               <i class="fas fa-sign-in-alt"></i> Masuk Sekarang
             </button>
           </form>
 
-          <div style="text-align: center; margin-top: 1.1rem; font-size: 0.84rem; color: var(--slate-600);">
-            Belum memiliki akun pemohon? 
-            <a href="#register" class="switch-to-register" style="color: var(--primary-600); font-weight: 700; text-decoration: none;">
-              Daftar di sini &rarr;
-            </a>
-          </div>
-
-          <!-- Bantuan Simulasi Akun Pengujian -->
-          <div style="margin-top: 1.5rem; padding-top: 1.15rem; border-top: 1px dashed var(--slate-200); font-size: 0.76rem; color: var(--slate-500);">
-            <div style="font-weight: 700; margin-bottom: 0.45rem; color: var(--slate-600);">
-              <i class="fas fa-key"></i> Bantuan Masuk Akun Simulasi (Klik Cepat):
-            </div>
-            <div style="display: flex; flex-wrap: wrap; gap: 0.35rem;">
-              <button type="button" class="btn btn-outline btn-sm" style="font-size: 0.72rem; padding: 0.25rem 0.55rem; background: #eff6ff; border-color: #93c5fd; color: #1e40af;" onclick="document.getElementById('login-username').value='budi.santoso@gmail.com'; document.getElementById('login-password').value='password123';">
-                Pemohon: Budi
-              </button>
-              <button type="button" class="btn btn-outline btn-sm" style="font-size: 0.72rem; padding: 0.25rem 0.55rem;" onclick="document.getElementById('login-username').value='kepala_dinas'; document.getElementById('login-password').value='password123';">
-                Kepala Dinas
-              </button>
-              <button type="button" class="btn btn-outline btn-sm" style="font-size: 0.72rem; padding: 0.25rem 0.55rem;" onclick="document.getElementById('login-username').value='sekretaris'; document.getElementById('login-password').value='password123';">
-                Sekretaris
-              </button>
-              <button type="button" class="btn btn-outline btn-sm" style="font-size: 0.72rem; padding: 0.25rem 0.55rem;" onclick="document.getElementById('login-username').value='kabid_trp'; document.getElementById('login-password').value='password123';">
-                Kabid TRP
-              </button>
-              <button type="button" class="btn btn-outline btn-sm" style="font-size: 0.72rem; padding: 0.25rem 0.55rem;" onclick="document.getElementById('login-username').value='admin'; document.getElementById('login-password').value='password123';">
-                Superadmin
-              </button>
-            </div>
-            <span style="display: block; margin-top: 0.35rem; color: var(--slate-400);">Kata sandi default: <strong>password123</strong></span>
-          </div>
-        </div>
-
-        <!-- TAB 2: FORM REGISTRASI PENGUNJUNG / PEMOHON -->
-        <div id="auth-register-card-body" class="login-body" style="display: none;">
-          <form id="form-register-visitor">
-            <div class="form-group" style="margin-bottom: 1rem;">
-              <label class="form-label" for="reg-nama">Nama Lengkap Pemohon <span class="required">*</span></label>
-              <input type="text" id="reg-nama" class="form-control" placeholder="Contoh: Budi Santoso, S.T." required>
-            </div>
-
-            <div class="form-group" style="margin-bottom: 1rem;">
-              <label class="form-label" for="reg-email">Alamat Email Aktif <span class="required">*</span></label>
-              <input type="email" id="reg-email" class="form-control" placeholder="pemohon@gmail.com" required>
-            </div>
-
-            <div class="form-group" style="margin-bottom: 1rem;">
-              <label class="form-label" for="reg-nohp">Nomor Handphone / WhatsApp <span class="required">*</span></label>
-              <input type="tel" id="reg-nohp" class="form-control" placeholder="08xxxxxxxxxx" required>
-            </div>
-
-            <div class="form-grid" style="grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem;">
-              <div class="form-group">
-                <label class="form-label" for="reg-password">Kata Sandi <span class="required">*</span></label>
-                <input type="password" id="reg-password" class="form-control" placeholder="Min. 6 karakter" required minlength="6">
-              </div>
-              <div class="form-group">
-                <label class="form-label" for="reg-password-confirm">Ulangi Sandi <span class="required">*</span></label>
-                <input type="password" id="reg-password-confirm" class="form-control" placeholder="Ulangi kata sandi" required minlength="6">
-              </div>
-            </div>
-
-            <!-- CAPTCHA Verifikasi Registrasi -->
-            <div class="captcha-container">
-              <label class="form-label" for="reg-captcha-input">
-                <i class="fas fa-shield-alt" style="color: var(--primary-600);"></i> Verifikasi Keamanan Pendaftaran <span class="required">*</span>
-              </label>
-              <div class="captcha-row">
-                <span id="reg-captcha-question-text" class="captcha-badge">Memuat...</span>
-                <button type="button" id="btn-refresh-reg-captcha" class="btn-refresh-captcha" title="Ganti soal hitungan">
-                  <i class="fas fa-sync-alt"></i>
-                </button>
-                <input type="number" id="reg-captcha-input" class="form-control" placeholder="Jawaban" required style="font-weight: 700; font-size: 1rem;">
-              </div>
-            </div>
-
-            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.85rem; font-weight: 700; font-size: 0.95rem; margin-top: 1rem; background: #059669; border-color: #059669;">
-              <i class="fas fa-user-plus"></i> Daftar Akun & Masuk ke Portal
-            </button>
-          </form>
-
-          <div style="text-align: center; margin-top: 1.1rem; font-size: 0.84rem; color: var(--slate-600);">
-            Sudah memiliki akun terdaftar? 
-            <a href="#login" class="switch-to-login" style="color: var(--primary-600); font-weight: 700; text-decoration: none;">
-              Masuk di sini &rarr;
+          <div style="text-align: center; margin-top: 1.25rem; font-size: 0.84rem;">
+            <a href="#landing" style="color: var(--slate-500); text-decoration: none; display: inline-flex; align-items: center; gap: 0.35rem; font-weight: 600;">
+              <i class="fas fa-arrow-left"></i> Kembali ke Halaman Infografis Publik
             </a>
           </div>
         </div>
@@ -631,12 +369,20 @@
         </div>
       </div>
 
-      <!-- KPI METRIC CARDS -->
-      <div class="kpi-grid">
-        <!-- 1. Total Pengajuan -->
+      <!-- 4 KATEGORI PENGAJUAN DENGAN WARNA BERBEDA -->
+      <section class="dash-category-section" style="margin-top: 1rem; margin-bottom: 2rem;">
+        <div class="section-tag" style="margin-bottom: 0.5rem;">4 Kategori Pelayanan DINPUTARU (Warna Berbeda)</div>
+        <div id="dash-category-cards" class="dash-category-grid">
+          <!-- Populated dynamically by Monitoring.renderCategoryCards() -->
+        </div>
+      </section>
+
+      <!-- KPI METRIC CARDS (5 INDIKATOR INFORMASI) -->
+      <div class="kpi-grid kpi-grid-5">
+        <!-- 1. Total Permohonan Masuk -->
         <div class="kpi-card">
           <div class="kpi-card-header">
-            <span class="kpi-title">Total Pengajuan</span>
+            <span class="kpi-title">Total Permohonan Masuk</span>
             <div class="kpi-icon-wrapper kpi-icon-blue">
               <i class="fas fa-folder-open"></i>
             </div>
@@ -644,68 +390,68 @@
           <div class="kpi-value-row">
             <span id="kpi-total-pengajuan" class="kpi-value">0</span>
           </div>
-          <div class="kpi-subtext">Akumulasi pengajuan TRP & CK</div>
+          <div class="kpi-subtext">Akumulasi pengajuan seluruh kategori</div>
           <div class="kpi-accent-bar" style="background: var(--primary-500);"></div>
         </div>
 
-        <!-- 2. Selesai / Terbit -->
+        <!-- 2. Sudah Dilayani / Terbit -->
         <div class="kpi-card">
           <div class="kpi-card-header">
-            <span class="kpi-title">Selesai / Terbit</span>
+            <span class="kpi-title">Sudah Dilayani / Terbit</span>
             <div class="kpi-icon-wrapper kpi-icon-green">
               <i class="fas fa-check-double"></i>
             </div>
           </div>
           <div class="kpi-value-row">
-            <span id="kpi-selesai" class="kpi-value">0</span>
+            <span id="kpi-selesai" class="kpi-value" style="color: #059669;">0</span>
           </div>
-          <div class="kpi-subtext">SK Rekomtek & Dokumen Terbit</div>
+          <div class="kpi-subtext">SK, Rekomtek, atau Sertifikat Terbit</div>
           <div class="kpi-accent-bar" style="background: var(--success-500);"></div>
         </div>
 
-        <!-- 3. Sedang Berjalan -->
+        <!-- 3. On Progress (Ganti nama dari belum diproses) -->
         <div class="kpi-card">
           <div class="kpi-card-header">
-            <span class="kpi-title">Proses Berjalan</span>
+            <span class="kpi-title">On Progress</span>
             <div class="kpi-icon-wrapper kpi-icon-amber">
-              <i class="fas fa-spinner fa-spin"></i>
-            </div>
-          </div>
-          <div class="kpi-value-row">
-            <span id="kpi-proses" class="kpi-value">0</span>
-          </div>
-          <div class="kpi-subtext">Verifikasi teknis & telaah zonasi</div>
-          <div class="kpi-accent-bar" style="background: var(--warning-500);"></div>
-        </div>
-
-        <!-- 4. Belum Selesai (Pending/Kendala) -->
-        <div class="kpi-card">
-          <div class="kpi-card-header">
-            <span class="kpi-title">Belum Selesai</span>
-            <div class="kpi-icon-wrapper kpi-icon-purple">
               <i class="fas fa-hourglass-half"></i>
             </div>
           </div>
           <div class="kpi-value-row">
-            <span id="kpi-belum-selesai" class="kpi-value">0</span>
+            <span id="kpi-onprogress" class="kpi-value" style="color: #d97706;">0</span>
           </div>
-          <div class="kpi-subtext">Menunggu kelengkapan/sidang</div>
-          <div class="kpi-accent-bar" style="background: var(--purple-600);"></div>
+          <div class="kpi-subtext">Sedang dalam proses verifikasi & telaah</div>
+          <div class="kpi-accent-bar" style="background: var(--warning-500);"></div>
         </div>
 
-        <!-- 5. Overdue SLA -->
+        <!-- 4. Berkas Dikembalikan (Kembali ke pemohon dianggap selesai) -->
         <div class="kpi-card">
           <div class="kpi-card-header">
-            <span class="kpi-title">Overdue SLA</span>
-            <div class="kpi-icon-wrapper kpi-icon-red">
-              <i class="fas fa-bell"></i>
+            <span class="kpi-title">Berkas Dikembalikan</span>
+            <div class="kpi-icon-wrapper" style="background: #e0e7ff; color: #4338ca;">
+              <i class="fas fa-undo-alt"></i>
             </div>
           </div>
           <div class="kpi-value-row">
-            <span id="kpi-overdue" class="kpi-value" style="color: var(--danger-600);">0</span>
+            <span id="kpi-dikembalikan" class="kpi-value" style="color: #4338ca;">0</span>
           </div>
-          <div class="kpi-subtext">Melebihi target waktu standar</div>
-          <div class="kpi-accent-bar" style="background: var(--danger-500);"></div>
+          <div class="kpi-subtext">Kembali ke pemohon untuk dilengkapi</div>
+          <div class="kpi-accent-bar" style="background: #6366f1;"></div>
+        </div>
+
+        <!-- 5. Tingkat Penyelesaian (%) -->
+        <div class="kpi-card">
+          <div class="kpi-card-header">
+            <span class="kpi-title">Tingkat Penyelesaian</span>
+            <div class="kpi-icon-wrapper kpi-icon-purple">
+              <i class="fas fa-chart-line"></i>
+            </div>
+          </div>
+          <div class="kpi-value-row">
+            <span id="kpi-persen-selesai" class="kpi-value" style="color: #7c3aed;">0%</span>
+          </div>
+          <div class="kpi-subtext">Rasio penyelesaian berkas (%)</div>
+          <div class="kpi-accent-bar" style="background: var(--purple-600);"></div>
         </div>
       </div>
 
@@ -806,6 +552,25 @@
               Memuat data...
             </span>
           </div>
+        </div>
+
+        <!-- 4 Kategori Filter Tabs dengan Warna Berbeda (KTTR, OSS, PBG, SLF) -->
+        <div class="category-tabs-wrapper" id="dash-category-tabs">
+          <button type="button" class="cat-filter-btn active" data-category="ALL">
+            Semua Kategori <span class="cat-count-badge" id="cat-count-all">0</span>
+          </button>
+          <button type="button" class="cat-filter-btn cat-kttr" data-category="KTTR">
+            <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#0284c7;"></span> KTTR <span class="cat-count-badge" id="cat-count-kttr">0</span>
+          </button>
+          <button type="button" class="cat-filter-btn cat-oss" data-category="OSS">
+            <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#16a34a;"></span> Validasi OSS <span class="cat-count-badge" id="cat-count-oss">0</span>
+          </button>
+          <button type="button" class="cat-filter-btn cat-pbg" data-category="PBG">
+            <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#d97706;"></span> PBG <span class="cat-count-badge" id="cat-count-pbg">0</span>
+          </button>
+          <button type="button" class="cat-filter-btn cat-slf" data-category="SLF">
+            <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#9333ea;"></span> SLF <span class="cat-count-badge" id="cat-count-slf">0</span>
+          </button>
         </div>
 
         <!-- Status Filter Chips -->
@@ -1099,8 +864,8 @@
         <div>
           <strong style="color: #ffffff; display: block; margin-bottom: 0.75rem;">Layanan Bidang</strong>
           <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.4rem;">
-            <li><a href="#portal" onclick="App.showView('portal'); Portal.openService('KTTR');">KTTR (Keterangan Rencana Tata Ruang)</a></li>
-            <li><a href="#portal" onclick="App.showView('portal'); Portal.openService('OSS');">Validasi KKPR OSS-RBA</a></li>
+            <li><a href="https://bit.ly/pendaftaranKTTRDemak" target="_blank" rel="noopener noreferrer">KTTR (Pendaftaran Daring)</a></li>
+            <li><a href="https://bit.ly/validasioss" target="_blank" rel="noopener noreferrer">Validasi KKPR OSS-RBA</a></li>
             <li><a href="https://simbg.pu.go.id" target="_blank" rel="noopener noreferrer">PBG (Persetujuan Bangunan Gedung)</a></li>
             <li><a href="https://simbg.pu.go.id" target="_blank" rel="noopener noreferrer">SLF (Sertifikat Laik Fungsi)</a></li>
           </ul>

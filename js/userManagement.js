@@ -161,6 +161,10 @@ const UserManagement = {
         user.bidangLabel = bidangLabels[bidang] || bidang;
         user.jabatan = jabatan;
         user.status = status;
+
+        if (typeof DataAPI !== 'undefined' && DataAPI.updateUser) {
+          DataAPI.updateUser(id, user);
+        }
       }
     } else {
       // Add new
@@ -168,7 +172,7 @@ const UserManagement = {
       const newUser = {
         id: newId,
         username,
-        password: "password123",
+        password: "*Dinput4ru_01",
         nama,
         nip,
         email,
@@ -178,10 +182,14 @@ const UserManagement = {
         bidang,
         bidangLabel: bidangLabels[bidang] || bidang,
         jabatan,
-        avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=120&auto=format&fit=crop&q=80",
+        avatar: "assets/logo.svg",
         status
       };
       this.users.push(newUser);
+
+      if (typeof DataAPI !== 'undefined' && DataAPI.saveUser) {
+        DataAPI.saveUser(newUser);
+      }
     }
 
     saveStoredUsers(this.users);
@@ -193,10 +201,13 @@ const UserManagement = {
   resetPassword(id) {
     const user = this.users.find(u => u.id === id);
     if (!user) return;
-    if (confirm(`Reset password untuk ${user.nama} ke default "password123"?`)) {
-      user.password = "password123";
+    if (confirm(`Reset password untuk ${user.nama} ke default "*Dinput4ru_01"?`)) {
+      user.password = "*Dinput4ru_01";
       saveStoredUsers(this.users);
-      alert(`Password untuk ${user.username} berhasil di-reset menjadi "password123"`);
+      if (typeof DataAPI !== 'undefined' && DataAPI.updateUser) {
+        DataAPI.updateUser(id, user);
+      }
+      alert(`Password untuk ${user.username} berhasil di-reset menjadi "*Dinput4ru_01"`);
     }
   },
 
@@ -206,6 +217,9 @@ const UserManagement = {
     if (confirm(`Apakah Anda yakin ingin menghapus user ${user.nama} (${user.username})?`)) {
       this.users = this.users.filter(u => u.id !== id);
       saveStoredUsers(this.users);
+      if (typeof DataAPI !== 'undefined' && DataAPI.deleteUser) {
+        DataAPI.deleteUser(id);
+      }
       this.renderUsersTable();
       alert(`User ${user.nama} berhasil dihapus.`);
     }

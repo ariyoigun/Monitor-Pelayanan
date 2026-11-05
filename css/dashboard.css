@@ -826,3 +826,256 @@
   gap: 0.5rem;
 }
 
+/* =========================================================
+   COMPACT LOGIN DIALOG (SESUAI REQUEST USER)
+   ========================================================= */
+.login-dialog-box {
+  max-width: 410px !important;
+  margin: 0 auto;
+  border-radius: var(--radius-xl);
+  box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25), 0 0 0 1px rgba(226, 232, 240, 0.8);
+  border: 1px solid var(--slate-200);
+  animation: fadeInModal 0.25s ease-out;
+}
+
+.login-dialog-box .login-header {
+  padding: 1.75rem 1.5rem 1.25rem;
+}
+
+.login-dialog-box .login-logo {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 0.5rem;
+}
+
+.login-dialog-box .login-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.login-dialog-box .login-subtitle {
+  font-size: 0.78rem;
+}
+
+.login-dialog-box .login-body {
+  padding: 1.5rem 1.5rem 1.75rem;
+}
+
+/* =========================================================
+   5 KPI METRIC CARDS GRID
+   ========================================================= */
+.kpi-grid-5 {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+@media (max-width: 1200px) {
+  .kpi-grid-5 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .kpi-grid-5 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================================================
+   4 KATEGORI PENGAJUAN DASHBOARD INTERNAL DENGAN WARNA BERBEDA
+   ========================================================= */
+.dash-category-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+}
+
+@media (max-width: 1100px) {
+  .dash-category-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .dash-category-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.dash-cat-card {
+  background: #ffffff;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-xl);
+  padding: 1.25rem;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.dash-cat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.dash-cat-card.active-filter {
+  box-shadow: 0 0 0 2px var(--primary-600), 0 10px 25px -5px rgba(0, 0, 0, 0.12);
+}
+
+.dash-cat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dash-cat-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+}
+
+.dash-cat-stats-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.25rem;
+  text-align: center;
+  background: var(--slate-50);
+  padding: 0.65rem 0.35rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--slate-100);
+}
+
+.dash-cat-stat .lbl {
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--slate-500);
+  display: block;
+  white-space: nowrap;
+}
+
+.dash-cat-stat .val {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--slate-900);
+  display: block;
+  margin-top: 0.15rem;
+}
+
+/* Category Filter Tabs with Distinct Colors */
+.category-tabs-wrapper {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.cat-filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.95rem;
+  border-radius: var(--radius-full);
+  font-size: 0.82rem;
+  font-weight: 700;
+  border: 1px solid var(--slate-200);
+  background: #ffffff;
+  color: var(--slate-700);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.cat-filter-btn:hover {
+  background: var(--slate-100);
+  color: var(--slate-900);
+}
+
+.cat-filter-btn .cat-count-badge {
+  background: var(--slate-100);
+  color: var(--slate-700);
+  padding: 0.1rem 0.45rem;
+  border-radius: var(--radius-full);
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.cat-filter-btn.active {
+  background: var(--slate-900);
+  color: #ffffff;
+  border-color: var(--slate-900);
+}
+
+.cat-filter-btn.active .cat-count-badge {
+  background: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+}
+
+.cat-filter-btn.cat-kttr.active {
+  background: #0284c7;
+  border-color: #0284c7;
+  color: #ffffff;
+}
+
+.cat-filter-btn.cat-oss.active {
+  background: #16a34a;
+  border-color: #16a34a;
+  color: #ffffff;
+}
+
+.cat-filter-btn.cat-pbg.active {
+  background: #d97706;
+  border-color: #d97706;
+  color: #ffffff;
+}
+
+.cat-filter-btn.cat-slf.active {
+  background: #9333ea;
+  border-color: #9333ea;
+  color: #ffffff;
+}
+
+/* Distinct Table Category Badges */
+.service-pill.kttr {
+  background: #e0f2fe !important;
+  color: #0284c7 !important;
+  border: 1px solid #7dd3fc !important;
+}
+
+.service-pill.oss {
+  background: #dcfce7 !important;
+  color: #16a34a !important;
+  border: 1px solid #86efac !important;
+}
+
+.service-pill.pbg {
+  background: #fef3c7 !important;
+  color: #d97706 !important;
+  border: 1px solid #fcd34d !important;
+}
+
+.service-pill.slf {
+  background: #f3e8ff !important;
+  color: #9333ea !important;
+  border: 1px solid #d8b4fe !important;
+}
+
+/* 5 Metrics in Service Cards */
+.service-stat-5-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr) !important;
+  gap: 0.5rem;
+}
+
+@media (max-width: 640px) {
+  .service-stat-5-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+

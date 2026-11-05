@@ -121,3 +121,4 @@ console.log(`Seeded ${INITIAL_SUBMISSIONS.length} submissions.`);
 const countSub = db.prepare('SELECT COUNT(*) as cnt FROM submissions').get();
 console.log('Total submissions in SQLite DB:', countSub.cnt);
 console.log('Database successfully initialized at:', path.join(__dirname, 'silan.db'));
+

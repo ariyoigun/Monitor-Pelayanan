@@ -45,26 +45,14 @@ const App = {
   showView(viewName) {
     // Route Guards for Protected Views
     if (viewName === 'portal') {
-      if (!Auth.isLoggedIn()) {
-        alert('Untuk mengakses formulir pengajuan KTTR dan Validasi OSS, pemohon/pengunjung harus masuk (login) atau mendaftar akun terlebih dahulu.');
-        this.showView('login');
-        window.location.hash = 'login';
-        return;
-      }
-      if (typeof Portal !== 'undefined') {
-        Portal.updateVisitorProfile();
-      }
+      this.showView('landing');
+      window.location.hash = 'landing';
+      return;
     } else if (viewName === 'dashboard') {
       if (!Auth.isLoggedIn()) {
         alert('Akses Terbatas: Dashboard monitoring internal memerlukan autentikasi login petugas.');
         this.showView('login');
         window.location.hash = 'login';
-        return;
-      }
-      if (Auth.isVisitor()) {
-        alert('Perhatian: Akun Anda adalah akun Pemohon Layanan. Anda diarahkan ke Portal Pengajuan Layanan.');
-        this.showView('portal');
-        window.location.hash = 'portal';
         return;
       }
       Monitoring.refreshData();
@@ -97,9 +85,8 @@ const App = {
         SystemSettings.refresh();
       }
     } else if (viewName === 'login') {
-      // Regenerate CAPTCHAs when visiting login page
+      // Regenerate CAPTCHA when visiting login page
       Auth.generateCaptcha();
-      Auth.generateRegisterCaptcha();
     } else if (viewName === 'landing') {
       if (typeof Infografis !== 'undefined') {
         Infografis.renderInfographics();
@@ -139,7 +126,7 @@ const App = {
 
   handleRouting() {
     const hash = window.location.hash.replace('#', '');
-    if (['landing', 'portal', 'login', 'dashboard', 'users', 'settings'].includes(hash)) {
+    if (['landing', 'login', 'dashboard', 'users', 'settings'].includes(hash)) {
       this.showView(hash);
     } else {
       this.showView('landing');
@@ -218,7 +205,7 @@ const App = {
       });
     });
 
-    // Login Form Submission
+    // Login Form Submission (Khusus Petugas Internal)
     const loginForm = document.getElementById('form-login');
     if (loginForm) {
       loginForm.addEventListener('submit', (e) => {
@@ -230,51 +217,8 @@ const App = {
         const result = Auth.login(identifier, password, captchaInput);
         if (result.success) {
           alert(`Selamat datang di SILAN, ${result.user.nama} (${result.user.roleLabel})!`);
-          
-          if (result.isVisitor) {
-            const pendingService = sessionStorage.getItem('pending_service');
-            this.showView('portal');
-            window.location.hash = 'portal';
-            if (pendingService) {
-              sessionStorage.removeItem('pending_service');
-              setTimeout(() => {
-                if (typeof Portal !== 'undefined') Portal.openService(pendingService);
-              }, 200);
-            }
-          } else {
-            this.showView('dashboard');
-            window.location.hash = 'dashboard';
-          }
-        } else {
-          alert(result.message);
-        }
-      });
-    }
-
-    // Visitor Registration Form Submission
-    const registerForm = document.getElementById('form-register-visitor');
-    if (registerForm) {
-      registerForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const nama = document.getElementById('reg-nama').value.trim();
-        const email = document.getElementById('reg-email').value.trim();
-        const noHp = document.getElementById('reg-nohp').value.trim();
-        const password = document.getElementById('reg-password').value.trim();
-        const confirmPassword = document.getElementById('reg-password-confirm').value.trim();
-        const captcha = document.getElementById('reg-captcha-input').value.trim();
-
-        const result = Auth.registerVisitor(nama, email, noHp, password, confirmPassword, captcha);
-        if (result.success) {
-          alert(result.message);
-          const pendingService = sessionStorage.getItem('pending_service');
-          this.showView('portal');
-          window.location.hash = 'portal';
-          if (pendingService) {
-            sessionStorage.removeItem('pending_service');
-            setTimeout(() => {
-              if (typeof Portal !== 'undefined') Portal.openService(pendingService);
-            }, 200);
-          }
+          this.showView('dashboard');
+          window.location.hash = 'dashboard';
         } else {
           alert(result.message);
         }
