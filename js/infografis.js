@@ -1,6 +1,6 @@
 /**
  * SILAN DINPUTARU DEMAK - Sistem Monitoring Layanan
- * Public Infographics Module: Agregat Layanan & Filter Bulanan Interaktif
+ * Public Infographics Module: Agregat Layanan Otentik Excel & Filter Bulanan Interaktif
  */
 
 const Infografis = {
@@ -47,6 +47,7 @@ const Infografis = {
 
   renderInfographics() {
     const data = getMonthlyInfographicData(this.currentMonth);
+    const sysTexts = getStoredSystemTexts();
 
     // 1. Update Header Badge Periode
     const periodeBadge = document.getElementById('infografis-periode-title');
@@ -76,7 +77,11 @@ const Infografis = {
           colorClass: "card-kttr",
           badgeColor: "#0284c7",
           badgeBg: "#e0f2fe",
-          desc: "Keterangan kesesuaian ruang, zonasi RTRW/RDTR, Garis Sempadan Bangunan (GSB), KDB & KLB di Kabupaten Demak."
+          sla: sysTexts.slaKttr || "5 Hari Kerja",
+          desc: sysTexts.descKttr || "Keterangan kesesuaian ruang, zonasi RTRW/RDTR, Garis Sempadan Bangunan (GSB), KDB & KLB di Kabupaten Demak.",
+          isGoogleForm: true,
+          actionLabel: "Ajukan Permohonan KTTR",
+          bitly: sysTexts.urlFormKttrBitly || "https://bit.ly/pendaftaranKTTRDemak"
         },
         {
           key: "OSS",
@@ -84,7 +89,11 @@ const Infografis = {
           colorClass: "card-oss",
           badgeColor: "#16a34a",
           badgeBg: "#dcfce7",
-          desc: "Validasi Kesesuaian Kegiatan Pemanfaatan Ruang (KKPR) terintegrasi sistem perizinan berusaha OSS RBA & poligon SHP."
+          sla: sysTexts.slaOss || "5 Hari Kerja",
+          desc: sysTexts.descOss || "Validasi Kesesuaian Kegiatan Pemanfaatan Ruang (KKPR) terintegrasi sistem perizinan berusaha OSS RBA & poligon SHP.",
+          isGoogleForm: true,
+          actionLabel: "Ajukan Validasi OSS",
+          bitly: sysTexts.urlFormOssBitly || "https://bit.ly/validasioss"
         },
         {
           key: "PBG",
@@ -92,7 +101,12 @@ const Infografis = {
           colorClass: "card-pbg",
           badgeColor: "#d97706",
           badgeBg: "#fef3c7",
-          desc: "Persetujuan Bangunan Gedung (pengganti IMB) untuk bangunan baru atau renovasi dengan standar arsitektur & struktur TPA."
+          sla: sysTexts.slaPbg || "28 Hari Kerja",
+          desc: sysTexts.descPbg || "Persetujuan Bangunan Gedung (pengganti IMB) untuk bangunan baru atau renovasi dengan standar arsitektur & struktur TPA.",
+          isGoogleForm: false,
+          isSimbg: true,
+          actionLabel: "Buka Portal SIMBG (simbg.pu.go.id)",
+          url: sysTexts.urlSimbgWebsite || "https://simbg.pu.go.id"
         },
         {
           key: "SLF",
@@ -100,7 +114,12 @@ const Infografis = {
           colorClass: "card-slf",
           badgeColor: "#9333ea",
           badgeBg: "#f3e8ff",
-          desc: "Sertifikat Laik Fungsi pembuktian kelaikan gedung selesai terbangun dari aspek keselamatan kebakaran & kenyamanan."
+          sla: sysTexts.slaSlf || "28 Hari Kerja",
+          desc: sysTexts.descSlf || "Sertifikat Laik Fungsi pembuktian kelaikan gedung selesai terbangun dari aspek keselamatan kebakaran & kenyamanan.",
+          isGoogleForm: false,
+          isSimbg: true,
+          actionLabel: "Buka Portal SIMBG (simbg.pu.go.id)",
+          url: sysTexts.urlSimbgWebsite || "https://simbg.pu.go.id"
         }
       ];
 
@@ -111,6 +130,29 @@ const Infografis = {
         const persenSelesai = item.persenSelesai;
         const persenBelum = 100 - persenSelesai;
 
+        // Tombol aksi sesuai jenis layanan
+        let actionBtnHtml = '';
+        if (cfg.isGoogleForm) {
+          actionBtnHtml = `
+            <div style="margin-top: 1.15rem; padding-top: 0.85rem; border-top: 1px dashed var(--slate-200); display: flex; gap: 0.5rem; flex-wrap: wrap;">
+              <button type="button" class="btn btn-primary btn-sm btn-ajukan-layanan" data-layanan="${cfg.key}" style="flex: 1; justify-content: center;">
+                <i class="fas fa-file-signature"></i> ${cfg.actionLabel}
+              </button>
+              <a href="${cfg.bitly}" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm" title="Buka Google Form di Tab Baru" style="padding: 0.4rem 0.65rem;">
+                <i class="fas fa-external-link-alt"></i>
+              </a>
+            </div>
+          `;
+        } else if (cfg.isSimbg) {
+          actionBtnHtml = `
+            <div style="margin-top: 1.15rem; padding-top: 0.85rem; border-top: 1px dashed var(--slate-200);">
+              <a href="${cfg.url}" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem; text-decoration: none; font-weight: 700; color: #1e3a8a; border-color: #93c5fd; background: #eff6ff;">
+                <i class="fas fa-landmark"></i> ${cfg.actionLabel}
+              </a>
+            </div>
+          `;
+        }
+
         return `
           <div class="infographic-service-card ${cfg.colorClass}">
             <div class="service-card-header">
@@ -120,7 +162,7 @@ const Infografis = {
                 </div>
                 <div>
                   <h3 class="service-title">${item.nama}</h3>
-                  <div class="service-subtitle">${item.bidang} &bull; <span class="sla-text"><i class="fas fa-clock"></i> SLA: ${item.sla}</span></div>
+                  <div class="service-subtitle">${item.bidang} &bull; <span class="sla-text"><i class="fas fa-clock"></i> SLA: ${cfg.sla}</span></div>
                 </div>
               </div>
               <div class="service-badge-pill" style="color: ${cfg.badgeColor}; background: ${cfg.badgeBg};">
@@ -134,17 +176,17 @@ const Infografis = {
             <div class="service-stat-row">
               <div class="stat-box stat-total">
                 <span class="stat-label">Total Masuk</span>
-                <span class="stat-number">${item.total}</span>
-                <span class="stat-sub">Permohonan</span>
+                <span class="stat-number">${item.total.toLocaleString('id-ID')}</span>
+                <span class="stat-sub">Pengajuan</span>
               </div>
               <div class="stat-box stat-selesai">
-                <span class="stat-label">Selesai / Terbit</span>
-                <span class="stat-number text-success">${item.selesai}</span>
+                <span class="stat-label">Sudah Dilayani</span>
+                <span class="stat-number text-success">${item.selesai.toLocaleString('id-ID')}</span>
                 <span class="stat-sub badge-sub-success">${persenSelesai}%</span>
               </div>
               <div class="stat-box stat-belum">
-                <span class="stat-label">Belum Selesai</span>
-                <span class="stat-number text-warning">${item.belum}</span>
+                <span class="stat-label">Belum Diproses</span>
+                <span class="stat-number text-warning">${item.belum.toLocaleString('id-ID')}</span>
                 <span class="stat-sub badge-sub-warning">${persenBelum}%</span>
               </div>
             </div>
@@ -153,13 +195,15 @@ const Infografis = {
             <div class="visual-progress-block">
               <div class="progress-labels">
                 <span>Rasio Penyelesaian: <strong>${persenSelesai}%</strong></span>
-                <span>${item.selesai} Selesai / ${item.belum} Dalam Proses</span>
+                <span>${item.selesai} Terbit / ${item.belum} On Progress</span>
               </div>
               <div class="progress-bar-track">
-                <div class="progress-bar-fill fill-selesai" style="width: ${persenSelesai}%;" title="Selesai: ${item.selesai}"></div>
-                <div class="progress-bar-fill fill-belum" style="width: ${persenBelum}%;" title="Belum Selesai: ${item.belum}"></div>
+                <div class="progress-bar-fill fill-selesai" style="width: ${persenSelesai}%;" title="Sudah Dilayani: ${item.selesai}"></div>
+                <div class="progress-bar-fill fill-belum" style="width: ${persenBelum}%;" title="Belum Diproses / On Progress: ${item.belum}"></div>
               </div>
             </div>
+
+            ${actionBtnHtml}
           </div>
         `;
       }).join('');
@@ -191,17 +235,17 @@ const Infografis = {
 
           <div class="chart-bar-col">
             <div class="stacked-bar-wrapper" style="width: ${Math.max(widthPct, 15)}%;">
-              <div class="stacked-bar-fill bg-success" style="width: ${selesaiPct}%;" title="${key} Selesai: ${item.selesai} (${selesaiPct}%)">
-                ${selesaiPct >= 20 ? `<span class="bar-inner-text">${item.selesai}</span>` : ''}
+              <div class="stacked-bar-fill bg-success" style="width: ${selesaiPct}%;" title="${key} Sudah Dilayani: ${item.selesai} (${selesaiPct}%)">
+                ${selesaiPct >= 15 ? `<span class="bar-inner-text">${item.selesai}</span>` : ''}
               </div>
-              <div class="stacked-bar-fill bg-warning" style="width: ${belumPct}%;" title="${key} Belum Selesai: ${item.belum} (${belumPct}%)">
-                ${belumPct >= 20 ? `<span class="bar-inner-text">${item.belum}</span>` : ''}
+              <div class="stacked-bar-fill bg-warning" style="width: ${belumPct}%;" title="${key} Belum Diproses: ${item.belum} (${belumPct}%)">
+                ${belumPct >= 15 ? `<span class="bar-inner-text">${item.belum}</span>` : ''}
               </div>
             </div>
           </div>
 
           <div class="chart-total-col">
-            <strong>${item.total}</strong> <span style="font-size: 0.75rem; color: var(--slate-500);">Berkas</span>
+            <strong>${item.total.toLocaleString('id-ID')}</strong> <span style="font-size: 0.75rem; color: var(--slate-500);">Berkas</span>
           </div>
         </div>
       `;
@@ -228,5 +272,16 @@ const Infografis = {
         this.setMonth(e.target.value);
       });
     }
+
+    // Ajukan Layanan Button Delegation (KTTR / OSS)
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('.btn-ajukan-layanan');
+      if (btn) {
+        const layanan = btn.dataset.layanan;
+        if (typeof App !== 'undefined') {
+          App.handleAjukanLayanan(layanan);
+        }
+      }
+    });
   }
 };

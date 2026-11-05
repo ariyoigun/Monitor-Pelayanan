@@ -10,6 +10,10 @@ desktop.ini
 *.log
 npm-debug.log*
 
+# SQLite temporary WAL/SHM files
+*.db-wal
+*.db-shm
+
 # Environment and IDE files
 .env
 .env.local

@@ -6,46 +6,58 @@
 ---
 
 ## 📌 Tentang SILAN
-**SILAN (Sistem Monitoring Layanan)** adalah platform keterbukaan informasi dan pemantauan pelayanan terpadu berbasis web di lingkungan Dinas Pekerjaan Umum dan Penataan Ruang (DINPUTARU) Kabupaten Demak.
+**SILAN (Sistem Monitoring Layanan)** adalah platform pelayanan publik, pendaftaran perizinan mandiri, dan pemantauan permohonan terpadu berbasis web di lingkungan Dinas Pekerjaan Umum dan Penataan Ruang (DINPUTARU) Kabupaten Demak.
 
-Sistem ini terbagi menjadi dua panel utama:
-1. **Panel Halaman Publik (Rangkuman Layanan & Infografis Interaktif)**  
-   Menyajikan data agregat jumlah permohonan layanan publik tahun 2026 dalam bentuk infografis, angka, dan grafik komparasi per kategori layanan yang dapat difilter berdasarkan bulan.
-2. **Panel Dashboard Monitoring Internal (Petugas & Pimpinan)**  
-   Halaman internal khusus petugas berwenang yang **wajib masuk melalui autentikasi login** dengan sistem pengamanan **CAPTCHA perhitungan matematika sederhana**.
-
----
-
-## 📊 Panel Halaman Publik (Infografis Rangkuman Layanan)
-* **Pilihan Periode Bulan Interaktif:** Pengunjung dapat memilih periode *"Sepanjang Tahun 2026 (Jan - Nov)"* atau bulan spesifik (Januari s.d. November 2026) untuk melihat data secara dinamis.
-* **4 Kartu Metrik Kategori Layanan:**
-  1. **KTTR (Keterangan Rencana Tata Ruang)** - Bidang TRP (Contoh kumulatif: 150 pengajuan, 130 selesai, 20 belum selesai).
-  2. **Validasi KKPR OSS-RBA** - Bidang TRP (Contoh kumulatif: 95 pengajuan, 80 selesai, 15 belum selesai).
-  3. **PBG (Persetujuan Bangunan Gedung)** - Bidang Cipta Karya (Contoh kumulatif: 210 pengajuan, 175 selesai, 35 belum selesai).
-  4. **SLF (Sertifikat Laik Fungsi)** - Bidang Cipta Karya (Contoh kumulatif: 65 pengajuan, 52 selesai, 13 belum selesai).
-* **Grafik Visual Komparasi:** Menampilkan rasio persentase dan bar grafik warna hijau (selesai/terbit) vs oranye (belum selesai/on progress) yang langsung menyesuaikan saat periode bulan diganti.
-* **Tombol Login Internal:** Terletak di pojok kanan atas navbar untuk akses cepat bagi petugas dinas.
-
----
-
-## 🔐 Sistem Keamanan & Login Petugas
-* **Autentikasi Login Minimalis:** Halaman login yang bersih, elegan, dan profesional.
-* **Pengamanan CAPTCHA Matematika Acak:** Setiap kali halaman login dibuka atau di-refresh, sistem secara otomatis menghasilkan soal perhitungan matematika dasar acak (penjumlahan `+`, pengurangan `-`, perkalian `×`, atau pembagian `÷`) yang wajib dijawab dengan benar untuk mencegah bot/serangan otomatis.
-* **Tanpa Menu Beralih Peran Terbuka:** Tidak ada lagi bilah pengalih peran publik. Tingkat akses dan wewenang (Kepala Dinas, Sekretaris, Kabid TRP, Kabid CK, Koordinator, Superadmin) ditentukan murni berdasarkan akun login yang diatur di panel admin.
+Sistem terintegrasi dengan database SQLite lokal, REST API endpoints, serta rekapitulasi data otentik tahun 2026:
+1. **Panel Halaman Publik (Infografis Rangkuman Layanan 2026)**:
+   Menyajikan data agregat permohonan KTTR, Validasi OSS, PBG, dan SLF sepanjang tahun 2026 yang dapat difilter per bulan (Januari s.d. November 2026) dengan angka pengajuan riil (*Total Masuk*, *Sudah Dilayani*, dan *Belum Diproses*).
+2. **Portal Pengajuan Layanan (Khusus Pemohon / Pengunjung)**:
+   Pemohon wajib login/daftar akun untuk mengisi formulir pendaftaran:
+   - **KTTR**: Terkoneksi Google Form langsung via embed tanpa redirect ([bit.ly/pendaftaranKTTRDemak](https://bit.ly/pendaftaranKTTRDemak)). SLA: **5 Hari Kerja**.
+   - **Validasi KKPR OSS-RBA**: Terkoneksi Google Form langsung via embed tanpa redirect ([bit.ly/validasioss](https://bit.ly/validasioss)). SLA: **5 Hari Kerja**.
+   - **PBG**: Tautan resmi ke portal nasional SIMBG ([simbg.pu.go.id](https://simbg.pu.go.id)). SLA: **28 Hari Kerja**.
+   - **SLF**: Tautan resmi ke portal nasional SIMBG ([simbg.pu.go.id](https://simbg.pu.go.id)). SLA: **28 Hari Kerja**.
+3. **Panel Dashboard Monitoring Internal (Aparatur & Pimpinan Dinas)**:
+   - Dilengkapi **Grafik Analitik Chart.js**: Tren bulanan 4 layanan, status penyelesaian, proporsi beban pelayanan, dan sebaran kecamatan terbanyak di Kabupaten Demak.
+   - Kotak sorotan pimpinan untuk berkas tertahan / overdue SLA.
+   - Tabel monitoring dengan **Metadata Asli Rekap Excel** (KTTR, OSS, dan SIMBG).
+   - Pengendalian penuh status berkas (Tambah, Edit Status, Catatan Pimpinan, Cetak Disposisi, dan Hapus Berkas).
+4. **Pengaturan Teks Sistem (Super Admin)**:
+   Superadmin dapat mengubah seluruh teks di sistem secara dinamis (judul, menu, badge, deskripsi, nilai SLA, alamat kantor, kontak, dan footer) langsung melalui dashboard.
 
 ---
 
-## 👥 Akun Petugas & Hak Akses
+## 💾 Arsitektur Database & Backend API
+Sistem kini dilengkapi database SQLite bawaan Node.js (`node:sqlite`) dan REST API lengkap:
+- **File Database**: `database/silan.db`
+- **Cadangan JSON Portabel**: `database/silan_backup.json`
+- **REST API Endpoints**:
+  - `GET /api/submissions`: Mengambil daftar pengajuan (dengan filter bidang, layanan, status, pencarian, dan limit).
+  - `GET /api/submissions/:id`: Mengambil detail satu berkas pengajuan lengkap dengan metadata Excel dan riwayat timeline.
+  - `POST /api/submissions`: Menambahkan pengajuan baru (Create).
+  - `PUT /api/submissions/:id`: Memperbarui status, posisi meja, kendala, arahan, dan nomor SK (Update).
+  - `DELETE /api/submissions/:id`: Menghapus data berkas pengajuan secara permanen (Delete).
+  - `GET /api/stats`: Menghitung agregat statistik bulanan secara *real-time* langsung dari data pengajuan.
+  - `GET /api/settings` & `POST /api/settings`: Mengambil dan menyimpan konfigurasi teks sistem.
+  - `GET /api/users` & `POST /api/users` & `DELETE /api/users/:id`: Manajemen pengguna petugas internal.
+  - `POST /api/auth/login`: Autentikasi login untuk pemohon maupun petugas internal.
+  - `POST /api/auth/register`: Pendaftaran mandiri akun pemohon baru.
+  - `GET /api/database/backup`: Ekspor dump seluruh database ke format JSON.
 
-| Peran (Role) | Username | Password Default | Wewenang Sistem |
+---
+
+## 👥 Akun Simulasi & Hak Akses
+
+| Kategori Akun | Identifier / Username | Kata Sandi | Peran & Akses |
 |---|---|---|---|
-| **Kepala Dinas** | `kepala_dinas` | `password123` | Monitoring eksekutif menyeluruh, rekapitulasi bottleneck, cetak laporan eksekutif PDF |
-| **Sekretaris Dinas** | `sekretaris` | `password123` | Monitoring kepatuhan SLA dan pengendalian administrasi lintas bidang |
-| **Kabid TRP** | `kabid_trp` | `password123` | Validasi teknis dan pembaruan status berkas Bidang Tata Ruang & Pertanahan (KTTR & OSS) |
-| **Kabid CK** | `kabid_ck` | `password123` | Validasi teknis dan pembaruan status berkas Bidang Cipta Karya (PBG & SLF) |
-| **Koordinator TRP** | `koordinator_trp` | `password123` | Verifikasi teknis lapangan permohonan zonasi & tata ruang |
-| **Koordinator CK** | `koordinator_ck` | `password123` | Verifikasi teknis gambar & sidang TPA permohonan bangunan gedung |
-| **Superadmin** | `admin` | `password123` | Kendali penuh sistem, manajemen pengguna (tambah/edit/hapus/reset sandi), dan hapus berkas |
+| **Pemohon Demo** | `budi.santoso@gmail.com` | `password123` | Portal pengajuan KTTR, OSS, dan akses SIMBG |
+| **Kepala Dinas** | `kepala_dinas` | `password123` | Dashboard monitoring eksekutif, grafik analitik, disposisi |
+| **Sekretaris Dinas** | `sekretaris` | `password123` | Monitoring administrasi dan kepatuhan SLA 5 & 28 hari kerja |
+| **Kabid TRP** | `kabid_trp` | `password123` | Validasi & update status berkas TRP (KTTR & Validasi OSS) |
+| **Kabid CK** | `kabid_ck` | `password123` | Validasi & update status berkas Cipta Karya (PBG & SLF) |
+| **Koordinator TRP** | `koordinator_trp` | `password123` | Verifikasi teknis lapangan & kajian tata ruang |
+| **Koordinator CK** | `koordinator_ck` | `password123` | Penilaian teknis & penugasan sidang TPA/TPT |
+| **Superadmin** | `admin` | `password123` | Kendali penuh, manajemen user, pengaturan teks sistem & hapus data |
 
 ---
 
@@ -56,11 +68,23 @@ Sistem ini terbagi menjadi dua panel utama:
 git clone https://github.com/ariyoigun/Monitor-Pelayanan.git
 cd Monitor-Pelayanan
 
-# 2. Jalankan server lokal
+# 2. Jalankan server lokal Node.js
 npm start
 
-# 3. Buka di browser
+# 3. Akses melalui browser
 http://localhost:3000
+```
+
+Perintah database tambahan:
+```bash
+# Inisialisasi ulang database dari data master
+npm run db:seed
+
+# Ekspor database SQLite ke file silan_backup.json
+npm run db:export
+
+# Menjalankan verifikasi sintaksis
+npm test
 ```
 
 ---
@@ -72,20 +96,28 @@ http://localhost:3000
 │   └── logo.svg                 # Logo vektor resmi DINPUTARU Kabupaten Demak
 ├── css/
 │   ├── main.css                 # Base design system & layout responsif
-│   ├── components.css           # Styling infografis, kartu layanan, bar chart & captcha
-│   └── dashboard.css            # Styling dashboard pimpinan & cetak lembar kerja
+│   ├── components.css           # Styling infografis, kartu layanan & captcha
+│   └── dashboard.css            # Styling dashboard, portal pemohon & charts
+├── database/
+│   ├── db.js                    # Inisialisasi SQLite database (node:sqlite)
+│   ├── seed.js                  # Skrip seeding data awal dari Excel ke SQLite
+│   ├── export_json.js           # Skrip backup SQLite ke JSON portabel
+│   ├── silan.db                 # Database SQLite biner aktif
+│   └── silan_backup.json        # Cadangan database lengkap format JSON
+├── data_source/                 # Sumber file data Excel asli (KTTR, OSS, SIMBG)
 ├── js/
-│   ├── data.js                  # Master data, dataset bulanan 2026 & storage helper
-│   ├── auth.js                  # Autentikasi akun, generator CAPTCHA matematika & role guard
-│   ├── infografis.js            # Engine infografis publik, filter bulan & grafik dinamis
-│   ├── monitoring.js            # Engine tabel monitoring internal, filter & operasi berkas
+│   ├── data.js                  # Master data, model storage & REST API sync bridge
+│   ├── auth.js                  # Autentikasi, registrasi pemohon & CAPTCHA matematika
+│   ├── portal.js                # Modul portal pemohon & frame embed Google Form
+│   ├── systemSettings.js        # Modul kustomisasi semua teks sistem (Superadmin)
+│   ├── infografis.js            # Engine infografis publik & filter bulan 2026
+│   ├── monitoring.js            # Engine monitoring, grafik Chart.js & metadata Excel
 │   ├── userManagement.js        # Modul manajemen pengguna khusus Superadmin
 │   ├── tracker.js               # Generator cetak disposisi & laporan eksekutif PDF
 │   └── app.js                   # Application router & inisialisasi modul global
 ├── index.html                   # Single Page Application (SPA) SILAN
-├── server.js                    # Web server Node.js ringan (support SPA & traversal protection)
-├── package.json                 # Metadata proyek & npm scripts
-├── .gitignore                   # Ignore file git
+├── server.js                    # HTTP Server & REST API backend SQLite
+├── package.json                 # Metadata proyek, dependensi & npm scripts
 └── README.md                    # Dokumentasi lengkap sistem
 ```
 
@@ -93,7 +125,7 @@ http://localhost:3000
 
 ## 🏛️ Pemerintah Kabupaten Demak
 **Dinas Pekerjaan Umum dan Penataan Ruang (DINPUTARU)**  
-Jl. Kyai Singkil No. 7, Bintoro, Demak 59511  
+Jl. Kyai Jebat No. 35, Demak 59511  
 - **Telepon:** (0291) 685112  
 - **Email:** dinputaru@demakkab.go.id  
 - **Website:** [dinputaru.demakkab.go.id](https://dinputaru.demakkab.go.id)

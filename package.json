@@ -6,7 +6,9 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
-    "test": "node --check server.js js/*.js"
+    "db:seed": "node database/seed.js",
+    "db:export": "node database/export_json.js",
+    "test": "node --check server.js database/*.js js/*.js"
   },
   "keywords": [
     "silan",
@@ -22,5 +24,8 @@
     "dashboard"
   ],
   "author": "DINPUTARU Kabupaten Demak",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "xlsx": "^0.18.5"
+  }
 }
