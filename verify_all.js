@@ -120,4 +120,22 @@ assert(html.includes('gistaru-feature-card'), 'GISTARU card wrapper class must b
 console.log('   [OK] SIKEREN branding verified throughout public landing page');
 console.log('   [OK] Cek Pola Ruang Tanah/Bidang/Lokasi (GISTARU) card & links verified');
 
+// 7. Verify Internal Dashboard Sidebar Layout, Menu Pengajuan & Grey/Blue Theme
+console.log('\n7. Verifying Internal Dashboard Sidebar (Panel Kiri) & Content (Panel Kanan):');
+assert(html.includes('id="internal-sidebar"'), 'Missing internal-sidebar in index.html');
+assert(html.includes('internal-content-area'), 'Missing internal-content-area in index.html');
+assert(html.includes('subview-ringkasan'), 'Missing subview-ringkasan in index.html');
+assert(html.includes('subview-pengajuan'), 'Missing subview-pengajuan in index.html');
+assert(html.includes('data-internal-tab="pengajuan"'), 'Missing Menu Pengajuan tab in sidebar');
+assert(html.includes('data-internal-tab="ringkasan"'), 'Missing Ringkasan tab in sidebar');
+
+// Verify GISTARU is NOT inside view-dashboard
+const dashboardStart = html.indexOf('id="view-dashboard"');
+const dashboardEnd = html.indexOf('</main>', dashboardStart);
+const dashboardSectionHtml = html.substring(dashboardStart, dashboardEnd);
+assert(!dashboardSectionHtml.toLowerCase().includes('gistaru'), 'GISTARU must NOT appear in internal dashboard');
+console.log('   [OK] Internal dashboard panel layout verified (Left Sidebar & Right Content)');
+console.log('   [OK] Menu Pengajuan tab and subview verified');
+console.log('   [OK] Verified GISTARU is NOT present in internal dashboard');
+
 console.log('\n=== ALL VERIFICATIONS PASSED SUCCESSFULLY! ===');

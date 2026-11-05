@@ -13,6 +13,7 @@ const Monitoring = {
     search: ''
   },
   charts: {},
+  currentSubView: 'ringkasan',
 
   init() {
     this.submissions = getStoredSubmissions();
@@ -23,6 +24,83 @@ const Monitoring = {
   refreshData() {
     this.submissions = getStoredSubmissions();
     this.renderAll();
+    this.switchSubView(this.currentSubView || 'ringkasan');
+  },
+
+  switchSubView(tabName) {
+    if (!['ringkasan', 'pengajuan', 'users', 'settings'].includes(tabName)) {
+      tabName = 'ringkasan';
+    }
+    this.currentSubView = tabName;
+
+    // 1. Toggle subview containers
+    document.querySelectorAll('.internal-subview').forEach(view => {
+      view.classList.remove('active');
+    });
+    const target = document.getElementById(`subview-${tabName}`);
+    if (target) {
+      target.classList.add('active');
+    }
+
+    // 2. Toggle active state in sidebar buttons
+    document.querySelectorAll('.sidebar-nav-btn').forEach(btn => {
+      if (btn.dataset.internalTab === tabName) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+
+    // 3. Update topbar titles
+    const titleEl = document.getElementById('dyn-dash-title');
+    const breadcrumbEl = document.getElementById('internal-breadcrumb');
+    if (titleEl) {
+      switch (tabName) {
+        case 'ringkasan':
+          titleEl.textContent = 'Ringkasan & Analitik Pelayanan';
+          if (breadcrumbEl) breadcrumbEl.textContent = 'Dashboard Eksekutif • Analisis Volume & Sebaran Pelayanan';
+          break;
+        case 'pengajuan':
+          titleEl.textContent = 'Menu Pengajuan - Semua Data Pelayanan';
+          if (breadcrumbEl) breadcrumbEl.textContent = `Daftar Rekapitulasi ${this.submissions.length.toLocaleString('id-ID')} Berkas Pelayanan 2026`;
+          break;
+        case 'users':
+          titleEl.textContent = 'Manajemen Pengguna & Hak Akses';
+          if (breadcrumbEl) breadcrumbEl.textContent = 'Kelola Akun Aparatur & Petugas Internal SIKEREN';
+          break;
+        case 'settings':
+          titleEl.textContent = 'Pengaturan Teks & Keterangan Sistem';
+          if (breadcrumbEl) breadcrumbEl.textContent = 'Kustomisasi Teks Dinamis Halaman Publik & Internal';
+          break;
+      }
+    }
+
+    // 4. Update count badge in sidebar
+    const badgeEl = document.getElementById('sidebar-count-pengajuan');
+    if (badgeEl) {
+      badgeEl.textContent = this.submissions.length.toLocaleString('id-ID');
+    }
+
+    // 5. Trigger subview-specific logic
+    if (tabName === 'ringkasan') {
+      this.renderKPIs();
+      this.renderLeadershipFocus();
+      this.renderInternalCharts();
+      this.renderCategoryCards();
+    } else if (tabName === 'pengajuan') {
+      this.renderTable();
+      this.renderCategoryCards();
+    } else if (tabName === 'users') {
+      if (typeof UserManagement !== 'undefined') {
+        UserManagement.refreshUsers();
+      }
+    } else if (tabName === 'settings') {
+      if (typeof SystemSettings !== 'undefined') {
+        SystemSettings.refresh();
+      }
+    }
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   },
 
   renderAll() {
@@ -31,6 +109,11 @@ const Monitoring = {
     this.renderLeadershipFocus();
     this.renderInternalCharts();
     this.renderTable();
+
+    const badgeEl = document.getElementById('sidebar-count-pengajuan');
+    if (badgeEl) {
+      badgeEl.textContent = this.submissions.length.toLocaleString('id-ID');
+    }
   },
 
   /* =========================================================
@@ -931,8 +1014,6 @@ const Monitoring = {
       App.showView('login');
       return;
     }
-      return;
-    }
     const modal = document.getElementById('modal-new-submission');
     if (!modal) return;
     document.getElementById('form-new-submission').reset();
@@ -1069,6 +1150,38 @@ const Monitoring = {
     const formNew = document.getElementById('form-new-submission');
     if (formNew) {
       formNew.addEventListener('submit', (e) => this.handleSaveNewSubmission(e));
+    }
+
+    // Sidebar Internal Subview Tab Switching
+    document.querySelectorAll('[data-internal-tab]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const tab = btn.dataset.internalTab;
+        this.switchSubView(tab);
+        const sidebar = document.getElementById('internal-sidebar');
+        if (sidebar) sidebar.classList.remove('sidebar-open');
+      });
+    });
+
+    // Sidebar Mobile Toggle
+    const toggleBtn = document.getElementById('btn-toggle-sidebar');
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', () => {
+        const sidebar = document.getElementById('internal-sidebar');
+        if (sidebar) sidebar.classList.toggle('sidebar-open');
+      });
+    }
+
+    // Real-time Date Badge in Internal Topbar
+    const dateEl = document.getElementById('internal-current-date');
+    if (dateEl) {
+      try {
+        const today = new Date();
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        dateEl.textContent = today.toLocaleDateString('id-ID', options);
+      } catch (e) {
+        dateEl.textContent = 'Tahun 2026';
+      }
     }
   }
 };

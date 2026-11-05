@@ -1218,5 +1218,389 @@
   font-family: monospace;
 }
 
+/* =========================================================
+   INTERNAL DASHBOARD LAYOUT: SIDEBAR KIRI & HASIL KANAN
+   TEMA WARNA: ABU-ABU & BIRU
+   ========================================================= */
+#view-dashboard.view-section.active {
+  display: flex !important;
+  flex-direction: row;
+  min-height: calc(100vh - 72px);
+  width: 100%;
+  background-color: #f1f5f9; /* Slate grey background */
+  padding: 0;
+  margin: 0;
+}
+
+.internal-sidebar {
+  width: 275px;
+  flex-shrink: 0;
+  background: #0f172a; /* Deep Navy Slate (Abu-abu gelap kebiruan) */
+  color: #f8fafc;
+  border-right: 1px solid #1e293b;
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 72px);
+  position: sticky;
+  top: 72px;
+  z-index: 50;
+  transition: transform 0.3s ease, left 0.3s ease;
+}
+
+.sidebar-brand-box {
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  border-bottom: 1px solid #1e293b;
+  background: #0b1120;
+}
+
+.sidebar-logo {
+  width: 36px;
+  height: 36px;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
+.sidebar-brand-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-brand-name {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.sidebar-brand-tag {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #38bdf8; /* Biru terang */
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.sidebar-profile-card {
+  margin: 1rem 1rem 0.5rem 1rem;
+  padding: 0.85rem 1rem;
+  background: #1e293b; /* Slate 800 */
+  border-radius: 10px;
+  border: 1px solid #334155;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.sidebar-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #2563eb;
+  background: #ffffff;
+  flex-shrink: 0;
+  object-fit: cover;
+}
+
+.sidebar-profile-info {
+  overflow: hidden;
+  min-width: 0;
+}
+
+.sidebar-user-name {
+  font-weight: 700;
+  font-size: 0.86rem;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-user-role {
+  font-size: 0.73rem;
+  color: #94a3b8;
+  margin-top: 0.15rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-status-tag {
+  font-size: 0.68rem;
+  color: #4ade80;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.3rem;
+  font-weight: 600;
+}
+
+.status-pulse-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.7);
+  display: inline-block;
+}
+
+.sidebar-menu-group-label {
+  padding: 1.1rem 1.25rem 0.4rem;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #64748b;
+  text-transform: uppercase;
+}
+
+.sidebar-nav-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0 0.75rem;
+}
+
+.sidebar-nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: #cbd5e1;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.sidebar-nav-btn i {
+  width: 18px;
+  text-align: center;
+  font-size: 1rem;
+  color: #94a3b8;
+  transition: color 0.2s;
+}
+
+.sidebar-nav-btn:hover {
+  background: #1e293b;
+  color: #ffffff;
+}
+
+.sidebar-nav-btn:hover i {
+  color: #38bdf8;
+}
+
+.sidebar-nav-btn.active {
+  background: #2563eb !important; /* Tema Biru Utama */
+  color: #ffffff !important;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+}
+
+.sidebar-nav-btn.active i {
+  color: #ffffff !important;
+}
+
+.sidebar-badge-count {
+  margin-left: auto;
+  background: #3b82f6;
+  color: #ffffff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 10px;
+}
+
+.sidebar-nav-btn.active .sidebar-badge-count {
+  background: #1d4ed8;
+}
+
+.sidebar-footer-actions {
+  margin-top: auto;
+  padding: 1rem 0.75rem;
+  border-top: 1px solid #1e293b;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  background: #0b1120;
+}
+
+.sidebar-link-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 6px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #94a3b8;
+  text-decoration: none;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  width: 100%;
+  text-align: left;
+  transition: all 0.15s ease;
+}
+
+.sidebar-link-btn i {
+  width: 18px;
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+.sidebar-link-btn:hover {
+  background: #1e293b;
+  color: #ffffff;
+}
+
+.sidebar-link-btn.btn-logout:hover {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+}
+
+/* Panel Kanan (Konten Utama Hasil/View) */
+.internal-content-area {
+  flex: 1;
+  min-width: 0;
+  padding: 1.5rem 2rem 3.5rem 2rem;
+  background-color: #f1f5f9; /* Abu-abu Lembut */
+}
+
+.internal-topbar {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.btn-sidebar-toggle {
+  display: none;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  color: #334155;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.internal-view-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #0f172a; /* Slate 900 */
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.internal-view-subtitle {
+  font-size: 0.78rem;
+  color: #64748b; /* Slate 500 */
+  margin-top: 0.15rem;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.topbar-date-badge {
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #475569;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.internal-subview {
+  display: none;
+}
+
+.internal-subview.active {
+  display: block;
+  animation: fadeInSub 0.2s ease-in-out;
+}
+
+@keyframes fadeInSub {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.pengajuan-header-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+}
+
+.pengajuan-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 0.25rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pengajuan-desc {
+  font-size: 0.82rem;
+  color: #64748b;
+  margin: 0;
+}
+
+@media (max-width: 992px) {
+  .btn-sidebar-toggle {
+    display: inline-flex !important;
+  }
+  .internal-sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: -290px;
+    z-index: 1050;
+    height: 100vh;
+    box-shadow: 4px 0 24px rgba(0,0,0,0.3);
+  }
+  .internal-sidebar.sidebar-open {
+    left: 0;
+  }
+  .internal-content-area {
+    padding: 1rem;
+  }
+}
+
 
 

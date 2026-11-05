@@ -45,7 +45,7 @@
         <a href="https://gistaru.atrbpn.go.id" target="_blank" rel="noopener noreferrer" class="nav-link nav-gistaru-menu" title="Cek Pola Ruang Tanah/Bidang di GISTARU Kementerian ATR/BPN">
           <i class="fas fa-layer-group" style="color: #0284c7;"></i> Cek Pola Ruang (GISTARU)
         </a>
-        <a href="#dashboard" class="nav-link internal-only" data-view="dashboard" style="display: none;">
+        <a href="#dashboard" class="nav-link" data-view="dashboard" id="nav-monitoring-link" title="Akses Dashboard Monitoring Internal">
           <i class="fas fa-tachometer-alt"></i> Monitoring Internal
         </a>
         <a href="#users" class="nav-link superadmin-only" data-view="users" style="display: none;">
@@ -344,6 +344,16 @@
             </button>
           </form>
 
+          <div style="margin-top: 1.25rem; padding: 0.85rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.78rem; color: #475569; text-align: left;">
+            <div style="font-weight: 700; color: #1e3a8a; margin-bottom: 0.35rem; display: flex; align-items: center; gap: 0.35rem;">
+              <i class="fas fa-info-circle"></i> Akun Pengguna Internal Terdaftar:
+            </div>
+            <div>&bull; <strong>Superadmin:</strong> <code>superadmin</code> | Sandi: <code>*Dinput4ru_07</code> (atau <code>*Dinput4ru_01</code>)</div>
+            <div>&bull; <strong>Koordinator TRP:</strong> <code>koor.trp</code> | Sandi: <code>*Dinput4ru_01</code></div>
+            <div>&bull; <strong>Koordinator Cipta Karya:</strong> <code>koor.ck</code> | Sandi: <code>*Dinput4ru_01</code></div>
+            <div>&bull; <strong>Kepala Dinas:</strong> <code>kadin.dinputaru</code> | Sandi: <code>*Dinput4ru_01</code></div>
+          </div>
+
           <div style="text-align: center; margin-top: 1.25rem; font-size: 0.84rem;">
             <a href="#landing" style="color: var(--slate-500); text-decoration: none; display: inline-flex; align-items: center; gap: 0.35rem; font-weight: 600;">
               <i class="fas fa-arrow-left"></i> Kembali ke Halaman Infografis Publik
@@ -357,32 +367,139 @@
   <!-- =========================================================
        VIEW 4: DASHBOARD MONITORING (INTERNAL PEJABAT & PETUGAS)
        ========================================================= -->
-  <main id="view-dashboard" class="view-section">
-    <div class="container dashboard-container">
-      
-      <!-- Executive Greeting & Action Bar -->
-      <div class="executive-header">
-        <div class="exec-info-left">
-          <img src="assets/logo.svg" alt="User" class="exec-avatar-big dynamic-user-avatar">
-          <div class="exec-details">
-            <h2 id="dyn-dash-title">Dashboard Pemantauan Pelayanan</h2>
-            <div class="exec-role-text">
-              <i class="fas fa-user-circle"></i> <span class="dynamic-user-name">Dr. H. Akhmad Sugiharto, S.T., M.T.</span> 
-              &bull; <span class="dynamic-user-role">Kepala Dinas</span>
+  <main id="view-dashboard" class="view-section internal-dashboard-layout">
+    <!-- =========================================================
+         PANEL SEBELAH KIRI (SIDEBAR MENU NAVIGASI INTERNAL)
+         ========================================================= -->
+    <aside class="internal-sidebar" id="internal-sidebar">
+      <!-- Header Brand Internal -->
+      <div class="sidebar-brand-box">
+        <img src="assets/logo.svg" alt="SIKEREN Logo" class="sidebar-logo">
+        <div class="sidebar-brand-info">
+          <div class="sidebar-brand-name">SIKEREN</div>
+          <div class="sidebar-brand-tag">PORTAL INTERNAL</div>
+        </div>
+      </div>
+
+      <!-- Profil Pengguna Aktif di Sidebar -->
+      <div class="sidebar-profile-card">
+        <img src="assets/logo.svg" alt="User" class="sidebar-avatar dynamic-user-avatar">
+        <div class="sidebar-profile-info">
+          <div class="sidebar-user-name dynamic-user-name">Memuat Nama...</div>
+          <div class="sidebar-user-role dynamic-user-role">Memuat Peran...</div>
+          <div class="sidebar-status-tag">
+            <span class="status-pulse-dot"></span> Sesi Aktif
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigasi Menu Sidebar Internal -->
+      <div class="sidebar-menu-group-label">MENU UTAMA</div>
+      <nav class="sidebar-nav-menu">
+        <!-- 1. Ringkasan & Analitik -->
+        <button type="button" class="sidebar-nav-btn active" data-internal-tab="ringkasan">
+          <i class="fas fa-chart-line"></i>
+          <span>Ringkasan & Analitik</span>
+        </button>
+
+        <!-- 2. Menu Pengajuan (BERISI SEMUA 3.319 PENGAJUAN) -->
+        <button type="button" class="sidebar-nav-btn" data-internal-tab="pengajuan">
+          <i class="fas fa-file-invoice"></i>
+          <span>Menu Pengajuan</span>
+          <span class="sidebar-badge-count" id="sidebar-count-pengajuan">3.319</span>
+        </button>
+
+        <!-- 3. Manajemen Pengguna (Khusus Super Admin) -->
+        <div class="sidebar-menu-group-label superadmin-only" style="margin-top: 1.25rem;">ADMINISTRATOR</div>
+        <button type="button" class="sidebar-nav-btn superadmin-only" data-internal-tab="users">
+          <i class="fas fa-users-cog"></i>
+          <span>Manajemen Pengguna</span>
+        </button>
+
+        <!-- 4. Pengaturan Teks Sistem (Khusus Super Admin) -->
+        <button type="button" class="sidebar-nav-btn superadmin-only" data-internal-tab="settings">
+          <i class="fas fa-sliders-h"></i>
+          <span>Pengaturan Teks Sistem</span>
+        </button>
+      </nav>
+
+      <!-- Sidebar Footer Links -->
+      <div class="sidebar-footer-actions">
+        <a href="#landing" class="sidebar-link-btn" title="Kembali ke Portal Infografis Publik">
+          <i class="fas fa-globe"></i>
+          <span>Halaman Publik</span>
+        </a>
+        <button type="button" class="sidebar-link-btn btn-logout" title="Keluar dari Akun">
+          <i class="fas fa-sign-out-alt"></i>
+          <span>Keluar Sesi</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- =========================================================
+         PANEL SEBELAH KANAN (HASIL / VIEW UTAMA INTERNAL)
+         ========================================================= -->
+    <div class="internal-content-area">
+      <!-- Topbar Header Internal -->
+      <header class="internal-topbar">
+        <div class="topbar-left">
+          <button type="button" class="btn-sidebar-toggle" id="btn-toggle-sidebar" aria-label="Toggle Menu Sidebar">
+            <i class="fas fa-bars"></i>
+          </button>
+          <div>
+            <h2 class="internal-view-title" id="dyn-dash-title">Ringkasan & Analitik Pelayanan</h2>
+            <div class="internal-view-subtitle" id="internal-breadcrumb">
+              Dinas Pekerjaan Umum dan Penataan Ruang Kabupaten Demak
             </div>
-            <div class="exec-nip">Dinas Pekerjaan Umum dan Penataan Ruang Kabupaten Demak</div>
           </div>
         </div>
 
-        <div class="exec-actions-right">
-          <button class="btn btn-accent btn-sm" onclick="Monitoring.openNewSubmissionModal()">
-            <i class="fas fa-plus-circle"></i> Tambah Pengajuan Baru
+        <div class="topbar-right">
+          <!-- Tombol Tambah Pengajuan (Koordinator & Superadmin) -->
+          <button class="btn btn-primary btn-sm btn-action-add" onclick="Monitoring.openNewSubmissionModal()" title="Tambah Pengajuan Baru">
+            <i class="fas fa-plus-circle"></i> Tambah Pengajuan
           </button>
-          <button class="btn btn-outline btn-sm" onclick="Tracker.printExecutiveReport()">
-            <i class="fas fa-file-pdf"></i> Cetak Rekap Eksekutif (PDF)
+
+          <!-- Cetak Rekap Eksekutif -->
+          <button class="btn btn-outline btn-sm" onclick="Tracker.printExecutiveReport()" title="Cetak Rekapitulasi Eksekutif format PDF">
+            <i class="fas fa-file-pdf"></i> Cetak Rekap (PDF)
           </button>
+
+          <div class="topbar-date-badge">
+            <i class="fas fa-calendar-alt"></i> <span id="internal-current-date">Hari Ini</span>
+          </div>
         </div>
-      </div>
+      </header>
+
+      <!-- KONTEN SUBVIEW PANEL KANAN -->
+      <div class="internal-subviews-wrapper">
+        
+        <!-- ==============================================
+             SUBVIEW 1: RINGKASAN & ANALITIK
+             ============================================== -->
+        <div id="subview-ringkasan" class="internal-subview active">
+          <!-- Executive Greeting & Action Bar -->
+          <div class="executive-header">
+            <div class="exec-info-left">
+              <img src="assets/logo.svg" alt="User" class="exec-avatar-big dynamic-user-avatar">
+              <div class="exec-details">
+                <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--slate-900); margin-bottom: 0.25rem;">
+                  Selamat Datang di Portal Internal SIKEREN
+                </h3>
+                <div class="exec-role-text">
+                  <i class="fas fa-user-circle"></i> <span class="dynamic-user-name">Dr. H. Akhmad Sugiharto, S.T., M.T.</span> 
+                  &bull; <span class="dynamic-user-role">Kepala Dinas</span>
+                </div>
+                <div class="exec-nip">Dinas Pekerjaan Umum dan Penataan Ruang Kabupaten Demak</div>
+              </div>
+            </div>
+
+            <div class="exec-actions-right">
+              <button class="btn btn-primary btn-sm" onclick="Monitoring.switchSubView('pengajuan')">
+                <i class="fas fa-list-ul"></i> Buka Menu Pengajuan &rarr;
+              </button>
+            </div>
+          </div>
 
       <!-- KOTAK KHUSUS PIMPINAN: "Pengajuan Belum Selesai & Kendalanya" -->
       <div class="leadership-focus-box">
@@ -559,9 +676,30 @@
           </div>
         </div>
       </section>
+        </div>
 
-      <!-- MAIN MONITORING TABLE CARD -->
-      <div class="table-card">
+        <!-- ==============================================
+             SUBVIEW 2: MENU PENGAJUAN (SEMUA 3.319 PENGAJUAN)
+             ============================================== -->
+        <div id="subview-pengajuan" class="internal-subview">
+          <div class="pengajuan-header-card">
+            <div class="pengajuan-header-info">
+              <h2 class="pengajuan-title">
+                <i class="fas fa-file-invoice" style="color: var(--primary-600);"></i> Menu Pengajuan - Semua Data Pelayanan
+              </h2>
+              <div class="pengajuan-desc">
+                Daftar lengkap seluruh berkas pengajuan KTTR, Validasi OSS, PBG, dan SLF tahun 2026. Koordinator dan Superadmin memiliki wewenang penuh untuk menambah, mengedit, menghapus, dan menyimpan berkas.
+              </div>
+            </div>
+            <div class="pengajuan-header-actions">
+              <button class="btn btn-primary btn-sm btn-action-add" onclick="Monitoring.openNewSubmissionModal()">
+                <i class="fas fa-plus-circle"></i> Tambah Pengajuan Baru
+              </button>
+            </div>
+          </div>
+
+          <!-- MAIN MONITORING TABLE CARD -->
+          <div class="table-card">
         <!-- Toolbar Filters -->
         <div class="table-toolbar">
           <div class="search-input-wrapper">
@@ -655,17 +793,15 @@
         </div>
       </div>
     </div>
-  </main>
 
-  <!-- =========================================================
-       VIEW 5: USER MANAGEMENT VIEW (SUPERADMIN ONLY)
-       ========================================================= -->
-  <main id="view-users" class="view-section">
-    <div class="container dashboard-container">
-      <div class="user-management-panel">
-        <div class="panel-header">
+    <!-- ==============================================
+         SUBVIEW 3: MANAJEMEN PENGGUNA (SUPERADMIN)
+         ============================================== -->
+    <div id="subview-users" class="internal-subview">
+      <div class="user-management-panel" style="background:#ffffff; border-radius:12px; border:1px solid #e2e8f0; padding:1.5rem; box-shadow:0 1px 3px rgba(15,23,42,0.05);">
+        <div class="panel-header" style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1.5rem;">
           <div>
-            <h2 class="panel-title">
+            <h2 class="panel-title" style="font-size:1.25rem; font-weight:800; color:#0f172a; margin:0; display:flex; align-items:center; gap:0.5rem;">
               <i class="fas fa-users-cog" style="color: var(--primary-600);"></i> Manajemen Pengguna & Hak Akses
             </h2>
             <div style="font-size: 0.82rem; color: var(--slate-500); margin-top: 0.2rem;">
@@ -696,14 +832,12 @@
         </div>
       </div>
     </div>
-  </main>
 
-  <!-- =========================================================
-       VIEW 6: SETTINGS VIEW - PENGATURAN TEKS SISTEM (SUPERADMIN ONLY)
-       ========================================================= -->
-  <main id="view-settings" class="view-section">
-    <div class="container dashboard-container">
-      <div class="settings-section-card">
+    <!-- ==============================================
+         SUBVIEW 4: PENGATURAN TEKS SISTEM (SUPERADMIN)
+         ============================================== -->
+    <div id="subview-settings" class="internal-subview">
+      <div class="settings-section-card" style="background:#ffffff; border-radius:12px; border:1px solid #e2e8f0; padding:1.5rem; box-shadow:0 1px 3px rgba(15,23,42,0.05);">
         <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem; border-bottom: 2px solid var(--slate-100); padding-bottom: 1rem;">
           <div>
             <h2 style="font-size: 1.35rem; font-weight: 800; color: var(--slate-900); display: flex; align-items: center; gap: 0.5rem;">
@@ -878,8 +1012,15 @@
           </div>
         </form>
       </div>
-    </div>
-  </main>
+    </div> <!-- End subview-settings -->
+
+  </div> <!-- End internal-subviews-wrapper -->
+</div> <!-- End internal-content-area -->
+</main> <!-- End view-dashboard -->
+
+<!-- Hidden legacy anchors for routing compatibility -->
+<div id="view-users" style="display: none;"></div>
+<div id="view-settings" style="display: none;"></div>
 
   <!-- =========================================================
        FOOTER

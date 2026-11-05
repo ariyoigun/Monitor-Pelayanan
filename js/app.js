@@ -44,6 +44,12 @@ const App = {
   },
 
   showView(viewName) {
+    let internalSubTab = null;
+    if (['pengajuan', 'users', 'settings'].includes(viewName)) {
+      internalSubTab = viewName;
+      viewName = 'dashboard';
+    }
+
     // Route Guards for Protected Views
     if (viewName === 'portal') {
       this.showView('landing');
@@ -57,33 +63,15 @@ const App = {
         return;
       }
       Monitoring.refreshData();
-    } else if (viewName === 'users') {
-      if (!Auth.isLoggedIn()) {
-        this.showView('login');
-        window.location.hash = 'login';
-        return;
-      }
-      if (!Auth.isSuperAdmin()) {
-        alert('Akses Terbatas: Hanya role Superadmin yang dapat mengakses Manajemen Pengguna.');
-        this.showView('dashboard');
-        window.location.hash = 'dashboard';
-        return;
-      }
-      UserManagement.refreshUsers();
-    } else if (viewName === 'settings') {
-      if (!Auth.isLoggedIn()) {
-        this.showView('login');
-        window.location.hash = 'login';
-        return;
-      }
-      if (!Auth.isSuperAdmin()) {
-        alert('Akses Terbatas: Hanya role Superadmin yang dapat mengakses Pengaturan Teks Sistem.');
-        this.showView('dashboard');
-        window.location.hash = 'dashboard';
-        return;
-      }
-      if (typeof SystemSettings !== 'undefined') {
-        SystemSettings.refresh();
+      if (internalSubTab) {
+        if ((internalSubTab === 'users' || internalSubTab === 'settings') && !Auth.isSuperAdmin()) {
+          alert('Akses Terbatas: Hanya role Superadmin yang dapat mengakses menu tersebut.');
+          Monitoring.switchSubView('ringkasan');
+        } else {
+          Monitoring.switchSubView(internalSubTab);
+        }
+      } else {
+        Monitoring.switchSubView(Monitoring.currentSubView || 'ringkasan');
       }
     } else if (viewName === 'login') {
       // Regenerate CAPTCHA when visiting login page
@@ -110,6 +98,12 @@ const App = {
       targetSection.classList.add('active');
     }
 
+    // Hide public footer when in internal dashboard for clean full-height admin workspace
+    const footer = document.querySelector('.main-footer');
+    if (footer) {
+      footer.style.display = (viewName === 'dashboard') ? 'none' : '';
+    }
+
     // Update nav links active status
     document.querySelectorAll('.nav-link').forEach(link => {
       if (link.dataset.view === viewName) {
@@ -127,7 +121,7 @@ const App = {
 
   handleRouting() {
     const hash = window.location.hash.replace('#', '');
-    if (['landing', 'login', 'dashboard', 'users', 'settings'].includes(hash)) {
+    if (['landing', 'login', 'dashboard', 'pengajuan', 'users', 'settings'].includes(hash)) {
       this.showView(hash);
     } else {
       this.showView('landing');

@@ -186,6 +186,7 @@ const Auth = {
     const userProfileBadges = document.querySelectorAll('.user-profile-badge');
     const superadminOnlyEls = document.querySelectorAll('.superadmin-only');
     const internalOnlyEls = document.querySelectorAll('.internal-only');
+    const btnActionAddEls = document.querySelectorAll('.btn-action-add');
     const btnLogouts = document.querySelectorAll('.btn-logout');
     const btnLogins = document.querySelectorAll('.btn-login');
 
@@ -204,6 +205,10 @@ const Auth = {
         el.style.display = this.isSuperAdmin() ? '' : 'none';
       });
 
+      btnActionAddEls.forEach(el => {
+        el.style.display = this.canAddSubmission() ? 'inline-flex' : 'none';
+      });
+
       btnLogouts.forEach(el => el.style.display = 'inline-flex');
       btnLogins.forEach(el => el.style.display = 'none');
     } else {
@@ -213,6 +218,7 @@ const Auth = {
       userProfileBadges.forEach(el => el.style.display = 'none');
       internalOnlyEls.forEach(el => el.style.display = 'none');
       superadminOnlyEls.forEach(el => el.style.display = 'none');
+      btnActionAddEls.forEach(el => el.style.display = 'none');
 
       btnLogouts.forEach(el => el.style.display = 'none');
       btnLogins.forEach(el => el.style.display = 'inline-flex');
