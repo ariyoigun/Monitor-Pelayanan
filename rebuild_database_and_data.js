@@ -443,15 +443,15 @@ console.log(`Total processed submissions: ${allSubmissions.length} records.`);
 
 // 4. Default System Texts (Customizable by Superadmin)
 const DEFAULT_SYSTEM_TEXTS = {
-  appTitle: "SILAN DINPUTARU",
-  appSubtitle: "Sistem Monitoring Layanan - Kab. Demak",
+  appTitle: "SIKEREN DINPUTARU",
+  appSubtitle: "Sistem Informasi Keterangan Pelayanan Perizinan - Kab. Demak",
   navLandingText: "Infografis Publik",
   navDashboardText: "Monitoring Internal",
   navUsersText: "Manajemen Pengguna",
   navSettingsText: "Pengaturan Teks Sistem",
 
   heroBadge: "Portal Keterbukaan Informasi Pelayanan Publik DINPUTARU Kabupaten Demak",
-  heroTitle: "Rangkuman Layanan <span class=\"text-gold\">SILAN 2026</span>",
+  heroTitle: "Rangkuman Layanan <span class=\"text-gold\">SIKEREN 2026</span>",
   heroSubtitle: "Infografis agregat permohonan layanan publik Dinas Pekerjaan Umum dan Penataan Ruang Kabupaten Demak. Pantau volume permohonan masuk, tingkat penyelesaian berkas, dan kepastian standar waktu pelayanan (SLA) secara terbuka.",
   sectionTitle: "Infografis & Status 4 Layanan Utama DINPUTARU",
   sectionDesc: "Data real-time jumlah permohonan masuk, berkas yang telah rampung, dan berkas dalam proses untuk masing-masing kategori layanan sesuai periode bulan yang Anda pilih.",
@@ -471,6 +471,7 @@ const DEFAULT_SYSTEM_TEXTS = {
   urlFormKttr: "https://bit.ly/pendaftaranKTTRDemak",
   urlFormOss: "https://bit.ly/validasioss",
   urlSimbgWebsite: "https://simbg.pu.go.id",
+  urlGistaru: "https://gistaru.atrbpn.go.id",
 
   footerInstansi: "DINPUTARU KABUPATEN DEMAK",
   footerDesc: "Dinas Pekerjaan Umum dan Penataan Ruang Kabupaten Demak berkomitmen memberikan pelayanan tata ruang dan persetujuan bangunan yang cepat, pasti, dan transparan.",
@@ -479,6 +480,7 @@ const DEFAULT_SYSTEM_TEXTS = {
   footerEmail: "dinputaru@demakkab.go.id",
   footerWebsite: "dinputaru.demakkab.go.id",
   footerCopyright: "© 2026 Dinas Pekerjaan Umum dan Penataan Ruang Kabupaten Demak. Hak Cipta Dilindungi.",
+  footerTagline: "SIKEREN - Sistem Informasi Keterangan Pelayanan Perizinan DINPUTARU Demak Bermartabat",
 
   dashboardTitle: "Dashboard Pemantauan Pelayanan",
   leadershipFocusTitle: "Sorotan Pimpinan: Berkas Tertahan & Perlu Perhatian Segera",
@@ -634,7 +636,7 @@ const compactSubmissions = [
 ];
 
 const dataJsContent = `/**
- * SILAN DINPUTARU DEMAK - Sistem Informasi Monitoring Layanan
+ * SIKEREN DINPUTARU DEMAK - Sistem Informasi Keterangan Pelayanan Perizinan
  * Master Data, Excel 2026 Recalculated Statistics & Synchronized SQLite State
  */
 

@@ -1,5 +1,5 @@
 /**
- * SILAN DINPUTARU DEMAK - Sistem Monitoring Layanan
+ * SIKEREN DINPUTARU DEMAK - Sistem Informasi Keterangan Pelayanan Perizinan
  * Portal Pemohon / Pengunjung (Pengajuan KTTR & OSS via Google Form Embed & Akses SIMBG)
  */
 

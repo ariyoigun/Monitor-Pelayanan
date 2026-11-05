@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const db = require('./database/db');
 
-console.log('=== RUNNING COMPREHENSIVE VERIFICATION FOR SILAN DINPUTARU ===\n');
+console.log('=== RUNNING COMPREHENSIVE VERIFICATION FOR SIKEREN DINPUTARU ===\n');
 
 // 1. Verify Database Submissions
 const countRow = db.prepare('SELECT COUNT(*) as count FROM submissions').get();
@@ -109,5 +109,15 @@ assert(html.includes('https://bit.ly/pendaftaranKTTRDemak'), 'Direct KTTR link m
 assert(html.includes('https://bit.ly/validasioss'), 'Direct OSS link must be present');
 assert(html.includes('https://simbg.pu.go.id'), 'Direct SIMBG link must be present');
 console.log('   [OK] Direct external links present for KTTR, OSS, PBG, and SLF');
+
+// 6. Verify SIKEREN Branding & GISTARU Feature Card
+console.log('\n6. Verifying SIKEREN Branding & GISTARU Spatial Check Box:');
+assert(html.includes('SIKEREN'), 'SIKEREN name must be in index.html');
+assert(html.includes('Sistem Informasi Keterangan Pelayanan Perizinan'), 'Full title must be in index.html');
+assert(html.includes('Cek Pola Ruang Tanah / Bidang / Lokasi') || html.includes('Cek Pola Ruang Tanah/Bidang/Lokasi'), 'GISTARU feature card title must be in index.html');
+assert(html.includes('https://gistaru.atrbpn.go.id'), 'GISTARU URL link must be in index.html');
+assert(html.includes('gistaru-feature-card'), 'GISTARU card wrapper class must be present');
+console.log('   [OK] SIKEREN branding verified throughout public landing page');
+console.log('   [OK] Cek Pola Ruang Tanah/Bidang/Lokasi (GISTARU) card & links verified');
 
 console.log('\n=== ALL VERIFICATIONS PASSED SUCCESSFULLY! ===');

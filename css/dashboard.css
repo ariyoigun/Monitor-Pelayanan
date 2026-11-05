@@ -1078,4 +1078,145 @@
   }
 }
 
+/* =========================================================
+   GISTARU FEATURE CARD (CEK POLA RUANG TANAH/BIDANG/LOKASI)
+   ========================================================= */
+.gistaru-feature-card {
+  background: linear-gradient(135deg, #091e3a 0%, #0f3057 50%, #0284c7 100%);
+  border-radius: var(--radius-xl);
+  padding: 1.75rem 2rem;
+  margin-top: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 15px 35px -5px rgba(2, 132, 199, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.25s ease;
+}
+
+.gistaru-feature-card::before {
+  content: '';
+  position: absolute;
+  top: -40%;
+  right: -8%;
+  width: 320px;
+  height: 320px;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.2) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.gistaru-feature-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 40px -5px rgba(2, 132, 199, 0.35);
+}
+
+.gistaru-card-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  position: relative;
+  z-index: 2;
+}
+
+@media (max-width: 900px) {
+  .gistaru-card-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.25rem;
+  }
+}
+
+.gistaru-left {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  flex: 1;
+}
+
+.gistaru-icon-wrapper {
+  width: 58px;
+  height: 58px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+  color: #ffffff;
+  flex-shrink: 0;
+  box-shadow: 0 8px 16px rgba(2, 132, 199, 0.35);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.gistaru-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(56, 189, 248, 0.18);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  color: #7dd3fc;
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 0.25rem 0.65rem;
+  border-radius: var(--radius-full);
+  margin-bottom: 0.45rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.gistaru-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0 0 0.35rem 0;
+  letter-spacing: -0.01em;
+}
+
+.gistaru-desc {
+  font-size: 0.88rem;
+  color: #cbd5e1;
+  line-height: 1.55;
+  margin: 0;
+  max-width: 720px;
+}
+
+.gistaru-action {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+  flex-shrink: 0;
+}
+
+.btn-gistaru {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: #ffffff !important;
+  font-size: 0.95rem;
+  font-weight: 800;
+  padding: 0.85rem 1.6rem;
+  border-radius: var(--radius-lg);
+  text-decoration: none;
+  box-shadow: 0 8px 20px rgba(217, 119, 6, 0.35);
+  transition: all 0.2s ease;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  white-space: nowrap;
+}
+
+.btn-gistaru:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(217, 119, 6, 0.45);
+  background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+}
+
+.gistaru-url-hint {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  font-family: monospace;
+}
+
+
 

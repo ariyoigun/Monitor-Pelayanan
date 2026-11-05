@@ -1,7 +1,7 @@
 {
-  "name": "silan-dinputaru-demak",
+  "name": "sikeren-dinputaru-demak",
   "version": "2.0.0",
-  "description": "SILAN (Sistem Monitoring Layanan) Dinas Pekerjaan Umum dan Penataan Ruang (DINPUTARU) Kabupaten Demak: Infografis Pelayanan Publik & Monitoring Internal KTTR, Validasi OSS, PBG, dan SLF.",
+  "description": "SIKEREN (Sistem Informasi Keterangan Pelayanan Perizinan) Dinas Pekerjaan Umum dan Penataan Ruang (DINPUTARU) Kabupaten Demak: Infografis Pelayanan Publik & Monitoring Internal KTTR, Validasi OSS, PBG, dan SLF.",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -11,8 +11,8 @@
     "test": "node --check server.js database/*.js js/*.js"
   },
   "keywords": [
-    "silan",
-    "sistem-monitoring-layanan",
+    "sikeren",
+    "sistem-informasi-keterangan-pelayanan-perizinan",
     "dinputaru",
     "demak",
     "pelayanan-publik",

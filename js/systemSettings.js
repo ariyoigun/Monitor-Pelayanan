@@ -1,5 +1,5 @@
 /**
- * SILAN DINPUTARU DEMAK - Sistem Monitoring Layanan
+ * SIKEREN DINPUTARU DEMAK - Sistem Informasi Keterangan Pelayanan Perizinan
  * System Settings & Dynamic Text Management (Superadmin)
  */
 
@@ -25,17 +25,17 @@ const SystemSettings = {
 
     // 1. Branding & Header
     const brandTitles = document.querySelectorAll('.dynamic-app-title');
-    brandTitles.forEach(el => el.innerHTML = t.appTitle || 'SILAN <span class="highlight">DINPUTARU</span>');
+    brandTitles.forEach(el => el.innerHTML = t.appTitle || 'SIKEREN <span class="highlight">DINPUTARU</span>');
 
     const brandSubs = document.querySelectorAll('.dynamic-app-subtitle');
-    brandSubs.forEach(el => el.textContent = t.appSubtitle || 'Sistem Monitoring Layanan - Kab. Demak');
+    brandSubs.forEach(el => el.textContent = t.appSubtitle || 'Sistem Informasi Keterangan Pelayanan Perizinan - Kab. Demak');
 
     // 2. Public Infografis / Landing Page Texts
     const heroBadge = document.getElementById('dyn-hero-badge');
     if (heroBadge) heroBadge.innerHTML = `<i class="fas fa-shield-alt"></i> ${t.heroBadge}`;
 
     const heroTitle = document.getElementById('dyn-hero-title');
-    if (heroTitle) heroTitle.innerHTML = t.heroTitle || 'Rangkuman Layanan <span class="text-gold">SILAN 2026</span>';
+    if (heroTitle) heroTitle.innerHTML = t.heroTitle || 'Rangkuman Layanan <span class="text-gold">SIKEREN 2026</span>';
 
     const heroSubtitle = document.getElementById('dyn-hero-subtitle');
     if (heroSubtitle) heroSubtitle.textContent = t.heroSubtitle || '';

@@ -1,5 +1,5 @@
 /**
- * SILAN DINPUTARU DEMAK - Sistem Monitoring Layanan
+ * SIKEREN DINPUTARU DEMAK - Sistem Informasi Keterangan Pelayanan Perizinan
  * Public Infographics Module: Agregat Layanan Otentik Excel & Filter Bulanan Interaktif
  */
 

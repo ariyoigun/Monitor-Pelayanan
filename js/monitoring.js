@@ -1,5 +1,6 @@
 /**
- * SILAN DINPUTARU DEMAK - Monitoring Engine
+ * SIKEREN DINPUTARU DEMAK - Monitoring Engine
+ * Sistem Informasi Keterangan Pelayanan Perizinan
  * Table Rendering, Filtering, KPI Metrics, Leadership Focus, Internal Charts & Submission Operations
  */
 

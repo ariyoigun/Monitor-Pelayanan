@@ -1,5 +1,6 @@
 /**
- * SILAN DINPUTARU DEMAK - Main Application Controller
+ * SIKEREN DINPUTARU DEMAK - Main Application Controller
+ * Sistem Informasi Keterangan Pelayanan Perizinan
  * Routing, Navigation & Authentication Guards
  */
 
@@ -216,7 +217,7 @@ const App = {
 
         const result = Auth.login(identifier, password, captchaInput);
         if (result.success) {
-          alert(`Selamat datang di SILAN, ${result.user.nama} (${result.user.roleLabel})!`);
+          alert(`Selamat datang di SIKEREN, ${result.user.nama} (${result.user.roleLabel})!`);
           this.showView('dashboard');
           window.location.hash = 'dashboard';
         } else {
@@ -245,7 +246,7 @@ const App = {
       btn.addEventListener('click', (e) => {
         e.preventDefault();
         Auth.logout();
-        alert('Anda telah keluar dari sesi SILAN.');
+        alert('Anda telah keluar dari sesi SIKEREN.');
         this.showView('landing');
         window.location.hash = 'landing';
       });

@@ -1,5 +1,5 @@
 /**
- * SILAN DINPUTARU DEMAK - Sistem Monitoring Layanan
+ * SIKEREN DINPUTARU DEMAK - Sistem Informasi Keterangan Pelayanan Perizinan
  * Authentication, Role-Based Access Control & Mathematical CAPTCHA Security (Internal Staff Only)
  */
 
@@ -87,7 +87,7 @@ const Auth = {
       };
     }
 
-    // 2. Verifikasi Data Pengguna Internal dari Master User Akun dan Role Silan
+    // 2. Verifikasi Data Pengguna Internal dari Master User Akun dan Role SIKEREN
     const users = getStoredUsers();
     const cleanInput = String(usernameOrNip).trim().toLowerCase();
     const user = users.find(u => 
@@ -97,7 +97,7 @@ const Auth = {
     
     if (!user) {
       this.generateCaptcha();
-      return { success: false, message: "Username atau NIP petugas tidak ditemukan di sistem SILAN internal!" };
+      return { success: false, message: "Username atau NIP petugas tidak ditemukan di sistem SIKEREN internal!" };
     }
 
     if (user.password !== password && password !== "*Dinput4ru_01" && password !== "password123") {

@@ -588,7 +588,7 @@ const server = http.createServer(async (req, res) => {
 server.on('listening', () => {
   const address = server.address();
   console.log(`===================================================`);
-  console.log(` SILAN (Sistem Monitoring Layanan) DINPUTARU DEMAK`);
+  console.log(` SIKEREN (Sistem Informasi Keterangan Pelayanan Perizinan) DINPUTARU DEMAK`);
   console.log(` Berjalan di: http://localhost:${address.port}`);
   console.log(` Database: SQLite (database/silan.db) Aktif`);
   console.log(`===================================================`);
