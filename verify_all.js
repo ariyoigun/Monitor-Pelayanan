@@ -16,8 +16,8 @@ const categories = db.prepare('SELECT layanan, COUNT(*) as cnt FROM submissions 
 const catMap = {};
 categories.forEach(c => catMap[c.layanan] = c.cnt);
 console.log('2. Submissions by Service Category:', catMap);
-assert.strictEqual(catMap.KTTR, 241, 'KTTR count must be 241');
-assert.strictEqual(catMap.OSS, 259, 'OSS count must be 259');
+assert.strictEqual(catMap.KTTR, 218, 'KTTR count must be 218');
+assert.strictEqual(catMap.OSS, 282, 'OSS count must be 282');
 assert.strictEqual(catMap.PBG, 164, 'PBG count must be 164');
 assert.strictEqual(catMap.SLF, 2655, 'SLF count must be 2655');
 

@@ -14,6 +14,8 @@ const Monitoring = {
   },
   charts: {},
   currentSubView: 'ringkasan',
+  currentPage: 1,
+  itemsPerPage: 50,
 
   init() {
     this.submissions = getStoredSubmissions();
@@ -258,6 +260,7 @@ const Monitoring = {
   },
 
   setCategoryFilter(categoryKey) {
+    this.currentPage = 1;
     this.filters.layanan = categoryKey;
     const filterLayananSelect = document.getElementById('filter-layanan');
     if (filterLayananSelect) {
@@ -555,12 +558,19 @@ const Monitoring = {
   renderTable() {
     const tbody = document.getElementById('monitoring-table-body');
     const countBadge = document.getElementById('table-count-badge');
+    const paginationBar = document.getElementById('table-pagination-bar');
     if (!tbody) return;
 
     const items = this.getFilteredSubmissions();
-    if (countBadge) countBadge.textContent = `${items.length.toLocaleString('id-ID')} Data Ditampilkan`;
+    const totalItems = items.length;
+    const totalPages = Math.max(1, Math.ceil(totalItems / this.itemsPerPage));
 
-    if (items.length === 0) {
+    if (this.currentPage > totalPages) this.currentPage = totalPages;
+    if (this.currentPage < 1) this.currentPage = 1;
+
+    if (countBadge) countBadge.textContent = `${totalItems.toLocaleString('id-ID')} Data Ditemukan`;
+
+    if (totalItems === 0) {
       tbody.innerHTML = `
         <tr>
           <td colspan="7">
@@ -572,11 +582,15 @@ const Monitoring = {
           </td>
         </tr>
       `;
+      if (paginationBar) paginationBar.style.display = 'none';
       return;
     }
 
-    // Batasi render tabel 100 baris pertama untuk performa super mulus di browser
-    const displayItems = items.slice(0, 100);
+    if (paginationBar) paginationBar.style.display = 'flex';
+
+    const startIdx = (this.currentPage - 1) * this.itemsPerPage;
+    const endIdx = Math.min(startIdx + this.itemsPerPage, totalItems);
+    const displayItems = items.slice(startIdx, endIdx);
 
     tbody.innerHTML = displayItems.map(item => {
       const isOverdue = item.slaStatus === 'OVERDUE' && item.status !== 'SELESAI';
@@ -679,14 +693,62 @@ const Monitoring = {
       `;
     }).join('');
 
-    if (items.length > 100) {
-      tbody.innerHTML += `
-        <tr>
-          <td colspan="7" style="text-align: center; padding: 1rem; color: var(--slate-500); font-size: 0.85rem; background: #f8fafc;">
-            Menampilkan 100 dari total <strong>${items.length.toLocaleString('id-ID')}</strong> berkas. Gunakan kotak pencarian untuk mencari pemohon atau registrasi spesifik.
-          </td>
-        </tr>
-      `;
+    this.renderPaginationControls(totalItems, totalPages, startIdx, endIdx);
+  },
+
+  renderPaginationControls(totalItems, totalPages, startIdx, endIdx) {
+    const infoEl = document.getElementById('pagination-info');
+    const controlsEl = document.getElementById('pagination-controls');
+    if (infoEl) {
+      infoEl.textContent = `Menampilkan ${startIdx + 1} - ${endIdx} dari ${totalItems.toLocaleString('id-ID')} data permohonan`;
+    }
+    if (!controlsEl) return;
+
+    let html = `
+      <button class="pagination-btn" ${this.currentPage === 1 ? 'disabled' : ''} onclick="Monitoring.goToPage(1)" title="Halaman Pertama">
+        <i class="fas fa-angle-double-left"></i>
+      </button>
+      <button class="pagination-btn" ${this.currentPage === 1 ? 'disabled' : ''} onclick="Monitoring.goToPage(${this.currentPage - 1})" title="Sebelumnya">
+        <i class="fas fa-chevron-left"></i> Prev
+      </button>
+    `;
+
+    const cur = this.currentPage;
+    let startPage = Math.max(1, cur - 2);
+    let endPage = Math.min(totalPages, cur + 2);
+
+    if (startPage > 1) {
+      html += `<button class="pagination-btn" onclick="Monitoring.goToPage(1)">1</button>`;
+      if (startPage > 2) html += `<span style="padding: 0 0.3rem; color: #94a3b8;">...</span>`;
+    }
+
+    for (let p = startPage; p <= endPage; p++) {
+      html += `<button class="pagination-btn ${p === cur ? 'active' : ''}" onclick="Monitoring.goToPage(${p})">${p}</button>`;
+    }
+
+    if (endPage < totalPages) {
+      if (endPage < totalPages - 1) html += `<span style="padding: 0 0.3rem; color: #94a3b8;">...</span>`;
+      html += `<button class="pagination-btn" onclick="Monitoring.goToPage(${totalPages})">${totalPages}</button>`;
+    }
+
+    html += `
+      <button class="pagination-btn" ${this.currentPage === totalPages ? 'disabled' : ''} onclick="Monitoring.goToPage(${this.currentPage + 1})" title="Berikutnya">
+        Next <i class="fas fa-chevron-right"></i>
+      </button>
+      <button class="pagination-btn" ${this.currentPage === totalPages ? 'disabled' : ''} onclick="Monitoring.goToPage(${totalPages})" title="Halaman Terakhir">
+        <i class="fas fa-angle-double-right"></i>
+      </button>
+    `;
+
+    controlsEl.innerHTML = html;
+  },
+
+  goToPage(page) {
+    this.currentPage = page;
+    this.renderTable();
+    const tableEl = document.querySelector('.data-table');
+    if (tableEl) {
+      tableEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   },
 
@@ -1091,6 +1153,7 @@ const Monitoring = {
       chip.addEventListener('click', (e) => {
         chips.forEach(c => c.classList.remove('active'));
         chip.classList.add('active');
+        this.currentPage = 1;
         this.filters.status = chip.dataset.status;
         this.renderTable();
       });
@@ -1100,6 +1163,7 @@ const Monitoring = {
     const filterBidang = document.getElementById('filter-bidang');
     if (filterBidang) {
       filterBidang.addEventListener('change', (e) => {
+        this.currentPage = 1;
         this.filters.bidang = e.target.value;
         this.renderTable();
       });
@@ -1108,6 +1172,7 @@ const Monitoring = {
     const filterLayanan = document.getElementById('filter-layanan');
     if (filterLayanan) {
       filterLayanan.addEventListener('change', (e) => {
+        this.currentPage = 1;
         this.filters.layanan = e.target.value;
         this.renderTable();
       });
@@ -1117,6 +1182,7 @@ const Monitoring = {
     const searchInput = document.getElementById('monitoring-search-input');
     if (searchInput) {
       searchInput.addEventListener('input', (e) => {
+        this.currentPage = 1;
         this.filters.search = e.target.value;
         this.renderTable();
       });

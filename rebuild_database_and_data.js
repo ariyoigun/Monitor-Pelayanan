@@ -30,7 +30,7 @@ function parseIndonesianMonth(str) {
   return null;
 }
 
-function convertDate(val, prevDate) {
+function parseKttrDate(val, prevDate) {
   if (!val) return prevDate || '2026-05-15';
   const s = String(val).trim();
   if (/^\d{5}$/.test(s)) {
@@ -125,9 +125,9 @@ const INITIAL_USERS = roleRows.map((r, idx) => {
 console.log(`Loaded ${INITIAL_USERS.length} authentic users from Akun dan Role Silan.xlsx.`);
 
 // 2. Read Raw Submissions from Excel
-// A. KTTR & OSS
+// A. KTTR & OSS from "Layanan KTTR dan OSS.xlsx"
 const wbKttr = XLSX.readFile(path.join(dataDir, 'Layanan KTTR dan OSS.xlsx'));
-const wsKttr = wbKttr.Sheets['PAKAI '];
+const wsKttr = wbKttr.Sheets['PAKAI '] || wbKttr.Sheets[wbKttr.SheetNames[0]];
 const rowsKttr = XLSX.utils.sheet_to_json(wsKttr, { header: 1 });
 
 const rawRecords = {
@@ -138,16 +138,18 @@ const rawRecords = {
 };
 
 let lastKttrDate = '2026-01-01';
-for (let r = 4; r < 504; r++) {
+for (let r = 4; r < rowsKttr.length; r++) {
   const row = rowsKttr[r];
   if (!row || !row[2]) continue;
-  const d = convertDate(row[1], lastKttrDate);
+  const d = parseKttrDate(row[1], lastKttrDate);
   lastKttrDate = d;
   const m = parseInt(d.split('-')[1], 10);
   if (m < 1 || m > 11) continue;
 
-  const per = String(row[4] || '').toUpperCase();
-  const isKttr = per === 'RTT' || per.includes('RUMAH');
+  const per = String(row[4] || '').trim().toUpperCase();
+  // RTT (Rumah Tempat Tinggal) strictly classifies as KTTR (Non-Berusaha)
+  // Non-RTT (Usaha, SPPG, Apotek, Gudang, Perumahan developer, Industri) classifies as OSS-RBA
+  const isKttr = per === 'RTT';
   const cat = isKttr ? 'KTTR' : 'OSS';
   rawRecords[cat][m].push({
     source: 'kttr_oss',
@@ -156,7 +158,7 @@ for (let r = 4; r < 504; r++) {
   });
 }
 
-// B. PBG & SLF
+// B. PBG & SLF from 4 SIMBG Files
 const pbgFiles = [
   '05112026104417 JANUARI-MARET.xlsx',
   '05112026104356 APRIL-JUNI.xlsx',
@@ -275,7 +277,7 @@ for (const srv of ['KTTR', 'OSS', 'PBG', 'SLF']) {
       } else {
         onProgCount = Math.max(1, Math.round(total * rate));
         const rem = total - onProgCount;
-        // Berkas belum lengkap / kembali ke pemohon: ~3-5% dari sisa
+        // Berkas belum lengkap / kembali ke pemohon: ~3-4% dari sisa
         dikembalikanCount = Math.max(0, Math.round(rem * 0.04));
         dilayaniCount = rem - dikembalikanCount;
       }
@@ -339,7 +341,7 @@ for (const srv of ['KTTR', 'OSS', 'PBG', 'SLF']) {
           nikNib: srv === 'KTTR' ? 'NIK Terverifikasi' : 'NIB Berusaha Terdaftar',
           noHp: '-',
           email: '-',
-          namaKegiatan: peruntukan || (srv === 'KTTR' ? 'Rumah Tempat Tinggal' : 'Pemanfaatan Ruang Usaha'),
+          namaKegiatan: peruntukan || (srv === 'KTTR' ? 'Rumah Tempat Tinggal (RTT)' : 'Pemanfaatan Ruang Usaha'),
           lokasiProyek: lokasi,
           kecamatan: kec,
           luasLahan: luas,
@@ -501,6 +503,7 @@ db.exec(`
     id TEXT PRIMARY KEY,
     no_registrasi TEXT,
     layanan TEXT,
+    kategori TEXT,
     bidang TEXT,
     nama_pemohon TEXT,
     jenis_pemohon TEXT,
@@ -583,20 +586,20 @@ for (const [k, v] of Object.entries(DEFAULT_SYSTEM_TEXTS)) {
 
 const insertSub = db.prepare(`
   INSERT INTO submissions (
-    id, no_registrasi, layanan, bidang, nama_pemohon, jenis_pemohon, nik_nib,
+    id, no_registrasi, layanan, kategori, bidang, nama_pemohon, jenis_pemohon, nik_nib,
     no_hp, email, nama_kegiatan, lokasi_proyek, kecamatan, luas_lahan, luas_bangunan,
     tgl_pengajuan, estimasi_selesai, tgl_selesai, status, sla_status, tahap_saat_ini,
     tahap_index, posisi_meja, penanggung_jawab, no_surat_keputusan, keterangan_kendala,
     catatan_pimpinan, meta_excel, timeline, created_at, updated_at
   ) VALUES (
-    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
   )
 `);
 
 const nowStr = new Date().toISOString();
 for (const s of allSubmissions) {
   insertSub.run(
-    s.id, s.noRegistrasi, s.layanan, s.bidang, s.namaPemohon, s.jenisPemohon,
+    s.id, s.noRegistrasi, s.layanan, s.kategori || s.layanan, s.bidang, s.namaPemohon, s.jenisPemohon,
     s.nikNib, s.noHp, s.email, s.namaKegiatan, s.lokasiProyek, s.kecamatan,
     s.luasLahan, s.luasBangunan, s.tglPengajuan, s.estimasiSelesai, s.tglSelesai,
     s.status, s.slaStatus, s.tahapSaatIni, s.tahapIndex, s.posisiMeja, s.penanggungJawab,
@@ -609,7 +612,7 @@ console.log(`Saved ${allSubmissions.length} submissions into SQLite database.`);
 
 // 6. Generate JSON backup
 const backup = {
-  version: "2.1.0",
+  version: "2.2.0",
   exported_at: nowStr,
   counts: {
     submissions: allSubmissions.length,
@@ -626,15 +629,7 @@ const backup = {
 fs.writeFileSync(path.join(__dirname, 'database', 'silan_backup.json'), JSON.stringify(backup, null, 2), 'utf8');
 console.log('Saved database/silan_backup.json.');
 
-// 7. Generate js/data.js
-// To keep initial loading instant and under 1.5MB for browser localStorage, take top 1000 submissions (all KTTR, all OSS, all PBG, and representative SLF)
-const compactSubmissions = [
-  ...allSubmissions.filter(s => s.layanan === 'KTTR'),
-  ...allSubmissions.filter(s => s.layanan === 'OSS'),
-  ...allSubmissions.filter(s => s.layanan === 'PBG'),
-  ...allSubmissions.filter(s => s.layanan === 'SLF').slice(0, 300)
-];
-
+// 7. Generate js/data.js with ALL 3.319 authentic submissions
 const dataJsContent = `/**
  * SIKEREN DINPUTARU DEMAK - Sistem Informasi Keterangan Pelayanan Perizinan
  * Master Data, Excel 2026 Recalculated Statistics & Synchronized SQLite State
@@ -766,30 +761,94 @@ function getMonthlyInfographicData(monthKey = "ALL") {
   return result;
 }
 
-const INITIAL_SUBMISSIONS = ${JSON.stringify(compactSubmissions)};
+// Master Authentic Submissions (All ${allSubmissions.length} records)
+const INITIAL_SUBMISSIONS = ${JSON.stringify(allSubmissions)};
 
 const STORAGE_KEYS = {
-  SUBMISSIONS: "silan_submissions_v3",
-  USERS: "silan_users_v3",
-  CURRENT_USER: "silan_current_user_v3",
-  SYSTEM_TEXTS: "silan_system_texts_v3"
+  SUBMISSIONS_ADDED: "sikeren_added_v5",
+  SUBMISSIONS_EDITED: "sikeren_edited_v5",
+  SUBMISSIONS_DELETED: "sikeren_deleted_v5",
+  USERS: "sikeren_users_v5",
+  CURRENT_USER: "sikeren_current_user_v5",
+  SYSTEM_TEXTS: "sikeren_system_texts_v5"
 };
 
+let _activeSubmissionsCache = null;
+
 function getStoredSubmissions() {
-  const data = localStorage.getItem(STORAGE_KEYS.SUBMISSIONS);
-  if (!data) {
-    localStorage.setItem(STORAGE_KEYS.SUBMISSIONS, JSON.stringify(INITIAL_SUBMISSIONS));
-    return INITIAL_SUBMISSIONS;
-  }
+  if (_activeSubmissionsCache) return _activeSubmissionsCache;
+
+  let list = [...INITIAL_SUBMISSIONS];
+
+  // 1. Merge Added Submissions
   try {
-    return JSON.parse(data);
-  } catch (e) {
-    return INITIAL_SUBMISSIONS;
-  }
+    const rawAdded = localStorage.getItem(STORAGE_KEYS.SUBMISSIONS_ADDED);
+    if (rawAdded) {
+      const addedList = JSON.parse(rawAdded);
+      if (Array.isArray(addedList) && addedList.length > 0) {
+        list = [...addedList, ...list];
+      }
+    }
+  } catch(e) {}
+
+  // 2. Merge Edited Submissions
+  try {
+    const rawEdited = localStorage.getItem(STORAGE_KEYS.SUBMISSIONS_EDITED);
+    if (rawEdited) {
+      const editedMap = JSON.parse(rawEdited);
+      if (editedMap && typeof editedMap === 'object') {
+        list = list.map(item => editedMap[item.id] ? { ...item, ...editedMap[item.id] } : item);
+      }
+    }
+  } catch(e) {}
+
+  // 3. Filter Deleted Submissions
+  try {
+    const rawDeleted = localStorage.getItem(STORAGE_KEYS.SUBMISSIONS_DELETED);
+    if (rawDeleted) {
+      const deletedArr = JSON.parse(rawDeleted);
+      if (Array.isArray(deletedArr) && deletedArr.length > 0) {
+        const deletedSet = new Set(deletedArr);
+        list = list.filter(item => !deletedSet.has(item.id));
+      }
+    }
+  } catch(e) {}
+
+  _activeSubmissionsCache = list;
+  return _activeSubmissionsCache;
 }
 
 function saveStoredSubmissions(submissions) {
-  localStorage.setItem(STORAGE_KEYS.SUBMISSIONS, JSON.stringify(submissions));
+  _activeSubmissionsCache = submissions;
+}
+
+function storeAddedSubmission(newSub) {
+  try {
+    const existing = JSON.parse(localStorage.getItem(STORAGE_KEYS.SUBMISSIONS_ADDED) || '[]');
+    existing.unshift(newSub);
+    localStorage.setItem(STORAGE_KEYS.SUBMISSIONS_ADDED, JSON.stringify(existing));
+  } catch(e) {}
+  _activeSubmissionsCache = null;
+}
+
+function storeEditedSubmission(id, updatedData) {
+  try {
+    const existing = JSON.parse(localStorage.getItem(STORAGE_KEYS.SUBMISSIONS_EDITED) || '{}');
+    existing[id] = { ...(existing[id] || {}), ...updatedData };
+    localStorage.setItem(STORAGE_KEYS.SUBMISSIONS_EDITED, JSON.stringify(existing));
+  } catch(e) {}
+  _activeSubmissionsCache = null;
+}
+
+function storeDeletedSubmission(id) {
+  try {
+    const existing = JSON.parse(localStorage.getItem(STORAGE_KEYS.SUBMISSIONS_DELETED) || '[]');
+    if (!existing.includes(id)) {
+      existing.push(id);
+      localStorage.setItem(STORAGE_KEYS.SUBMISSIONS_DELETED, JSON.stringify(existing));
+    }
+  } catch(e) {}
+  _activeSubmissionsCache = null;
 }
 
 function getStoredUsers() {
@@ -841,10 +900,13 @@ function saveStoredSystemTexts(texts) {
 }
 
 function resetToDefaultData() {
-  localStorage.setItem(STORAGE_KEYS.SUBMISSIONS, JSON.stringify(INITIAL_SUBMISSIONS));
+  localStorage.removeItem(STORAGE_KEYS.SUBMISSIONS_ADDED);
+  localStorage.removeItem(STORAGE_KEYS.SUBMISSIONS_EDITED);
+  localStorage.removeItem(STORAGE_KEYS.SUBMISSIONS_DELETED);
   localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(INITIAL_USERS));
   localStorage.setItem(STORAGE_KEYS.SYSTEM_TEXTS, JSON.stringify(DEFAULT_SYSTEM_TEXTS));
   localStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
+  _activeSubmissionsCache = null;
 }
 
 // RESTful Database Client Bridge (SQLite Sync with LocalStorage Fallback)
@@ -856,11 +918,14 @@ const DataAPI = {
       const res = await fetch('/api/stats');
       if (res.ok) {
         this.isOnline = true;
-        const subRes = await fetch('/api/submissions?limit=1500');
+        const subRes = await fetch('/api/submissions?limit=5000');
         if (subRes.ok) {
           const subData = await subRes.json();
           if (subData.success && subData.data.length > 0) {
-            saveStoredSubmissions(subData.data);
+            _activeSubmissionsCache = subData.data;
+            if (typeof Monitoring !== 'undefined' && typeof Monitoring.refreshData === 'function') {
+              Monitoring.refreshData();
+            }
           }
         }
       }
@@ -870,6 +935,7 @@ const DataAPI = {
   },
 
   async addSubmission(sub) {
+    storeAddedSubmission(sub);
     if (this.isOnline) {
       try {
         await fetch('/api/submissions', {
@@ -884,6 +950,7 @@ const DataAPI = {
   },
 
   async updateSubmission(id, updateData) {
+    storeEditedSubmission(id, updateData);
     if (this.isOnline) {
       try {
         await fetch(\`/api/submissions/\${id}\`, {
@@ -898,6 +965,7 @@ const DataAPI = {
   },
 
   async deleteSubmission(id) {
+    storeDeletedSubmission(id);
     if (this.isOnline) {
       try {
         await fetch(\`/api/submissions/\${id}\`, { method: 'DELETE' });
