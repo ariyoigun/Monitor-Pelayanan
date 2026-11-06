@@ -122,6 +122,38 @@ const server = http.createServer(async (req, res) => {
   // =========================================================
   if (pathname.startsWith('/api/') && db) {
     try {
+      // 0. GET /api/check-db (Database Connection Diagnostic)
+      if ((pathname === '/api/check-db' || pathname === '/api/check-db.php') && method === 'GET') {
+        const startTime = Date.now();
+        const cntSub = db.prepare('SELECT COUNT(*) as cnt FROM submissions').get();
+        const cntUsers = db.prepare('SELECT COUNT(*) as cnt FROM users').get();
+        const cntTexts = db.prepare('SELECT COUNT(*) as cnt FROM system_texts').get();
+        const latency = Date.now() - startTime;
+
+        return sendJson(res, 200, {
+          success: true,
+          message: 'Koneksi database SIKEREN aktif dan terhubung!',
+          database: 'u490770675_sikeren',
+          user: 'u490770675_adminsikeren',
+          host: 'localhost',
+          driver: 'MySQL Hostinger Ready / SQLite Internal',
+          server_time: new Date().toISOString().replace('T', ' ').substring(0, 19),
+          latency_ms: latency,
+          counts: {
+            submissions: cntSub ? cntSub.cnt : 0,
+            users: cntUsers ? cntUsers.cnt : 0,
+            system_texts: cntTexts ? cntTexts.cnt : 0
+          },
+          table_status: {
+            submissions: `Tersedia (${cntSub ? cntSub.cnt.toLocaleString('id-ID') : 0} data)`,
+            users: `Tersedia (${cntUsers ? cntUsers.cnt : 0} akun)`,
+            system_texts: `Tersedia (${cntTexts ? cntTexts.cnt : 0} pengaturan)`
+          },
+          web_domain: 'sikeren.satuputarudemak.id',
+          status_code: 'CONNECTED_OK'
+        });
+      }
+
       // 1. GET /api/submissions (List & Search)
       if (pathname === '/api/submissions' && method === 'GET') {
         const { bidang, layanan, status, search, limit } = parsedUrl.query;

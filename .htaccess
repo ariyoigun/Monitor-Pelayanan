@@ -1,0 +1,33 @@
+# SIKEREN DINPUTARU DEMAK - Apache / LiteSpeed URL Rewrite Configuration
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    # Route /api/check-db to api/check-db.php
+    RewriteRule ^api/check-db/?$ api/check-db.php [L,QSA]
+
+    # Route /api/submissions to api/submissions.php
+    RewriteRule ^api/submissions/?$ api/submissions.php [L,QSA]
+    RewriteRule ^api/submissions/([A-Za-z0-9\-_]+)/?$ api/submissions.php?id=$1 [L,QSA]
+
+    # Route /api/users to api/users.php
+    RewriteRule ^api/users/?$ api/users.php [L,QSA]
+    RewriteRule ^api/users/([A-Za-z0-9\-_]+)/?$ api/users.php?id=$1 [L,QSA]
+
+    # Route /api/settings to api/settings.php
+    RewriteRule ^api/settings/?$ api/settings.php [L,QSA]
+
+    # Route /api/stats to api/stats.php
+    RewriteRule ^api/stats/?$ api/stats.php [L,QSA]
+</IfModule>
+
+# Security: Deny direct access to sensitive files
+<FilesMatch "(\.env|\.db|\.sqlite|silan\.db|sikeren\.sql)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Enable Gzip / Compression
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json
+</IfModule>

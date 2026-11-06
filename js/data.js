@@ -828,9 +828,40 @@ function resetToDefaultData() {
   _activeSubmissionsCache = null;
 }
 
-// RESTful Database Client Bridge (SQLite Sync with LocalStorage Fallback)
+// RESTful Database Client Bridge (MySQL Hostinger & SQLite Sync with LocalStorage Fallback)
 const DataAPI = {
   isOnline: true,
+
+  async checkDatabaseConnection() {
+    try {
+      const endpoints = ['/api/check-db', 'api/check-db.php', '/api/check-db.php'];
+      for (const ep of endpoints) {
+        try {
+          const res = await fetch(ep);
+          if (res.ok) {
+            const data = await res.json();
+            return data;
+          }
+        } catch (e) {}
+      }
+      return {
+        success: false,
+        message: 'Server API belum dapat dihubungi. Pastikan server/hosting aktif.',
+        database: 'u490770675_sikeren',
+        user: 'u490770675_adminsikeren',
+        host: 'localhost',
+        driver: 'Offline / Network'
+      };
+    } catch (err) {
+      return {
+        success: false,
+        message: 'Gagal terhubung: ' + err.message,
+        database: 'u490770675_sikeren',
+        user: 'u490770675_adminsikeren',
+        host: 'localhost'
+      };
+    }
+  },
 
   async init() {
     try {
@@ -847,6 +878,34 @@ const DataAPI = {
             }
           }
         }
+
+        // Pull settings from database
+        try {
+          const setRes = await fetch('/api/settings');
+          if (setRes.ok) {
+            const setData = await setRes.json();
+            if (setData.success && setData.data) {
+              localStorage.setItem(STORAGE_KEYS.SYSTEM_TEXTS, JSON.stringify(setData.data));
+              if (typeof SystemSettings !== 'undefined' && typeof SystemSettings.applySettingsToDOM === 'function') {
+                SystemSettings.applySettingsToDOM();
+              }
+            }
+          }
+        } catch(e) {}
+
+        // Pull users from database
+        try {
+          const usrRes = await fetch('/api/users');
+          if (usrRes.ok) {
+            const usrData = await usrRes.json();
+            if (usrData.success && usrData.data && usrData.data.length > 0) {
+              localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(usrData.data));
+              if (typeof UserManagement !== 'undefined' && typeof UserManagement.refreshUsers === 'function') {
+                UserManagement.refreshUsers();
+              }
+            }
+          }
+        } catch(e) {}
       }
     } catch (e) {
       this.isOnline = false;

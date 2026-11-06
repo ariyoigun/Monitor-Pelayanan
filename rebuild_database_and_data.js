@@ -629,6 +629,170 @@ const backup = {
 fs.writeFileSync(path.join(__dirname, 'database', 'silan_backup.json'), JSON.stringify(backup, null, 2), 'utf8');
 console.log('Saved database/silan_backup.json.');
 
+// 6b. Generate MySQL Dump for phpMyAdmin (u490770675_sikeren on sikeren.satuputarudemak.id)
+function escapeSqlVal(val) {
+  if (val === null || val === undefined) return 'NULL';
+  if (typeof val === 'number') return String(val);
+  if (typeof val === 'boolean') return val ? '1' : '0';
+  let s = String(val);
+  s = s.replace(/\\/g, '\\\\')
+       .replace(/\x00/g, '\\0')
+       .replace(/\n/g, '\\n')
+       .replace(/\r/g, '\\r')
+       .replace(/'/g, "\\'")
+       .replace(/"/g, '\\"')
+       .replace(/\x1a/g, '\\Z');
+  return `'${s}'`;
+}
+
+let mysqlDump = `-- ========================================================
+-- SIKEREN DINPUTARU KABUPATEN DEMAK
+-- Sistem Informasi Keterangan Pelayanan Perizinan
+-- phpMyAdmin Database Dump
+--
+-- Target Host: localhost (sikeren.satuputarudemak.id)
+-- Target Database: u490770675_sikeren
+-- Target User: u490770675_adminsikeren
+-- Generated on: ${nowStr}
+-- ========================================================
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+07:00";
+SET NAMES utf8mb4;
+
+-- --------------------------------------------------------
+-- Table structure for table \`system_texts\`
+-- --------------------------------------------------------
+DROP TABLE IF EXISTS \`system_texts\`;
+CREATE TABLE \`system_texts\` (
+  \`setting_key\` varchar(128) NOT NULL,
+  \`setting_val\` longtext DEFAULT NULL,
+  \`updated_at\` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (\`setting_key\`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+-- Table structure for table \`users\`
+-- --------------------------------------------------------
+DROP TABLE IF EXISTS \`users\`;
+CREATE TABLE \`users\` (
+  \`id\` varchar(32) NOT NULL,
+  \`username\` varchar(64) NOT NULL,
+  \`password\` varchar(255) NOT NULL,
+  \`nama\` varchar(255) NOT NULL,
+  \`nip\` varchar(64) DEFAULT NULL,
+  \`role\` varchar(64) NOT NULL,
+  \`role_label\` varchar(128) DEFAULT NULL,
+  \`bidang\` varchar(64) DEFAULT NULL,
+  \`bidang_label\` varchar(128) DEFAULT NULL,
+  \`jabatan\` varchar(128) DEFAULT NULL,
+  \`avatar\` varchar(255) DEFAULT 'assets/logo.svg',
+  \`email\` varchar(128) DEFAULT NULL,
+  \`no_hp\` varchar(64) DEFAULT NULL,
+  \`status\` varchar(32) DEFAULT 'Aktif',
+  \`created_at\` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (\`id\`),
+  UNIQUE KEY \`idx_username\` (\`username\`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+-- Table structure for table \`submissions\`
+-- --------------------------------------------------------
+DROP TABLE IF EXISTS \`submissions\`;
+CREATE TABLE \`submissions\` (
+  \`id\` varchar(64) NOT NULL,
+  \`no_registrasi\` varchar(64) DEFAULT NULL,
+  \`layanan\` varchar(32) NOT NULL,
+  \`kategori\` varchar(32) DEFAULT NULL,
+  \`bidang\` varchar(32) DEFAULT NULL,
+  \`nama_pemohon\` varchar(255) DEFAULT NULL,
+  \`jenis_pemohon\` varchar(128) DEFAULT NULL,
+  \`nik_nib\` varchar(64) DEFAULT NULL,
+  \`no_hp\` varchar(64) DEFAULT NULL,
+  \`email\` varchar(128) DEFAULT NULL,
+  \`nama_kegiatan\` text DEFAULT NULL,
+  \`lokasi_proyek\` text DEFAULT NULL,
+  \`kecamatan\` varchar(64) DEFAULT NULL,
+  \`luas_lahan\` varchar(64) DEFAULT NULL,
+  \`luas_bangunan\` varchar(64) DEFAULT NULL,
+  \`tgl_pengajuan\` date DEFAULT NULL,
+  \`estimasi_selesai\` date DEFAULT NULL,
+  \`tgl_selesai\` date DEFAULT NULL,
+  \`status\` varchar(32) NOT NULL DEFAULT 'PROSES',
+  \`sla_status\` varchar(32) NOT NULL DEFAULT 'ON_TRACK',
+  \`tahap_saat_ini\` varchar(255) DEFAULT NULL,
+  \`tahap_index\` int(11) DEFAULT 0,
+  \`posisi_meja\` varchar(255) DEFAULT NULL,
+  \`penanggung_jawab\` varchar(255) DEFAULT NULL,
+  \`no_surat_keputusan\` varchar(128) DEFAULT NULL,
+  \`keterangan_kendala\` text DEFAULT NULL,
+  \`catatan_pimpinan\` text DEFAULT NULL,
+  \`meta_excel\` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
+  \`timeline\` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
+  \`created_at\` datetime DEFAULT CURRENT_TIMESTAMP,
+  \`updated_at\` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (\`id\`),
+  KEY \`idx_layanan\` (\`layanan\`),
+  KEY \`idx_status\` (\`status\`),
+  KEY \`idx_bidang\` (\`bidang\`),
+  KEY \`idx_tgl_pengajuan\` (\`tgl_pengajuan\`),
+  KEY \`idx_no_reg\` (\`no_registrasi\`),
+  KEY \`idx_kecamatan\` (\`kecamatan\`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+-- Dumping data for table \`system_texts\`
+-- --------------------------------------------------------
+`;
+
+const sysEntries = Object.entries(DEFAULT_SYSTEM_TEXTS);
+if (sysEntries.length > 0) {
+  mysqlDump += `INSERT INTO \`system_texts\` (\`setting_key\`, \`setting_val\`, \`updated_at\`) VALUES\n`;
+  const sysLines = sysEntries.map(([k, v]) => `  (${escapeSqlVal(k)}, ${escapeSqlVal(v)}, NOW())`);
+  mysqlDump += sysLines.join(',\n') + ';\n\n';
+}
+
+mysqlDump += `-- --------------------------------------------------------
+-- Dumping data for table \`users\` (7 Authentic Users)
+-- --------------------------------------------------------
+`;
+
+if (INITIAL_USERS.length > 0) {
+  mysqlDump += `INSERT INTO \`users\` (\`id\`, \`username\`, \`password\`, \`nama\`, \`nip\`, \`role\`, \`role_label\`, \`bidang\`, \`bidang_label\`, \`jabatan\`, \`avatar\`, \`email\`, \`no_hp\`, \`status\`, \`created_at\`) VALUES\n`;
+  const userLines = INITIAL_USERS.map(u => `  (${escapeSqlVal(u.id)}, ${escapeSqlVal(u.username)}, ${escapeSqlVal(u.password)}, ${escapeSqlVal(u.nama)}, ${escapeSqlVal(u.nip)}, ${escapeSqlVal(u.role)}, ${escapeSqlVal(u.roleLabel)}, ${escapeSqlVal(u.bidang)}, ${escapeSqlVal(u.bidangLabel)}, ${escapeSqlVal(u.jabatan)}, ${escapeSqlVal(u.avatar)}, ${escapeSqlVal(u.email)}, ${escapeSqlVal(u.noHp)}, ${escapeSqlVal(u.status)}, NOW())`);
+  mysqlDump += userLines.join(',\n') + ';\n\n';
+}
+
+mysqlDump += `-- --------------------------------------------------------
+-- Dumping data for table \`submissions\` (${allSubmissions.length} Authentic Records)
+-- --------------------------------------------------------
+`;
+
+const BATCH_SIZE = 100;
+for (let i = 0; i < allSubmissions.length; i += BATCH_SIZE) {
+  const batch = allSubmissions.slice(i, i + BATCH_SIZE);
+  mysqlDump += `INSERT INTO \`submissions\` (
+  \`id\`, \`no_registrasi\`, \`layanan\`, \`kategori\`, \`bidang\`, \`nama_pemohon\`, \`jenis_pemohon\`, \`nik_nib\`,
+  \`no_hp\`, \`email\`, \`nama_kegiatan\`, \`lokasi_proyek\`, \`kecamatan\`, \`luas_lahan\`, \`luas_bangunan\`,
+  \`tgl_pengajuan\`, \`estimasi_selesai\`, \`tgl_selesai\`, \`status\`, \`sla_status\`, \`tahap_saat_ini\`,
+  \`tahap_index\`, \`posisi_meja\`, \`penanggung_jawab\`, \`no_surat_keputusan\`, \`keterangan_kendala\`,
+  \`catatan_pimpinan\`, \`meta_excel\`, \`timeline\`, \`created_at\`, \`updated_at\`
+) VALUES\n`;
+
+  const lines = batch.map(s => {
+    return `  (${escapeSqlVal(s.id)}, ${escapeSqlVal(s.noRegistrasi)}, ${escapeSqlVal(s.layanan)}, ${escapeSqlVal(s.kategori || s.layanan)}, ${escapeSqlVal(s.bidang)}, ${escapeSqlVal(s.namaPemohon)}, ${escapeSqlVal(s.jenisPemohon)}, ${escapeSqlVal(s.nikNib)}, ${escapeSqlVal(s.noHp)}, ${escapeSqlVal(s.email)}, ${escapeSqlVal(s.namaKegiatan)}, ${escapeSqlVal(s.lokasiProyek)}, ${escapeSqlVal(s.kecamatan)}, ${escapeSqlVal(s.luasLahan)}, ${escapeSqlVal(s.luasBangunan)}, ${escapeSqlVal(s.tglPengajuan)}, ${escapeSqlVal(s.estimasiSelesai)}, ${escapeSqlVal(s.tglSelesai)}, ${escapeSqlVal(s.status)}, ${escapeSqlVal(s.slaStatus)}, ${escapeSqlVal(s.tahapSaatIni)}, ${escapeSqlVal(s.tahapIndex || 0)}, ${escapeSqlVal(s.posisiMeja)}, ${escapeSqlVal(s.penanggungJawab)}, ${escapeSqlVal(s.noSuratKeputusan)}, ${escapeSqlVal(s.keteranganKendala)}, ${escapeSqlVal(s.catatanPimpinan)}, ${escapeSqlVal(typeof s.metaExcel === 'object' ? JSON.stringify(s.metaExcel) : s.metaExcel)}, ${escapeSqlVal(typeof s.timeline === 'object' ? JSON.stringify(s.timeline) : s.timeline)}, NOW(), NOW())`;
+  });
+
+  mysqlDump += lines.join(',\n') + ';\n\n';
+}
+
+mysqlDump += `COMMIT;\n`;
+
+fs.writeFileSync(path.join(__dirname, 'database', 'sikeren_u490770675.sql'), mysqlDump, 'utf8');
+fs.writeFileSync(path.join(__dirname, 'sikeren.sql'), mysqlDump, 'utf8');
+console.log('Saved database/sikeren_u490770675.sql and sikeren.sql.');
+
 // 7. Generate js/data.js with ALL 3.319 authentic submissions
 const dataJsContent = `/**
  * SIKEREN DINPUTARU DEMAK - Sistem Informasi Keterangan Pelayanan Perizinan
@@ -909,9 +1073,40 @@ function resetToDefaultData() {
   _activeSubmissionsCache = null;
 }
 
-// RESTful Database Client Bridge (SQLite Sync with LocalStorage Fallback)
+// RESTful Database Client Bridge (MySQL Hostinger & SQLite Sync with LocalStorage Fallback)
 const DataAPI = {
   isOnline: true,
+
+  async checkDatabaseConnection() {
+    try {
+      const endpoints = ['/api/check-db', 'api/check-db.php', '/api/check-db.php'];
+      for (const ep of endpoints) {
+        try {
+          const res = await fetch(ep);
+          if (res.ok) {
+            const data = await res.json();
+            return data;
+          }
+        } catch (e) {}
+      }
+      return {
+        success: false,
+        message: 'Server API belum dapat dihubungi. Pastikan server/hosting aktif.',
+        database: 'u490770675_sikeren',
+        user: 'u490770675_adminsikeren',
+        host: 'localhost',
+        driver: 'Offline / Network'
+      };
+    } catch (err) {
+      return {
+        success: false,
+        message: 'Gagal terhubung: ' + err.message,
+        database: 'u490770675_sikeren',
+        user: 'u490770675_adminsikeren',
+        host: 'localhost'
+      };
+    }
+  },
 
   async init() {
     try {
@@ -928,6 +1123,34 @@ const DataAPI = {
             }
           }
         }
+
+        // Pull settings from database
+        try {
+          const setRes = await fetch('/api/settings');
+          if (setRes.ok) {
+            const setData = await setRes.json();
+            if (setData.success && setData.data) {
+              localStorage.setItem(STORAGE_KEYS.SYSTEM_TEXTS, JSON.stringify(setData.data));
+              if (typeof SystemSettings !== 'undefined' && typeof SystemSettings.applySettingsToDOM === 'function') {
+                SystemSettings.applySettingsToDOM();
+              }
+            }
+          }
+        } catch(e) {}
+
+        // Pull users from database
+        try {
+          const usrRes = await fetch('/api/users');
+          if (usrRes.ok) {
+            const usrData = await usrRes.json();
+            if (usrData.success && usrData.data && usrData.data.length > 0) {
+              localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(usrData.data));
+              if (typeof UserManagement !== 'undefined' && typeof UserManagement.refreshUsers === 'function') {
+                UserManagement.refreshUsers();
+              }
+            }
+          }
+        } catch(e) {}
       }
     } catch (e) {
       this.isOnline = false;

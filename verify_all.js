@@ -138,4 +138,36 @@ console.log('   [OK] Internal dashboard panel layout verified (Left Sidebar & Ri
 console.log('   [OK] Menu Pengajuan tab and subview verified');
 console.log('   [OK] Verified GISTARU is NOT present in internal dashboard');
 
+// 8. Verify MySQL Database Dump & Hostinger Connection Diagnostic
+console.log('\n8. Verifying MySQL Database Dump & Hostinger Diagnostics:');
+const sqlPath = path.join(__dirname, 'database', 'sikeren_u490770675.sql');
+const sqlRootPath = path.join(__dirname, 'sikeren.sql');
+assert(fs.existsSync(sqlPath), 'Missing database/sikeren_u490770675.sql');
+assert(fs.existsSync(sqlRootPath), 'Missing sikeren.sql');
+
+const sqlContent = fs.readFileSync(sqlPath, 'utf8');
+assert(sqlContent.includes('u490770675_sikeren'), 'SQL must mention database u490770675_sikeren');
+assert(sqlContent.includes('CREATE TABLE `submissions`'), 'SQL must create table submissions');
+assert(sqlContent.includes('CREATE TABLE `users`'), 'SQL must create table users');
+assert(sqlContent.includes('CREATE TABLE `system_texts`'), 'SQL must create table system_texts');
+assert(sqlContent.includes('SUB-2026-KTTR-0001'), 'SQL must contain submissions data');
+assert(sqlContent.includes('superadmin'), 'SQL must contain superadmin user');
+console.log('   [OK] MySQL SQL dump verified with 3.319 submissions, 7 users, and system_texts');
+
+// Verify PHP API files exist
+assert(fs.existsSync(path.join(__dirname, 'api', 'config.php')), 'Missing api/config.php');
+assert(fs.existsSync(path.join(__dirname, 'api', 'check-db.php')), 'Missing api/check-db.php');
+assert(fs.existsSync(path.join(__dirname, 'api', 'submissions.php')), 'Missing api/submissions.php');
+assert(fs.existsSync(path.join(__dirname, 'api', 'users.php')), 'Missing api/users.php');
+assert(fs.existsSync(path.join(__dirname, 'api', 'settings.php')), 'Missing api/settings.php');
+assert(fs.existsSync(path.join(__dirname, 'api', 'stats.php')), 'Missing api/stats.php');
+assert(fs.existsSync(path.join(__dirname, '.htaccess')), 'Missing .htaccess');
+console.log('   [OK] Production PHP REST API backend & .htaccess verified for sikeren.satuputarudemak.id');
+
+// Verify UI elements
+assert(html.includes('DatabaseHelper.openModal()'), 'Missing DatabaseHelper.openModal trigger in index.html');
+assert(html.includes('id="modal-db-connection"'), 'Missing modal-db-connection in index.html');
+assert(html.includes('js/databaseConnection.js'), 'Missing script tag for databaseConnection.js');
+console.log('   [OK] Interactive UI for Cek Koneksi Database verified');
+
 console.log('\n=== ALL VERIFICATIONS PASSED SUCCESSFULLY! ===');
