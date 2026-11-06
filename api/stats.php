@@ -41,3 +41,4 @@ try {
 } catch (Exception $e) {
     sendJson(['success' => false, 'message' => $e->getMessage()], 500);
 }
+

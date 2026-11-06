@@ -1647,6 +1647,110 @@
   cursor: not-allowed;
 }
 
+/* =========================================================
+   MONTH FILTER TABS & QUICK SORT STYLING
+   ========================================================= */
+.month-tabs-wrapper {
+  display: flex;
+  gap: 0.35rem;
+  overflow-x: auto;
+  padding: 0.4rem 0;
+  margin-bottom: 0.6rem;
+  scrollbar-width: thin;
+}
+
+.month-filter-btn {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 20px;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.month-filter-btn:hover {
+  background: #e2e8f0;
+  color: #1e293b;
+  border-color: #94a3b8;
+}
+
+.month-filter-btn.active {
+  background: var(--primary-600);
+  border-color: var(--primary-600);
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+}
+
+.table-filter-group {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.table-filter-group .filter-select {
+  font-size: 0.82rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid var(--slate-300);
+  background: white;
+  color: var(--slate-800);
+  font-weight: 500;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.table-filter-group .filter-select:focus {
+  border-color: var(--primary-500);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+/* =========================================================
+   INTERACTIVE CHART PILLS & FULL-WIDTH CARDS
+   ========================================================= */
+.chart-box-card.col-span-full {
+  grid-column: 1 / -1;
+}
+
+.chart-filter-pills {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.chart-filter-btn {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 0.25rem 0.7rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.chart-filter-btn:hover {
+  background: #f1f5f9;
+  color: #1e293b;
+}
+
+.chart-filter-btn.active {
+  background: var(--primary-600);
+  border-color: var(--primary-600);
+  color: #ffffff;
+  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.25);
+}
+
+
 
 
 

@@ -74,3 +74,4 @@ function getJsonInput() {
     $data = json_decode($raw, true);
     return is_array($data) ? $data : [];
 }
+

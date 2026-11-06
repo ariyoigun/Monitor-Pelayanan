@@ -9,9 +9,12 @@ const Monitoring = {
   filters: {
     bidang: 'ALL',
     layanan: 'ALL',
+    bulan: 'ALL',
     status: 'ALL',
+    sort: 'tgl-desc',
     search: ''
   },
+  chartFilterService: 'ALL',
   charts: {},
   currentSubView: 'ringkasan',
   currentPage: 1,
@@ -262,6 +265,15 @@ const Monitoring = {
   setCategoryFilter(categoryKey) {
     this.currentPage = 1;
     this.filters.layanan = categoryKey;
+    if (categoryKey === 'PBG' || categoryKey === 'SLF') {
+      this.filters.bidang = 'ALL';
+      const elB = document.getElementById('filter-bidang');
+      if (elB) elB.value = 'ALL';
+    } else if (categoryKey === 'KTTR' || categoryKey === 'OSS') {
+      this.filters.bidang = 'ALL';
+      const elB = document.getElementById('filter-bidang');
+      if (elB) elB.value = 'ALL';
+    }
     const filterLayananSelect = document.getElementById('filter-layanan');
     if (filterLayananSelect) {
       filterLayananSelect.value = categoryKey;
@@ -275,6 +287,68 @@ const Monitoring = {
     });
     this.renderCategoryCards();
     this.renderTable();
+    this.switchSubView('pengajuan');
+  },
+
+  setMonthFilter(monthKey) {
+    this.currentPage = 1;
+    this.filters.bulan = String(monthKey);
+    const filterBulanSelect = document.getElementById('filter-bulan');
+    if (filterBulanSelect) {
+      filterBulanSelect.value = String(monthKey);
+    }
+    document.querySelectorAll('.month-filter-btn').forEach(btn => {
+      if (btn.dataset.month === String(monthKey)) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+    this.renderTable();
+  },
+
+  setStatusFilter(statusKey) {
+    this.currentPage = 1;
+    this.filters.status = statusKey;
+    const filterStatusSelect = document.getElementById('filter-status-select');
+    if (filterStatusSelect) {
+      filterStatusSelect.value = statusKey;
+    }
+    document.querySelectorAll('.filter-chip').forEach(chip => {
+      if (chip.dataset.status === statusKey) {
+        chip.classList.add('active');
+      } else {
+        chip.classList.remove('active');
+      }
+    });
+    this.renderTable();
+  },
+
+  setSortOrder(sortKey) {
+    this.currentPage = 1;
+    this.filters.sort = sortKey;
+    const sortSelect = document.getElementById('sort-order');
+    if (sortSelect) {
+      sortSelect.value = sortKey;
+    }
+    this.renderTable();
+  },
+
+  setChartFilterService(srvKey) {
+    this.chartFilterService = srvKey;
+    document.querySelectorAll('.chart-filter-btn').forEach(btn => {
+      if (btn.dataset.chartService === srvKey) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+    const titleEl = document.getElementById('chart-monthly-comparison-title');
+    if (titleEl) {
+      const srvLabel = srvKey === 'ALL' ? 'Semua Layanan' : srvKey;
+      titleEl.innerHTML = `<i class="fas fa-chart-bar" style="color: #0284c7;"></i> Komparasi Status Pengajuan Per Bulan (${srvLabel}) (2026)`;
+    }
+    this.renderInternalCharts();
   },
 
   /* =========================================================
@@ -360,12 +434,13 @@ const Monitoring = {
   },
 
   /* =========================================================
-     GRAFIK DI DASHBOARD INTERNAL (CHART.JS)
+     GRAFIK DI DASHBOARD INTERNAL (CHART.JS DYNAMIC & INTERACTIVE)
      ========================================================= */
   renderInternalCharts() {
     if (typeof Chart === 'undefined') return;
 
     // Destroy previous charts to avoid canvas re-use errors
+    if (this.charts.monthlyStatus) this.charts.monthlyStatus.destroy();
     if (this.charts.trend) this.charts.trend.destroy();
     if (this.charts.status) this.charts.status.destroy();
     if (this.charts.services) this.charts.services.destroy();
@@ -373,7 +448,98 @@ const Monitoring = {
 
     const monthLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov'];
 
-    // 1. Chart Tren Bulanan
+    // 1. Chart Utama: Komparasi Status Per Bulan (Interaktif & Multi-Service)
+    const canvasMonthlyStatus = document.getElementById('chart-internal-monthly-status');
+    if (canvasMonthlyStatus) {
+      const srv = this.chartFilterService || 'ALL';
+      const selesaiMonthly = [];
+      const onProgressMonthly = [];
+      const dikembalikanMonthly = [];
+
+      for (let m = 1; m <= 11; m++) {
+        const mSubs = this.submissions.filter(s => {
+          const itemMonth = parseInt((s.tglPengajuan || '').split('-')[1], 10);
+          if (itemMonth !== m) return false;
+          if (srv !== 'ALL' && s.layanan !== srv && s.kategori !== srv) return false;
+          return true;
+        });
+
+        const sel = mSubs.filter(s => s.status === 'SELESAI').length;
+        const kem = mSubs.filter(s => s.status === 'BERKAS_DIKEMBALIKAN').length;
+        const prog = mSubs.filter(s => s.status === 'PROSES' || (!['SELESAI', 'BERKAS_DIKEMBALIKAN'].includes(s.status))).length;
+
+        selesaiMonthly.push(sel);
+        onProgressMonthly.push(prog);
+        dikembalikanMonthly.push(kem);
+      }
+
+      this.charts.monthlyStatus = new Chart(canvasMonthlyStatus.getContext('2d'), {
+        type: 'bar',
+        data: {
+          labels: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November'],
+          datasets: [
+            {
+              label: 'Sudah Dilayani / Terbit',
+              data: selesaiMonthly,
+              backgroundColor: '#10b981',
+              borderRadius: 4,
+              stack: 'statusStack'
+            },
+            {
+              label: 'On Progress',
+              data: onProgressMonthly,
+              backgroundColor: '#f59e0b',
+              borderRadius: 4,
+              stack: 'statusStack'
+            },
+            {
+              label: 'Berkas Dikembalikan',
+              data: dikembalikanMonthly,
+              backgroundColor: '#6366f1',
+              borderRadius: 4,
+              stack: 'statusStack'
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: {
+            mode: 'index',
+            intersect: false
+          },
+          plugins: {
+            legend: {
+              position: 'top',
+              labels: { boxWidth: 14, font: { weight: 600, size: 12 } }
+            },
+            tooltip: {
+              callbacks: {
+                footer: (tooltipItems) => {
+                  let sum = 0;
+                  tooltipItems.forEach(item => { sum += item.parsed.y; });
+                  return 'Total Pengajuan: ' + sum.toLocaleString('id-ID');
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              stacked: true,
+              grid: { display: false }
+            },
+            y: {
+              stacked: true,
+              beginAtZero: true,
+              grid: { color: '#f1f5f9' },
+              ticks: { precision: 0 }
+            }
+          }
+        }
+      });
+    }
+
+    // 2. Chart Tren Bulanan Per Layanan (Dihitung Dinamis dari Submissions)
     const canvasTrend = document.getElementById('chart-internal-trend');
     if (canvasTrend) {
       const kttrMonthly = [];
@@ -382,10 +548,11 @@ const Monitoring = {
       const slfMonthly = [];
 
       for (let m = 1; m <= 11; m++) {
-        kttrMonthly.push(MONTHLY_STATS_2026.services.KTTR.monthly[String(m)]?.total || 0);
-        ossMonthly.push(MONTHLY_STATS_2026.services.OSS.monthly[String(m)]?.total || 0);
-        pbgMonthly.push(MONTHLY_STATS_2026.services.PBG.monthly[String(m)]?.total || 0);
-        slfMonthly.push(MONTHLY_STATS_2026.services.SLF.monthly[String(m)]?.total || 0);
+        const mSubs = this.submissions.filter(s => parseInt((s.tglPengajuan || '').split('-')[1], 10) === m);
+        kttrMonthly.push(mSubs.filter(s => s.layanan === 'KTTR').length);
+        ossMonthly.push(mSubs.filter(s => s.layanan === 'OSS').length);
+        pbgMonthly.push(mSubs.filter(s => s.layanan === 'PBG').length);
+        slfMonthly.push(mSubs.filter(s => s.layanan === 'SLF').length);
       }
 
       this.charts.trend = new Chart(canvasTrend.getContext('2d'), {
@@ -393,10 +560,10 @@ const Monitoring = {
         data: {
           labels: monthLabels,
           datasets: [
-            { label: 'KTTR (Tata Ruang)', data: kttrMonthly, backgroundColor: '#0284c7', borderRadius: 4 },
-            { label: 'Validasi OSS (KKPR)', data: ossMonthly, backgroundColor: '#16a34a', borderRadius: 4 },
-            { label: 'PBG (Cipta Karya)', data: pbgMonthly, backgroundColor: '#d97706', borderRadius: 4 },
-            { label: 'SLF (Cipta Karya)', data: slfMonthly, backgroundColor: '#9333ea', borderRadius: 4 }
+            { label: 'KTTR', data: kttrMonthly, backgroundColor: '#0284c7', borderRadius: 4 },
+            { label: 'Validasi OSS', data: ossMonthly, backgroundColor: '#16a34a', borderRadius: 4 },
+            { label: 'PBG', data: pbgMonthly, backgroundColor: '#d97706', borderRadius: 4 },
+            { label: 'SLF', data: slfMonthly, backgroundColor: '#9333ea', borderRadius: 4 }
           ]
         },
         options: {
@@ -414,21 +581,21 @@ const Monitoring = {
       });
     }
 
-    // 2. Chart Status Penyelesaian (Selesai vs Dalam Proses)
+    // 3. Chart Status Penyelesaian Keseluruhan
     const canvasStatus = document.getElementById('chart-internal-status');
     if (canvasStatus) {
       const selesai = this.submissions.filter(s => s.status === 'SELESAI').length;
-      const proses = this.submissions.filter(s => s.status === 'PROSES' || s.status === 'MENUNGGU_APPROVAL').length;
-      const pending = this.submissions.filter(s => s.status === 'PENDING_PEMOHON' || s.status === 'SIDANG_SURVEY').length;
-      const ditolak = this.submissions.filter(s => s.status === 'DITOLAK').length;
+      const proses = this.submissions.filter(s => s.status === 'PROSES' || (!['SELESAI', 'BERKAS_DIKEMBALIKAN', 'DITOLAK'].includes(s.status))).length;
+      const kembali = this.submissions.filter(s => s.status === 'BERKAS_DIKEMBALIKAN').length;
+      const overdue = this.submissions.filter(s => s.slaStatus === 'OVERDUE' && s.status !== 'SELESAI').length;
 
       this.charts.status = new Chart(canvasStatus.getContext('2d'), {
         type: 'doughnut',
         data: {
-          labels: ['Selesai / Terbit', 'Dalam Proses', 'Tertahan / Revisi', 'Ditolak / Batal'],
+          labels: ['Sudah Dilayani / Terbit', 'On Progress', 'Berkas Dikembalikan', 'Overdue SLA'],
           datasets: [{
-            data: [selesai, proses, pending, ditolak],
-            backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#ef4444'],
+            data: [selesai, proses, kembali, overdue],
+            backgroundColor: ['#10b981', '#f59e0b', '#6366f1', '#ef4444'],
             hoverOffset: 6
           }]
         },
@@ -443,7 +610,7 @@ const Monitoring = {
       });
     }
 
-    // 3. Chart Proporsi Layanan
+    // 4. Chart Proporsi Layanan
     const canvasServices = document.getElementById('chart-internal-services');
     if (canvasServices) {
       const countKttr = this.submissions.filter(s => s.layanan === 'KTTR').length;
@@ -454,7 +621,7 @@ const Monitoring = {
       this.charts.services = new Chart(canvasServices.getContext('2d'), {
         type: 'pie',
         data: {
-          labels: ['KTTR', 'OSS-RBA', 'PBG', 'SLF'],
+          labels: ['KTTR (Tata Ruang)', 'OSS-RBA (Tata Ruang)', 'PBG (Cipta Karya)', 'SLF (Cipta Karya)'],
           datasets: [{
             data: [countKttr, countOss, countPbg, countSlf],
             backgroundColor: ['#0284c7', '#16a34a', '#d97706', '#9333ea'],
@@ -471,12 +638,12 @@ const Monitoring = {
       });
     }
 
-    // 4. Chart Sebaran Kecamatan di Kab. Demak
+    // 5. Chart Sebaran Kecamatan di Kab. Demak
     const canvasKecamatan = document.getElementById('chart-internal-kecamatan');
     if (canvasKecamatan) {
       const kecCounts = {};
       this.submissions.forEach(s => {
-        const k = s.kecamatan || 'Lainnya';
+        const k = s.kecamatan || 'Demak';
         kecCounts[k] = (kecCounts[k] || 0) + 1;
       });
 
@@ -512,44 +679,92 @@ const Monitoring = {
   },
 
   /* =========================================================
-     FILTERING LOGIC
+     FILTERING & SORTING LOGIC
      ========================================================= */
   getFilteredSubmissions() {
-    return this.submissions.filter(item => {
-      // Bidang filter
+    let result = this.submissions.filter(item => {
+      // 1. Bidang filter
       if (this.filters.bidang !== 'ALL' && item.bidang !== this.filters.bidang) {
         return false;
       }
 
-      // Layanan filter
-      if (this.filters.layanan !== 'ALL' && item.layanan !== this.filters.layanan) {
-        return false;
+      // 2. Layanan / Kategori filter
+      if (this.filters.layanan !== 'ALL') {
+        if (item.layanan !== this.filters.layanan && item.kategori !== this.filters.layanan) {
+          return false;
+        }
       }
 
-      // Status filter
+      // 3. Bulan Pengajuan filter (Jan - Nov 2026)
+      if (this.filters.bulan !== 'ALL') {
+        const itemDate = item.tglPengajuan || '';
+        const parts = itemDate.split('-');
+        if (parts.length >= 2) {
+          const itemMonth = parseInt(parts[1], 10);
+          if (itemMonth !== parseInt(this.filters.bulan, 10)) {
+            return false;
+          }
+        } else {
+          return false;
+        }
+      }
+
+      // 4. Status filter
       if (this.filters.status === 'BELUM_SELESAI') {
         if (item.status === 'SELESAI' || item.status === 'DITOLAK') return false;
       } else if (this.filters.status === 'OVERDUE') {
         if (item.slaStatus !== 'OVERDUE' || item.status === 'SELESAI') return false;
+      } else if (this.filters.status === 'PROSES') {
+        if (item.status !== 'PROSES' && (item.status === 'SELESAI' || item.status === 'BERKAS_DIKEMBALIKAN' || item.status === 'DITOLAK')) return false;
       } else if (this.filters.status !== 'ALL') {
         if (item.status !== this.filters.status) return false;
       }
 
-      // Search filter
-      if (this.filters.search.trim() !== '') {
-        const q = this.filters.search.toLowerCase();
+      // 5. Search filter
+      if (this.filters.search && this.filters.search.trim() !== '') {
+        const q = this.filters.search.toLowerCase().trim();
         const match = 
           (item.noRegistrasi || '').toLowerCase().includes(q) ||
           (item.namaPemohon || '').toLowerCase().includes(q) ||
           (item.namaKegiatan || '').toLowerCase().includes(q) ||
+          (item.lokasiProyek || '').toLowerCase().includes(q) ||
           (item.kecamatan || '').toLowerCase().includes(q) ||
           (item.posisiMeja || '').toLowerCase().includes(q) ||
+          (item.penanggungJawab || '').toLowerCase().includes(q) ||
+          (item.noSuratKeputusan || '').toLowerCase().includes(q) ||
           (item.keteranganKendala || '').toLowerCase().includes(q);
         if (!match) return false;
       }
 
       return true;
     });
+
+    // 6. Sorting Logic
+    const sort = this.filters.sort || 'tgl-desc';
+    result.sort((a, b) => {
+      if (sort === 'tgl-desc') {
+        const dateComp = (b.tglPengajuan || '').localeCompare(a.tglPengajuan || '');
+        if (dateComp !== 0) return dateComp;
+        return (b.id || '').localeCompare(a.id || '');
+      } else if (sort === 'tgl-asc') {
+        const dateComp = (a.tglPengajuan || '').localeCompare(b.tglPengajuan || '');
+        if (dateComp !== 0) return dateComp;
+        return (a.id || '').localeCompare(b.id || '');
+      } else if (sort === 'status') {
+        const order = { 'PROSES': 1, 'PENDING_PEMOHON': 2, 'SIDANG_SURVEY': 3, 'MENUNGGU_APPROVAL': 4, 'BERKAS_DIKEMBALIKAN': 5, 'OVERDUE': 0, 'SELESAI': 6, 'DITOLAK': 7 };
+        const oA = order[a.status] !== undefined ? order[a.status] : 10;
+        const oB = order[b.status] !== undefined ? order[b.status] : 10;
+        if (oA !== oB) return oA - oB;
+        return (b.tglPengajuan || '').localeCompare(a.tglPengajuan || '');
+      } else if (sort === 'pemohon-asc') {
+        return (a.namaPemohon || '').localeCompare(b.namaPemohon || '');
+      } else if (sort === 'noreg-desc') {
+        return (b.noRegistrasi || '').localeCompare(a.noRegistrasi || '');
+      }
+      return 0;
+    });
+
+    return result;
   },
 
   /* =========================================================
@@ -1048,7 +1263,7 @@ const Monitoring = {
     this.renderAll();
 
     document.getElementById('modal-update-status').classList.remove('active');
-    alert('Status berkas pengajuan berhasil diperbarui!');
+    alert(`Status permohonan ${item.noRegistrasi} (${item.layanan}) berhasil diperbarui dan tersimpan ke database!`);
   },
 
   deleteSubmission(id) {
@@ -1153,28 +1368,83 @@ const Monitoring = {
       chip.addEventListener('click', (e) => {
         chips.forEach(c => c.classList.remove('active'));
         chip.classList.add('active');
-        this.currentPage = 1;
-        this.filters.status = chip.dataset.status;
-        this.renderTable();
+        this.setStatusFilter(chip.dataset.status);
       });
     });
 
-    // Select filters
+    // Select filter: Bidang
     const filterBidang = document.getElementById('filter-bidang');
+    const filterLayanan = document.getElementById('filter-layanan');
     if (filterBidang) {
       filterBidang.addEventListener('change', (e) => {
         this.currentPage = 1;
-        this.filters.bidang = e.target.value;
+        const val = e.target.value;
+        this.filters.bidang = val;
+        if (val === 'CK' && (this.filters.layanan === 'KTTR' || this.filters.layanan === 'OSS')) {
+          this.filters.layanan = 'ALL';
+          if (filterLayanan) filterLayanan.value = 'ALL';
+          document.querySelectorAll('.cat-filter-btn').forEach(b => b.classList.toggle('active', b.dataset.category === 'ALL'));
+        } else if (val === 'TRP' && (this.filters.layanan === 'PBG' || this.filters.layanan === 'SLF')) {
+          this.filters.layanan = 'ALL';
+          if (filterLayanan) filterLayanan.value = 'ALL';
+          document.querySelectorAll('.cat-filter-btn').forEach(b => b.classList.toggle('active', b.dataset.category === 'ALL'));
+        }
         this.renderTable();
       });
     }
 
-    const filterLayanan = document.getElementById('filter-layanan');
+    // Select filter: Layanan
     if (filterLayanan) {
       filterLayanan.addEventListener('change', (e) => {
         this.currentPage = 1;
-        this.filters.layanan = e.target.value;
+        const val = e.target.value;
+        this.filters.layanan = val;
+        if (val === 'PBG' || val === 'SLF') {
+          this.filters.bidang = 'ALL';
+          if (filterBidang) filterBidang.value = 'ALL';
+        } else if (val === 'KTTR' || val === 'OSS') {
+          this.filters.bidang = 'ALL';
+          if (filterBidang) filterBidang.value = 'ALL';
+        }
+        document.querySelectorAll('.cat-filter-btn').forEach(btn => {
+          btn.classList.toggle('active', btn.dataset.category === val);
+        });
         this.renderTable();
+      });
+    }
+
+    // Select filter: Bulan Pengajuan
+    const filterBulan = document.getElementById('filter-bulan');
+    if (filterBulan) {
+      filterBulan.addEventListener('change', (e) => {
+        this.setMonthFilter(e.target.value);
+      });
+    }
+
+    // Select filter: Status Pengajuan
+    const filterStatusSelect = document.getElementById('filter-status-select');
+    if (filterStatusSelect) {
+      filterStatusSelect.addEventListener('change', (e) => {
+        this.setStatusFilter(e.target.value);
+      });
+    }
+
+    // Select filter: Sort Pengajuan
+    const sortOrder = document.getElementById('sort-order');
+    if (sortOrder) {
+      sortOrder.addEventListener('change', (e) => {
+        this.setSortOrder(e.target.value);
+      });
+    }
+
+    // Quick Month Tabs delegation
+    const monthTabs = document.getElementById('dash-month-tabs');
+    if (monthTabs) {
+      monthTabs.addEventListener('click', (e) => {
+        const btn = e.target.closest('.month-filter-btn');
+        if (btn) {
+          this.setMonthFilter(btn.dataset.month);
+        }
       });
     }
 

@@ -39,3 +39,4 @@ if ($method === 'POST') {
 }
 
 sendJson(['success' => false, 'message' => 'Metode HTTP tidak didukung'], 405);
+

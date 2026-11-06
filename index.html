@@ -625,16 +625,52 @@
             <i class="fas fa-chart-line" style="color: var(--primary-600);"></i> Grafik & Analitik Dashboard Internal
           </h2>
           <p class="section-desc">
-            Visualisasi volume pengajuan bulanan, rasio keberhasilan penyelesaian, dan sebaran wilayah pengajuan di Kabupaten Demak.
+            Visualisasi volume pengajuan bulanan, perbandingan status per bulan, dan sebaran wilayah pengajuan di Kabupaten Demak.
           </p>
         </div>
 
         <div class="internal-charts-grid">
-          <!-- Chart 1: Tren Bulanan -->
+          <!-- Chart Utama: Komparasi Status Pengajuan Per Bulan (Januari - November 2026) -->
+          <div class="chart-box-card col-span-full">
+            <div class="chart-box-header" style="flex-wrap: wrap; gap: 0.75rem;">
+              <div>
+                <div class="chart-box-title" id="chart-monthly-comparison-title">
+                  <i class="fas fa-chart-bar" style="color: #0284c7;"></i> Komparasi Status Pengajuan Per Bulan (Jan - Nov 2026)
+                </div>
+                <div style="font-size: 0.78rem; color: #64748b; margin-top: 0.2rem;">
+                  Perbandingan berkas Sudah Dilayani, On Progress, dan Berkas Dikembalikan tiap bulan
+                </div>
+              </div>
+
+              <!-- Interactive Service Selector for Monthly Chart -->
+              <div class="chart-filter-pills" id="chart-monthly-service-filters">
+                <button type="button" class="chart-filter-btn active" data-chart-service="ALL" onclick="Monitoring.setChartFilterService('ALL')">
+                  Semua Layanan
+                </button>
+                <button type="button" class="chart-filter-btn" data-chart-service="KTTR" onclick="Monitoring.setChartFilterService('KTTR')">
+                  KTTR
+                </button>
+                <button type="button" class="chart-filter-btn" data-chart-service="OSS" onclick="Monitoring.setChartFilterService('OSS')">
+                  Validasi OSS
+                </button>
+                <button type="button" class="chart-filter-btn" data-chart-service="PBG" onclick="Monitoring.setChartFilterService('PBG')">
+                  PBG
+                </button>
+                <button type="button" class="chart-filter-btn" data-chart-service="SLF" onclick="Monitoring.setChartFilterService('SLF')">
+                  SLF
+                </button>
+              </div>
+            </div>
+            <div class="chart-canvas-wrapper" style="height: 320px;">
+              <canvas id="chart-internal-monthly-status"></canvas>
+            </div>
+          </div>
+
+          <!-- Chart 2: Tren Bulanan -->
           <div class="chart-box-card">
             <div class="chart-box-header">
               <div class="chart-box-title">
-                <i class="fas fa-chart-bar" style="color: #0284c7;"></i> Tren Volume Pengajuan Per Bulan (2026)
+                <i class="fas fa-chart-line" style="color: #0284c7;"></i> Tren Volume Pengajuan Per Bulan (2026)
               </div>
               <span class="badge badge-proses" style="font-size: 0.72rem;">Jan - Nov 2026</span>
             </div>
@@ -643,20 +679,20 @@
             </div>
           </div>
 
-          <!-- Chart 2: Status Penyelesaian -->
+          <!-- Chart 3: Status Penyelesaian Keseluruhan -->
           <div class="chart-box-card">
             <div class="chart-box-header">
               <div class="chart-box-title">
                 <i class="fas fa-chart-pie" style="color: #10b981;"></i> Status Penyelesaian Berkas
               </div>
-              <span class="badge badge-selesai" style="font-size: 0.72rem;">Persentase Rampung</span>
+              <span class="badge badge-selesai" style="font-size: 0.72rem;">Distribusi Status</span>
             </div>
             <div class="chart-canvas-wrapper">
               <canvas id="chart-internal-status"></canvas>
             </div>
           </div>
 
-          <!-- Chart 3: Proporsi Antar Layanan -->
+          <!-- Chart 4: Proporsi Antar Layanan -->
           <div class="chart-box-card">
             <div class="chart-box-header">
               <div class="chart-box-title">
@@ -669,7 +705,7 @@
             </div>
           </div>
 
-          <!-- Chart 4: Sebaran Kecamatan -->
+          <!-- Chart 5: Sebaran Kecamatan -->
           <div class="chart-box-card">
             <div class="chart-box-header">
               <div class="chart-box-title">
@@ -715,18 +751,55 @@
           </div>
 
           <div class="table-filter-group">
-            <select id="filter-bidang" class="filter-select">
+            <select id="filter-bidang" class="filter-select" title="Filter Bidang Kerja">
               <option value="ALL">Semua Bidang (TRP & CK)</option>
               <option value="TRP">Bidang Tata Ruang & Pertanahan (TRP)</option>
               <option value="CK">Bidang Cipta Karya (CK)</option>
             </select>
 
-            <select id="filter-layanan" class="filter-select">
-              <option value="ALL">Semua Layanan</option>
+            <select id="filter-layanan" class="filter-select" title="Filter Kategori Layanan">
+              <option value="ALL">Semua Kategori (KTTR, OSS, PBG, SLF)</option>
               <option value="KTTR">KTTR (Tata Ruang)</option>
               <option value="OSS">Validasi OSS (Tata Ruang)</option>
               <option value="PBG">PBG (Cipta Karya)</option>
               <option value="SLF">SLF (Cipta Karya)</option>
+            </select>
+
+            <!-- Filter Bulan Pengajuan -->
+            <select id="filter-bulan" class="filter-select" title="Filter Bulan Pengajuan">
+              <option value="ALL">📅 Semua Bulan (Jan - Nov 2026)</option>
+              <option value="1">Januari 2026</option>
+              <option value="2">Februari 2026</option>
+              <option value="3">Maret 2026</option>
+              <option value="4">April 2026</option>
+              <option value="5">Mei 2026</option>
+              <option value="6">Juni 2026</option>
+              <option value="7">Juli 2026</option>
+              <option value="8">Agustus 2026</option>
+              <option value="9">September 2026</option>
+              <option value="10">Oktober 2026</option>
+              <option value="11">November 2026</option>
+            </select>
+
+            <!-- Filter Status Pengajuan -->
+            <select id="filter-status-select" class="filter-select" title="Filter Status Pengajuan">
+              <option value="ALL">⚡ Semua Status</option>
+              <option value="PROSES">On Progress (Sedang Berjalan)</option>
+              <option value="SELESAI">Sudah Dilayani / Terbit</option>
+              <option value="BERKAS_DIKEMBALIKAN">Berkas Dikembalikan</option>
+              <option value="BELUM_SELESAI">Belum Selesai (Prioritas)</option>
+              <option value="PENDING_PEMOHON">Tertahan Pemohon</option>
+              <option value="SIDANG_SURVEY">Sidang / Uji Lapangan</option>
+              <option value="OVERDUE">Overdue SLA</option>
+            </select>
+
+            <!-- Sort Pengajuan -->
+            <select id="sort-order" class="filter-select" title="Urutkan Pengajuan">
+              <option value="tgl-desc">🔽 Tanggal Pengajuan (Terbaru)</option>
+              <option value="tgl-asc">🔼 Tanggal Pengajuan (Terlama)</option>
+              <option value="status">⏳ Prioritas Status (On Progress Duluan)</option>
+              <option value="pemohon-asc">🔤 Nama Pemohon (A - Z)</option>
+              <option value="noreg-desc">🔢 No. Registrasi</option>
             </select>
 
             <span id="table-count-badge" class="badge badge-proses" style="font-size: 0.75rem;">
@@ -754,6 +827,24 @@
           </button>
         </div>
 
+        <!-- Filter Bulan Quick Tabs (Jan - Nov 2026) -->
+        <div class="month-tabs-wrapper" id="dash-month-tabs">
+          <button type="button" class="month-filter-btn active" data-month="ALL">
+            <i class="fas fa-calendar-alt"></i> Semua Bulan
+          </button>
+          <button type="button" class="month-filter-btn" data-month="1">Januari</button>
+          <button type="button" class="month-filter-btn" data-month="2">Februari</button>
+          <button type="button" class="month-filter-btn" data-month="3">Maret</button>
+          <button type="button" class="month-filter-btn" data-month="4">April</button>
+          <button type="button" class="month-filter-btn" data-month="5">Mei</button>
+          <button type="button" class="month-filter-btn" data-month="6">Juni</button>
+          <button type="button" class="month-filter-btn" data-month="7">Juli</button>
+          <button type="button" class="month-filter-btn" data-month="8">Agustus</button>
+          <button type="button" class="month-filter-btn" data-month="9">September</button>
+          <button type="button" class="month-filter-btn" data-month="10">Oktober</button>
+          <button type="button" class="month-filter-btn" data-month="11">November</button>
+        </div>
+
         <!-- Status Filter Chips -->
         <div class="filter-tabs-wrapper">
           <button class="filter-chip active" data-status="ALL">
@@ -765,6 +856,12 @@
           <button class="filter-chip" data-status="PROSES">
             <i class="fas fa-sync fa-spin"></i> On Progress
           </button>
+          <button class="filter-chip" data-status="SELESAI">
+            <i class="fas fa-check-circle" style="color: var(--success-500);"></i> Sudah Dilayani / Terbit
+          </button>
+          <button class="filter-chip" data-status="BERKAS_DIKEMBALIKAN">
+            <i class="fas fa-undo-alt" style="color: #6366f1;"></i> Berkas Dikembalikan
+          </button>
           <button class="filter-chip" data-status="PENDING_PEMOHON">
             <i class="fas fa-user-clock"></i> Tertahan Pemohon
           </button>
@@ -773,9 +870,6 @@
           </button>
           <button class="filter-chip" data-status="OVERDUE">
             <i class="fas fa-fire" style="color: var(--danger-500);"></i> Overdue SLA
-          </button>
-          <button class="filter-chip" data-status="SELESAI">
-            <i class="fas fa-check-circle" style="color: var(--success-500);"></i> Selesai / Terbit
           </button>
         </div>
 
@@ -1160,6 +1254,7 @@
                 <option value="SIDANG_SURVEY">Dalam Sidang TPA / Tinjauan Lapangan</option>
                 <option value="MENUNGGU_APPROVAL">Menunggu Persetujuan / Paraf Pejabat</option>
                 <option value="SELESAI">Selesai / Terbit Dokumen</option>
+                <option value="BERKAS_DIKEMBALIKAN">Berkas Dikembalikan ke Pemohon</option>
                 <option value="DITOLAK">Ditolak / Dikembalikan</option>
               </select>
             </div>

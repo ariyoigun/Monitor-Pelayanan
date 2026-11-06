@@ -170,4 +170,16 @@ assert(html.includes('id="modal-db-connection"'), 'Missing modal-db-connection i
 assert(html.includes('js/databaseConnection.js'), 'Missing script tag for databaseConnection.js');
 console.log('   [OK] Interactive UI for Cek Koneksi Database verified');
 
+// 9. Verify Month & Status Filters, Sorting & Interactive Monthly Comparison Chart
+console.log('\n9. Verifying Month & Status Filters, Sorting & Interactive Charts:');
+assert(html.includes('id="filter-bulan"'), 'Missing filter-bulan in index.html');
+assert(html.includes('id="filter-status-select"'), 'Missing filter-status-select in index.html');
+assert(html.includes('id="sort-order"'), 'Missing sort-order in index.html');
+assert(html.includes('id="dash-month-tabs"'), 'Missing dash-month-tabs in index.html');
+assert(html.includes('id="chart-internal-monthly-status"'), 'Missing chart-internal-monthly-status canvas');
+assert(html.includes('id="chart-monthly-service-filters"'), 'Missing chart-monthly-service-filters pills');
+console.log('   [OK] Filter Bulan (Jan - Nov 2026), Filter Status & Sort Selector verified');
+console.log('   [OK] Quick Month Tabs verified');
+console.log('   [OK] Interactive Monthly Status Comparison Chart & Service Filter Pills verified');
+
 console.log('\n=== ALL VERIFICATIONS PASSED SUCCESSFULLY! ===');
