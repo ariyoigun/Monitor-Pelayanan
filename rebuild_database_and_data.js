@@ -850,11 +850,25 @@ const MONTHLY_STATS_2026 = ${JSON.stringify(MONTHLY_STATS_2026, null, 2)};
 
 /**
  * Mendapatkan agregat statistik 5 metrik infografis publik dan dashboard
+ * Dihitung SECARA DINAMIS dari getStoredSubmissions() agar setiap perubahan
+ * di dashboard internal (update status, edit, tambah) langsung tercermin di halaman publik!
  */
 function getMonthlyInfographicData(monthKey = "ALL") {
+  const submissions = (typeof getStoredSubmissions === 'function') ? getStoredSubmissions() : (INITIAL_SUBMISSIONS || []);
+  const sysTexts = (typeof getStoredSystemTexts === 'function') ? getStoredSystemTexts() : {};
+
+  let filteredSubs = submissions;
+  if (monthKey !== "ALL") {
+    const m = parseInt(monthKey, 10);
+    filteredSubs = filteredSubs.filter(s => {
+      const itemMonth = parseInt((s.tglPengajuan || '').split('-')[1], 10);
+      return itemMonth === m;
+    });
+  }
+
   const result = {
     selectedMonth: monthKey,
-    monthLabel: MONTHLY_STATS_2026.months.find(m => m.key === String(monthKey))?.label || "Tahun 2026",
+    monthLabel: MONTHLY_STATS_2026.months.find(m => m.key === String(monthKey))?.label || (monthKey === "ALL" ? "Sepanjang Tahun 2026" : "Bulan " + monthKey + " 2026"),
     summary: {
       total: 0,
       sudahDilayani: 0,
@@ -865,36 +879,26 @@ function getMonthlyInfographicData(monthKey = "ALL") {
     services: {}
   };
 
-  const serviceKeys = Object.keys(MONTHLY_STATS_2026.services);
-  const sysTexts = getStoredSystemTexts();
+  const serviceKeys = ['KTTR', 'OSS', 'PBG', 'SLF'];
+  const serviceMeta = {
+    KTTR: { nama: "Keterangan Rencana Tata Ruang (KTTR)", bidang: "Tata Ruang & Pertanahan (TRP)", defaultSla: "5 Hari Kerja" },
+    OSS:  { nama: "Validasi KKPR OSS-RBA", bidang: "Tata Ruang & Pertanahan (TRP)", defaultSla: "5 Hari Kerja" },
+    PBG:  { nama: "Persetujuan Bangunan Gedung (PBG)", bidang: "Cipta Karya (CK)", defaultSla: "28 Hari Kerja" },
+    SLF:  { nama: "Sertifikat Laik Fungsi (SLF)", bidang: "Cipta Karya (CK)", defaultSla: "28 Hari Kerja" }
+  };
 
   serviceKeys.forEach(sKey => {
-    const sObj = MONTHLY_STATS_2026.services[sKey];
-    let total = 0;
-    let sudahDilayani = 0;
-    let onProgress = 0;
-    let berkasDikembalikan = 0;
-
-    if (monthKey === "ALL") {
-      for (let m = 1; m <= 11; m++) {
-        const d = sObj.monthly[String(m)] || { total: 0, sudahDilayani: 0, onProgress: 0, berkasDikembalikan: 0 };
-        total += d.total;
-        sudahDilayani += d.sudahDilayani;
-        onProgress += d.onProgress;
-        berkasDikembalikan += d.berkasDikembalikan;
-      }
-    } else {
-      const d = sObj.monthly[String(monthKey)] || { total: 0, sudahDilayani: 0, onProgress: 0, berkasDikembalikan: 0 };
-      total = d.total;
-      sudahDilayani = d.sudahDilayani;
-      onProgress = d.onProgress;
-      berkasDikembalikan = d.berkasDikembalikan;
-    }
+    const sMeta = serviceMeta[sKey];
+    const sSubs = filteredSubs.filter(s => s.layanan === sKey || s.kategori === sKey);
+    const total = sSubs.length;
+    const sudahDilayani = sSubs.filter(s => s.status === 'SELESAI').length;
+    const berkasDikembalikan = sSubs.filter(s => s.status === 'BERKAS_DIKEMBALIKAN').length;
+    const onProgress = sSubs.filter(s => s.status === 'PROSES' || (!['SELESAI', 'BERKAS_DIKEMBALIKAN', 'DITOLAK'].includes(s.status))).length;
 
     const selesaiTot = sudahDilayani + berkasDikembalikan;
     const persen = total > 0 ? Math.round((selesaiTot / total) * 100) : 0;
 
-    let slaLabel = sObj.sla;
+    let slaLabel = sMeta.defaultSla;
     if (sKey === 'KTTR' && sysTexts.slaKttr) slaLabel = sysTexts.slaKttr;
     if (sKey === 'OSS' && sysTexts.slaOss) slaLabel = sysTexts.slaOss;
     if (sKey === 'PBG' && sysTexts.slaPbg) slaLabel = sysTexts.slaPbg;
@@ -902,8 +906,8 @@ function getMonthlyInfographicData(monthKey = "ALL") {
 
     result.services[sKey] = {
       kode: sKey,
-      nama: sObj.nama,
-      bidang: sObj.bidang,
+      nama: sMeta.nama,
+      bidang: sMeta.bidang,
       sla: slaLabel,
       total,
       sudahDilayani,

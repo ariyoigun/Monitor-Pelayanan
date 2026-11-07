@@ -95,6 +95,7 @@ const Monitoring = {
     } else if (tabName === 'pengajuan') {
       this.renderTable();
       this.renderCategoryCards();
+      this.renderPengajuanMonthSummary();
     } else if (tabName === 'users') {
       if (typeof UserManagement !== 'undefined') {
         UserManagement.refreshUsers();
@@ -110,6 +111,7 @@ const Monitoring = {
 
   renderAll() {
     this.renderCategoryCards();
+    this.renderPengajuanMonthSummary();
     this.renderKPIs();
     this.renderLeadershipFocus();
     this.renderInternalCharts();
@@ -119,14 +121,58 @@ const Monitoring = {
     if (badgeEl) {
       badgeEl.textContent = this.submissions.length.toLocaleString('id-ID');
     }
+
+    // Live sync to Public Infographics so public page immediately reflects status updates
+    if (typeof Infografis !== 'undefined' && typeof Infografis.renderInfographics === 'function') {
+      Infografis.renderInfographics();
+    }
   },
 
   /* =========================================================
-     4 KATEGORI PENGAJUAN DENGAN WARNA BERBEDA
+     4 KATEGORI PENGAJUAN DENGAN WARNA BERBEDA & FILTER BULAN
      ========================================================= */
   renderCategoryCards() {
     const container = document.getElementById('dash-category-cards');
+
+    // Filter by active month if selected!
+    let activeSubs = this.submissions;
+    const selectedMonth = this.filters.bulan || 'ALL';
+    if (selectedMonth !== 'ALL') {
+      const m = parseInt(selectedMonth, 10);
+      activeSubs = activeSubs.filter(s => {
+        const itemMonth = parseInt((s.tglPengajuan || '').split('-')[1], 10);
+        return itemMonth === m;
+      });
+    }
+
+    // Update Category Badges in toolbar (Always matches active month!)
+    const countAll = activeSubs.length;
+    const countKttr = activeSubs.filter(s => s.layanan === 'KTTR').length;
+    const countOss = activeSubs.filter(s => s.layanan === 'OSS').length;
+    const countPbg = activeSubs.filter(s => s.layanan === 'PBG').length;
+    const countSlf = activeSubs.filter(s => s.layanan === 'SLF').length;
+
+    const elAll = document.getElementById('cat-count-all');
+    const elKttr = document.getElementById('cat-count-kttr');
+    const elOss = document.getElementById('cat-count-oss');
+    const elPbg = document.getElementById('cat-count-pbg');
+    const elSlf = document.getElementById('cat-count-slf');
+
+    if (elAll) elAll.textContent = countAll.toLocaleString('id-ID');
+    if (elKttr) elKttr.textContent = countKttr.toLocaleString('id-ID');
+    if (elOss) elOss.textContent = countOss.toLocaleString('id-ID');
+    if (elPbg) elPbg.textContent = countPbg.toLocaleString('id-ID');
+    if (elSlf) elSlf.textContent = countSlf.toLocaleString('id-ID');
+
     if (!container) return;
+
+    const monthNames = {
+      'ALL': '',
+      '1': 'Januari', '2': 'Februari', '3': 'Maret', '4': 'April',
+      '5': 'Mei', '6': 'Juni', '7': 'Juli', '8': 'Agustus',
+      '9': 'September', '10': 'Oktober', '11': 'November'
+    };
+    const monthSuffix = selectedMonth !== 'ALL' ? ` (Bulan ${monthNames[selectedMonth]})` : '';
 
     const categories = [
       {
@@ -172,7 +218,7 @@ const Monitoring = {
     ];
 
     container.innerHTML = categories.map(cat => {
-      const subs = this.submissions.filter(s => s.layanan === cat.key || s.kategori === cat.key);
+      const subs = activeSubs.filter(s => s.layanan === cat.key || s.kategori === cat.key);
       const total = subs.length;
       const dilayani = subs.filter(s => s.status === 'SELESAI').length;
       const kembali = subs.filter(s => s.status === 'BERKAS_DIKEMBALIKAN').length;
@@ -194,7 +240,7 @@ const Monitoring = {
               </div>
               <div>
                 <h4 style="font-size: 1rem; font-weight: 800; color: var(--slate-900); margin: 0;">${cat.key}</h4>
-                <div style="font-size: 0.72rem; color: var(--slate-500);">${cat.bidang.split(' ')[0]} &bull; SLA ${cat.sla}</div>
+                <div style="font-size: 0.72rem; color: var(--slate-500);">${cat.bidang.split(' ')[0]} &bull; SLA ${cat.sla}${monthSuffix}</div>
               </div>
             </div>
             <span class="badge" style="background: ${cat.bg}; color: ${cat.color}; font-weight: 700;">
@@ -241,25 +287,110 @@ const Monitoring = {
         </div>
       `;
     }).join('');
+  },
 
-    // Update Category Badges in toolbar
-    const countAll = this.submissions.length;
-    const countKttr = this.submissions.filter(s => s.layanan === 'KTTR').length;
-    const countOss = this.submissions.filter(s => s.layanan === 'OSS').length;
-    const countPbg = this.submissions.filter(s => s.layanan === 'PBG').length;
-    const countSlf = this.submissions.filter(s => s.layanan === 'SLF').length;
+  /* =========================================================
+     RINGKASAN METRIK PER LAYANAN BERDASARKAN BULAN DI PENGAJUAN
+     ========================================================= */
+  renderPengajuanMonthSummary() {
+    const container = document.getElementById('dash-pengajuan-month-bar');
+    if (!container) return;
 
-    const elAll = document.getElementById('cat-count-all');
-    const elKttr = document.getElementById('cat-count-kttr');
-    const elOss = document.getElementById('cat-count-oss');
-    const elPbg = document.getElementById('cat-count-pbg');
-    const elSlf = document.getElementById('cat-count-slf');
+    const monthKey = this.filters.bulan || 'ALL';
+    const monthNames = {
+      'ALL': 'Sepanjang Tahun 2026 (Semua Bulan)',
+      '1': 'Januari 2026',
+      '2': 'Februari 2026',
+      '3': 'Maret 2026',
+      '4': 'April 2026',
+      '5': 'Mei 2026',
+      '6': 'Juni 2026',
+      '7': 'Juli 2026',
+      '8': 'Agustus 2026',
+      '9': 'September 2026',
+      '10': 'Oktober 2026',
+      '11': 'November 2026'
+    };
 
-    if (elAll) elAll.textContent = countAll.toLocaleString('id-ID');
-    if (elKttr) elKttr.textContent = countKttr.toLocaleString('id-ID');
-    if (elOss) elOss.textContent = countOss.toLocaleString('id-ID');
-    if (elPbg) elPbg.textContent = countPbg.toLocaleString('id-ID');
-    if (elSlf) elSlf.textContent = countSlf.toLocaleString('id-ID');
+    let activeSubs = this.submissions;
+    if (monthKey !== 'ALL') {
+      const m = parseInt(monthKey, 10);
+      activeSubs = activeSubs.filter(s => {
+        const itemMonth = parseInt((s.tglPengajuan || '').split('-')[1], 10);
+        return itemMonth === m;
+      });
+    }
+
+    const services = [
+      { key: 'KTTR', name: 'KTTR', dotColor: '#0284c7', border: '#0284c7', sla: '5 Hari' },
+      { key: 'OSS', name: 'Validasi OSS', dotColor: '#16a34a', border: '#16a34a', sla: '5 Hari' },
+      { key: 'PBG', name: 'PBG', dotColor: '#d97706', border: '#d97706', sla: '28 Hari' },
+      { key: 'SLF', name: 'SLF', dotColor: '#9333ea', border: '#9333ea', sla: '28 Hari' }
+    ];
+
+    const totalAll = activeSubs.length;
+    const selesaiAll = activeSubs.filter(s => s.status === 'SELESAI').length;
+    const kembaliAll = activeSubs.filter(s => s.status === 'BERKAS_DIKEMBALIKAN').length;
+    const onProgAll = activeSubs.filter(s => s.status === 'PROSES' || (!['SELESAI', 'BERKAS_DIKEMBALIKAN', 'DITOLAK'].includes(s.status))).length;
+    const rateAll = totalAll > 0 ? Math.round(((selesaiAll + kembaliAll) / totalAll) * 100) : 0;
+
+    const chipsHtml = services.map(srv => {
+      const sSubs = activeSubs.filter(s => s.layanan === srv.key || s.kategori === srv.key);
+      const tot = sSubs.length;
+      const sel = sSubs.filter(s => s.status === 'SELESAI').length;
+      const onProg = sSubs.filter(s => s.status === 'PROSES' || (!['SELESAI', 'BERKAS_DIKEMBALIKAN', 'DITOLAK'].includes(s.status))).length;
+      const kem = sSubs.filter(s => s.status === 'BERKAS_DIKEMBALIKAN').length;
+      const rate = tot > 0 ? Math.round(((sel + kem) / tot) * 100) : 0;
+
+      const isCurrentFilter = this.filters.layanan === srv.key;
+
+      return `
+        <div class="month-service-chip" style="border-left: 3px solid ${srv.border}; cursor: pointer; ${isCurrentFilter ? 'box-shadow: 0 0 0 2px ' + srv.border + ';' : ''}" onclick="Monitoring.setCategoryFilter('${srv.key}')" title="Klik untuk memfilter pengajuan ${srv.name}">
+          <div class="month-service-chip-head">
+            <span class="month-service-chip-name">
+              <span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${srv.dotColor};"></span>
+              ${srv.name} <span style="font-size:0.7rem;font-weight:normal;color:#94a3b8;">(${srv.sla})</span>
+            </span>
+            <span class="month-service-chip-count" style="color:${srv.dotColor};">${tot.toLocaleString('id-ID')}</span>
+          </div>
+          <div class="month-service-chip-breakdown">
+            <span style="color:#10b981;">Dilayani: <strong>${sel}</strong></span> &bull;
+            <span style="color:#d97706;">On Progress: <strong>${onProg}</strong></span> &bull;
+            <span style="color:#6366f1;">Kembali: <strong>${kem}</strong></span>
+            <span style="margin-left:auto;font-weight:700;color:${rate >= 80 ? '#10b981' : '#64748b'};">${rate}%</span>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    container.innerHTML = `
+      <div class="pengajuan-month-bar-header">
+        <div class="pengajuan-month-bar-title">
+          <i class="fas fa-calendar-alt" style="color:var(--primary-600);"></i>
+          Data Pengajuan Periode: <span style="color:var(--primary-700);">${monthNames[monthKey] || monthKey}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.8rem;flex-wrap:wrap;">
+          <span class="pengajuan-month-bar-badge">
+            Total Masuk: <strong>${totalAll.toLocaleString('id-ID')}</strong> Berkas
+          </span>
+          <span class="pengajuan-month-bar-badge" style="background:#ecfdf5;color:#047857;border-color:#a7f3d0;">
+            Dilayani: <strong>${selesaiAll.toLocaleString('id-ID')}</strong>
+          </span>
+          <span class="pengajuan-month-bar-badge" style="background:#fffbeb;color:#b45309;border-color:#fde68a;">
+            On Progress: <strong>${onProgAll.toLocaleString('id-ID')}</strong>
+          </span>
+          <span class="pengajuan-month-bar-badge" style="background:#eef2ff;color:#4338ca;border-color:#c7d2fe;">
+            Kembali: <strong>${kembaliAll.toLocaleString('id-ID')}</strong>
+          </span>
+          <span class="pengajuan-month-bar-badge" style="background:#f5f3ff;color:#6b21a8;border-color:#ddd6fe;">
+            Penyelesaian: <strong>${rateAll}%</strong>
+          </span>
+        </div>
+      </div>
+      <div class="pengajuan-month-services-grid">
+        ${chipsHtml}
+      </div>
+    `;
   },
 
   setCategoryFilter(categoryKey) {
@@ -286,6 +417,7 @@ const Monitoring = {
       }
     });
     this.renderCategoryCards();
+    this.renderPengajuanMonthSummary();
     this.renderTable();
     this.switchSubView('pengajuan');
   },
@@ -304,6 +436,10 @@ const Monitoring = {
         btn.classList.remove('active');
       }
     });
+
+    this.renderCategoryCards();
+    this.renderPengajuanMonthSummary();
+    this.renderKPIs();
     this.renderTable();
   },
 
@@ -355,10 +491,19 @@ const Monitoring = {
      KPI METRICS (5 INDIKATOR INFORMASI)
      ========================================================= */
   renderKPIs() {
-    const total = this.submissions.length;
-    const selesai = this.submissions.filter(s => s.status === 'SELESAI').length;
-    const dikembalikan = this.submissions.filter(s => s.status === 'BERKAS_DIKEMBALIKAN').length;
-    const onProgress = this.submissions.filter(s => s.status === 'PROSES' || (!['SELESAI', 'BERKAS_DIKEMBALIKAN'].includes(s.status))).length;
+    let activeSubs = this.submissions;
+    if (this.filters.bulan && this.filters.bulan !== 'ALL') {
+      const m = parseInt(this.filters.bulan, 10);
+      activeSubs = activeSubs.filter(s => {
+        const itemMonth = parseInt((s.tglPengajuan || '').split('-')[1], 10);
+        return itemMonth === m;
+      });
+    }
+
+    const total = activeSubs.length;
+    const selesai = activeSubs.filter(s => s.status === 'SELESAI').length;
+    const dikembalikan = activeSubs.filter(s => s.status === 'BERKAS_DIKEMBALIKAN').length;
+    const onProgress = activeSubs.filter(s => s.status === 'PROSES' || (!['SELESAI', 'BERKAS_DIKEMBALIKAN', 'DITOLAK'].includes(s.status))).length;
 
     const rate = total > 0 ? Math.round(((selesai + dikembalikan) / total) * 100) : 0;
 
@@ -386,7 +531,7 @@ const Monitoring = {
 
     // Filter unfinished applications, prioritize overdue and pending items
     const unfinished = this.submissions.filter(s => s.status !== 'SELESAI' && s.status !== 'DITOLAK');
-    
+
     // Sort so that OVERDUE items come first
     unfinished.sort((a, b) => {
       if (a.slaStatus === 'OVERDUE' && b.slaStatus !== 'OVERDUE') return -1;
@@ -647,7 +792,7 @@ const Monitoring = {
         kecCounts[k] = (kecCounts[k] || 0) + 1;
       });
 
-      const sortedKec = Object.entries(kecCounts).sort((a,b) => b[1] - a[1]).slice(0, 8);
+      const sortedKec = Object.entries(kecCounts).sort((a, b) => b[1] - a[1]).slice(0, 8);
       const labelsKec = sortedKec.map(x => x[0]);
       const dataKec = sortedKec.map(x => x[1]);
 
@@ -723,7 +868,7 @@ const Monitoring = {
       // 5. Search filter
       if (this.filters.search && this.filters.search.trim() !== '') {
         const q = this.filters.search.toLowerCase().trim();
-        const match = 
+        const match =
           (item.noRegistrasi || '').toLowerCase().includes(q) ||
           (item.namaPemohon || '').toLowerCase().includes(q) ||
           (item.namaKegiatan || '').toLowerCase().includes(q) ||
@@ -783,7 +928,16 @@ const Monitoring = {
     if (this.currentPage > totalPages) this.currentPage = totalPages;
     if (this.currentPage < 1) this.currentPage = 1;
 
-    if (countBadge) countBadge.textContent = `${totalItems.toLocaleString('id-ID')} Data Ditemukan`;
+    if (countBadge) {
+      const monthNames = {
+        'ALL': 'Semua Bulan',
+        '1': 'Januari', '2': 'Februari', '3': 'Maret', '4': 'April',
+        '5': 'Mei', '6': 'Juni', '7': 'Juli', '8': 'Agustus',
+        '9': 'September', '10': 'Oktober', '11': 'November'
+      };
+      const monthLabel = monthNames[this.filters.bulan || 'ALL'] || this.filters.bulan;
+      countBadge.textContent = `${totalItems.toLocaleString('id-ID')} Data Ditemukan (${monthLabel})`;
+    }
 
     if (totalItems === 0) {
       tbody.innerHTML = `
@@ -1232,11 +1386,11 @@ const Monitoring = {
     }
 
     const now = new Date();
-    const formattedTime = now.getFullYear() + '-' + 
-      String(now.getMonth()+1).padStart(2,'0') + '-' + 
-      String(now.getDate()).padStart(2,'0') + ' ' + 
-      String(now.getHours()).padStart(2,'0') + ':' + 
-      String(now.getMinutes()).padStart(2,'0');
+    const formattedTime = now.getFullYear() + '-' +
+      String(now.getMonth() + 1).padStart(2, '0') + '-' +
+      String(now.getDate()).padStart(2, '0') + ' ' +
+      String(now.getHours()).padStart(2, '0') + ':' +
+      String(now.getMinutes()).padStart(2, '0');
 
     if (!item.timeline) item.timeline = [];
     item.timeline.push({
@@ -1247,23 +1401,29 @@ const Monitoring = {
       catatan: newLogNote || ('Status diperbarui menjadi ' + newStatus + '. Keterangan: ' + newKeterangan)
     });
 
+    const updatePayload = {
+      status: item.status,
+      slaStatus: item.slaStatus,
+      tahapSaatIni: item.tahapSaatIni,
+      posisiMeja: item.posisiMeja,
+      keteranganKendala: item.keteranganKendala,
+      catatanPimpinan: item.catatanPimpinan,
+      noSuratKeputusan: item.noSuratKeputusan,
+      tglSelesai: item.tglSelesai,
+      timeline: item.timeline
+    };
+
     saveStoredSubmissions(this.submissions);
     if (typeof DataAPI !== 'undefined') {
-      DataAPI.updateSubmission(item.id, {
-        status: item.status,
-        slaStatus: item.slaStatus,
-        tahapSaatIni: item.tahapSaatIni,
-        posisiMeja: item.posisiMeja,
-        keteranganKendala: item.keteranganKendala,
-        catatanPimpinan: item.catatanPimpinan,
-        noSuratKeputusan: item.noSuratKeputusan,
-        timeline: item.timeline
-      });
+      DataAPI.updateSubmission(item.id, updatePayload);
+    } else {
+      storeEditedSubmission(item.id, updatePayload);
     }
+    this.submissions = getStoredSubmissions();
     this.renderAll();
 
     document.getElementById('modal-update-status').classList.remove('active');
-    alert(`Status permohonan ${item.noRegistrasi} (${item.layanan}) berhasil diperbarui dan tersimpan ke database!`);
+    alert(`Status permohonan ${item.noRegistrasi} (${item.layanan}) berhasil diperbarui dan tersimpan ke database! Halaman publik dan dashboard internal otomatis sinkron.`);
   },
 
   deleteSubmission(id) {
@@ -1279,7 +1439,10 @@ const Monitoring = {
       saveStoredSubmissions(this.submissions);
       if (typeof DataAPI !== 'undefined') {
         DataAPI.deleteSubmission(id);
+      } else {
+        storeDeletedSubmission(id);
       }
+      this.submissions = getStoredSubmissions();
       this.renderAll();
       alert(`Pengajuan ${item.noRegistrasi} berhasil dihapus dari sistem.`);
     }
@@ -1354,7 +1517,10 @@ const Monitoring = {
     saveStoredSubmissions(this.submissions);
     if (typeof DataAPI !== 'undefined') {
       DataAPI.addSubmission(newSub);
+    } else {
+      storeAddedSubmission(newSub);
     }
+    this.submissions = getStoredSubmissions();
     this.renderAll();
 
     document.getElementById('modal-new-submission').classList.remove('active');

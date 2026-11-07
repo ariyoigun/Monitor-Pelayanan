@@ -6,7 +6,7 @@
 -- Target Host: localhost (sikeren.satuputarudemak.id)
 -- Target Database: u490770675_sikeren
 -- Target User: u490770675_adminsikeren
--- Generated on: 2026-11-06T21:39:02.682Z
+-- Generated on: 2026-11-06T22:16:07.637Z
 -- ========================================================
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
