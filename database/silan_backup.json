@@ -1,6 +1,6 @@
 {
   "version": "2.2.0",
-  "exported_at": "2026-11-08T02:11:10.792Z",
+  "exported_at": "2026-11-08T02:31:52.255Z",
   "counts": {
     "submissions": 3319,
     "users": 7,
@@ -205722,13 +205722,13 @@
     ],
     "system_texts": {
       "appTitle": "SIKEREN DINPUTARU",
-      "appSubtitle": "Sistem Informasi Keterangan Pelayanan Perizinan - Kab. Demak",
+      "appSubtitle": "Sistem Informasi Layanan Perizinan DINPUTARU Kab. Demak",
       "navLandingText": "Infografis Publik",
       "navDashboardText": "Monitoring Internal",
       "navUsersText": "Manajemen Pengguna",
       "navSettingsText": "Pengaturan Teks Sistem",
       "heroBadge": "Portal Keterbukaan Informasi Pelayanan Publik DINPUTARU Kabupaten Demak",
-      "heroTitle": "Rangkuman Layanan <span class=\"text-gold\">SIKEREN 2026</span>",
+      "heroTitle": "Rangkuman Layanan Perizinan <span class=\"text-gold\">DINPUTARU</span>",
       "heroSubtitle": "Infografis agregat permohonan layanan publik Dinas Pekerjaan Umum dan Penataan Ruang Kabupaten Demak. Pantau volume permohonan masuk, tingkat penyelesaian berkas, dan kepastian standar waktu pelayanan (SLA) secara terbuka.",
       "sectionTitle": "Infografis & Status 4 Layanan Utama DINPUTARU",
       "sectionDesc": "Data real-time jumlah permohonan masuk, berkas yang telah rampung, dan berkas dalam proses untuk masing-masing kategori layanan sesuai periode bulan yang Anda pilih.",

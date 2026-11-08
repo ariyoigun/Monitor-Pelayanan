@@ -6,13 +6,31 @@
 -- Target Host: localhost (sikeren.satuputarudemak.id)
 -- Target Database: u490770675_sikeren
 -- Target User: u490770675_adminsikeren
--- Generated on: 2026-11-08T02:11:10.792Z
+-- Generated on: 2026-11-08T02:31:52.255Z
 -- ========================================================
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+07:00";
 SET NAMES utf8mb4;
+
+-- --------------------------------------------------------
+-- Table structure for table `service_years`
+-- --------------------------------------------------------
+DROP TABLE IF EXISTS `service_years`;
+CREATE TABLE `service_years` (
+  `year` varchar(8) NOT NULL,
+  `label` varchar(64) NOT NULL,
+  `status` varchar(32) NOT NULL DEFAULT 'AKTIF',
+  `is_default` tinyint(1) NOT NULL DEFAULT 0,
+  `keterangan` text DEFAULT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`year`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `service_years` (`year`, `label`, `status`, `is_default`, `keterangan`, `created_at`, `updated_at`) VALUES
+('2026', 'Tahun 2026', 'AKTIF', 1, 'Tahun Berjalan 2026 (Data Otentik DINPUTARU Demak)', NOW(), NOW());
 
 -- --------------------------------------------------------
 -- Table structure for table `system_texts`
@@ -99,13 +117,13 @@ CREATE TABLE `submissions` (
 -- --------------------------------------------------------
 INSERT INTO `system_texts` (`setting_key`, `setting_val`, `updated_at`) VALUES
   ('appTitle', 'SIKEREN DINPUTARU', NOW()),
-  ('appSubtitle', 'Sistem Informasi Keterangan Pelayanan Perizinan - Kab. Demak', NOW()),
+  ('appSubtitle', 'Sistem Informasi Layanan Perizinan DINPUTARU Kab. Demak', NOW()),
   ('navLandingText', 'Infografis Publik', NOW()),
   ('navDashboardText', 'Monitoring Internal', NOW()),
   ('navUsersText', 'Manajemen Pengguna', NOW()),
   ('navSettingsText', 'Pengaturan Teks Sistem', NOW()),
   ('heroBadge', 'Portal Keterbukaan Informasi Pelayanan Publik DINPUTARU Kabupaten Demak', NOW()),
-  ('heroTitle', 'Rangkuman Layanan <span class=\"text-gold\">SIKEREN 2026</span>', NOW()),
+  ('heroTitle', 'Rangkuman Layanan Perizinan <span class=\"text-gold\">DINPUTARU</span>', NOW()),
   ('heroSubtitle', 'Infografis agregat permohonan layanan publik Dinas Pekerjaan Umum dan Penataan Ruang Kabupaten Demak. Pantau volume permohonan masuk, tingkat penyelesaian berkas, dan kepastian standar waktu pelayanan (SLA) secara terbuka.', NOW()),
   ('sectionTitle', 'Infografis & Status 4 Layanan Utama DINPUTARU', NOW()),
   ('sectionDesc', 'Data real-time jumlah permohonan masuk, berkas yang telah rampung, dan berkas dalam proses untuk masing-masing kategori layanan sesuai periode bulan yang Anda pilih.', NOW()),

@@ -28,14 +28,14 @@ const SystemSettings = {
     brandTitles.forEach(el => el.innerHTML = t.appTitle || 'SIKEREN <span class="highlight">DINPUTARU</span>');
 
     const brandSubs = document.querySelectorAll('.dynamic-app-subtitle');
-    brandSubs.forEach(el => el.textContent = t.appSubtitle || 'Sistem Informasi Keterangan Pelayanan Perizinan - Kab. Demak');
+    brandSubs.forEach(el => el.textContent = t.appSubtitle || 'Sistem Informasi Layanan Perizinan DINPUTARU Kab. Demak');
 
     // 2. Public Infografis / Landing Page Texts
     const heroBadge = document.getElementById('dyn-hero-badge');
     if (heroBadge) heroBadge.innerHTML = `<i class="fas fa-shield-alt"></i> ${t.heroBadge}`;
 
     const heroTitle = document.getElementById('dyn-hero-title');
-    if (heroTitle) heroTitle.innerHTML = t.heroTitle || 'Rangkuman Layanan <span class="text-gold">SIKEREN 2026</span>';
+    if (heroTitle) heroTitle.innerHTML = t.heroTitle || 'Rangkuman Layanan Perizinan <span class="text-gold">DINPUTARU</span>';
 
     const heroSubtitle = document.getElementById('dyn-hero-subtitle');
     if (heroSubtitle) heroSubtitle.textContent = t.heroSubtitle || '';

@@ -156,10 +156,18 @@ const server = http.createServer(async (req, res) => {
 
       // 1. GET /api/submissions (List & Search)
       if (pathname === '/api/submissions' && method === 'GET') {
-        const { bidang, layanan, status, search, limit } = parsedUrl.query;
+        const { bidang, layanan, status, search, limit, year, month } = parsedUrl.query;
         let query = 'SELECT * FROM submissions WHERE 1=1';
         const params = [];
 
+        if (year && year !== 'ALL') {
+          query += ' AND substr(tgl_pengajuan, 1, 4) = ?';
+          params.push(year);
+        }
+        if (month && month !== 'ALL') {
+          query += ' AND CAST(substr(tgl_pengajuan, 6, 2) AS INTEGER) = ?';
+          params.push(parseInt(month, 10));
+        }
         if (bidang && bidang !== 'ALL') {
           query += ' AND bidang = ?';
           params.push(bidang);
@@ -328,9 +336,17 @@ const server = http.createServer(async (req, res) => {
 
       // 6. GET /api/stats (Live Aggregated Statistics - 5 Metrics)
       if (pathname === '/api/stats' && method === 'GET') {
-        const allSubs = db.prepare('SELECT id, layanan, status, tgl_pengajuan FROM submissions').all();
+        const reqYear = parsedUrl.query.year || '2026';
+        let querySql = 'SELECT id, layanan, status, tgl_pengajuan FROM submissions';
+        const params = [];
+        if (reqYear !== 'ALL') {
+          querySql += ' WHERE substr(tgl_pengajuan, 1, 4) = ?';
+          params.push(reqYear);
+        }
+        const allSubs = db.prepare(querySql).all(...params);
         const services = ['KTTR', 'OSS', 'PBG', 'SLF'];
         const stats = {
+          year: reqYear,
           summary: { total: 0, sudahDilayani: 0, onProgress: 0, berkasDikembalikan: 0, tingkatPenyelesaian: 0, selesai: 0, belum: 0, persenSelesai: 0 },
           services: {}
         };
@@ -347,7 +363,7 @@ const server = http.createServer(async (req, res) => {
             persenSelesai: 0,
             monthly: {}
           };
-          for (let m = 1; m <= 11; m++) {
+          for (let m = 1; m <= 12; m++) {
             stats.services[s].monthly[String(m)] = {
               total: 0,
               sudahDilayani: 0,
@@ -384,15 +400,17 @@ const server = http.createServer(async (req, res) => {
           if (sub.tgl_pengajuan) {
             const parts = sub.tgl_pengajuan.split('-');
             const m = parseInt(parts[1], 10);
-            if (m >= 1 && m <= 11) {
+            if (m >= 1 && m <= 12) {
               const mObj = stats.services[s].monthly[String(m)];
-              mObj.total++;
-              if (isSelesai) {
-                mObj.sudahDilayani++;
-              } else if (isDikembalikan) {
-                mObj.berkasDikembalikan++;
-              } else {
-                mObj.onProgress++;
+              if (mObj) {
+                mObj.total++;
+                if (isSelesai) {
+                  mObj.sudahDilayani++;
+                } else if (isDikembalikan) {
+                  mObj.berkasDikembalikan++;
+                } else {
+                  mObj.onProgress++;
+                }
               }
             }
           }
@@ -406,7 +424,7 @@ const server = http.createServer(async (req, res) => {
           itm.belum = itm.onProgress;
           itm.persenSelesai = itm.tingkatPenyelesaian;
 
-          for (let m = 1; m <= 11; m++) {
+          for (let m = 1; m <= 12; m++) {
             const mObj = itm.monthly[String(m)];
             const mRampung = mObj.sudahDilayani + mObj.berkasDikembalikan;
             mObj.tingkatPenyelesaian = mObj.total > 0 ? Math.round((mRampung / mObj.total) * 100) : 0;
@@ -519,6 +537,106 @@ const server = http.createServer(async (req, res) => {
         const id = pathname.replace('/api/users/', '');
         db.prepare('DELETE FROM users WHERE id = ?').run(id);
         return sendJson(res, 200, { success: true, message: 'Pengguna berhasil dihapus' });
+      }
+
+      // 8b. GET, POST, PUT, DELETE /api/years (Superadmin Year Management)
+      if (pathname === '/api/years' && method === 'GET') {
+        const rows = db.prepare('SELECT year, label, status, is_default, keterangan, created_at, updated_at FROM service_years ORDER BY year DESC').all();
+        const result = rows.map(r => {
+          const subCount = db.prepare('SELECT COUNT(*) as count FROM submissions WHERE substr(tgl_pengajuan, 1, 4) = ?').get(r.year)?.count || 0;
+          return {
+            year: r.year,
+            label: r.label,
+            status: r.status,
+            isDefault: r.is_default === 1,
+            keterangan: r.keterangan,
+            totalSubmissions: subCount,
+            createdAt: r.created_at,
+            updatedAt: r.updated_at
+          };
+        });
+        return sendJson(res, 200, { success: true, data: result });
+      }
+
+      if (pathname === '/api/years' && method === 'POST') {
+        const body = await parseBody(req);
+        const yearStr = String(body.year || '').trim();
+        if (!/^\d{4}$/.test(yearStr)) {
+          return sendJson(res, 400, { success: false, message: 'Format tahun harus 4 digit angka (misal: 2027)' });
+        }
+        const existing = db.prepare('SELECT year FROM service_years WHERE year = ?').get(yearStr);
+        if (existing) {
+          return sendJson(res, 400, { success: false, message: `Tahun ${yearStr} sudah ada dalam sistem` });
+        }
+        const nowStr = new Date().toISOString();
+        const isDef = body.isDefault ? 1 : 0;
+        if (isDef === 1) {
+          db.prepare('UPDATE service_years SET is_default = 0').run();
+        }
+        db.prepare(`
+          INSERT INTO service_years (year, label, status, is_default, keterangan, created_at, updated_at)
+          VALUES (?, ?, ?, ?, ?, ?, ?)
+        `).run(
+          yearStr,
+          body.label || `Tahun ${yearStr}`,
+          body.status || 'AKTIF',
+          isDef,
+          body.keterangan || `Tahun Pelayanan ${yearStr}`,
+          nowStr,
+          nowStr
+        );
+        return sendJson(res, 201, { success: true, message: `Tahun ${yearStr} berhasil ditambahkan` });
+      }
+
+      if (pathname.startsWith('/api/years/') && method === 'PUT') {
+        const year = pathname.replace('/api/years/', '').trim();
+        const body = await parseBody(req);
+        const existing = db.prepare('SELECT * FROM service_years WHERE year = ?').get(year);
+        if (!existing) {
+          return sendJson(res, 404, { success: false, message: 'Tahun tidak ditemukan' });
+        }
+        const nowStr = new Date().toISOString();
+        let isDef = body.isDefault !== undefined ? (body.isDefault ? 1 : 0) : existing.is_default;
+        if (isDef === 1) {
+          db.prepare('UPDATE service_years SET is_default = 0').run();
+        }
+        db.prepare(`
+          UPDATE service_years SET
+            label = ?,
+            status = ?,
+            is_default = ?,
+            keterangan = ?,
+            updated_at = ?
+          WHERE year = ?
+        `).run(
+          body.label !== undefined ? body.label : existing.label,
+          body.status !== undefined ? body.status : existing.status,
+          isDef,
+          body.keterangan !== undefined ? body.keterangan : existing.keterangan,
+          nowStr,
+          year
+        );
+        return sendJson(res, 200, { success: true, message: `Tahun ${year} berhasil diperbarui` });
+      }
+
+      if (pathname.startsWith('/api/years/') && method === 'DELETE') {
+        const year = pathname.replace('/api/years/', '').trim();
+        if (year === '2026') {
+          return sendJson(res, 400, { success: false, message: 'Tahun 2026 adalah data tahun dasar dan tidak dapat dihapus' });
+        }
+        const existing = db.prepare('SELECT * FROM service_years WHERE year = ?').get(year);
+        if (!existing) {
+          return sendJson(res, 404, { success: false, message: 'Tahun tidak ditemukan' });
+        }
+        if (existing.is_default === 1) {
+          return sendJson(res, 400, { success: false, message: 'Tidak dapat menghapus tahun yang sedang menjadi Default' });
+        }
+        const count = db.prepare('SELECT COUNT(*) as count FROM submissions WHERE substr(tgl_pengajuan, 1, 4) = ?').get(year)?.count || 0;
+        if (count > 0) {
+          return sendJson(res, 400, { success: false, message: `Tahun ${year} memiliki ${count} berkas pengajuan dan tidak dapat dihapus` });
+        }
+        db.prepare('DELETE FROM service_years WHERE year = ?').run(year);
+        return sendJson(res, 200, { success: true, message: `Tahun ${year} berhasil dihapus` });
       }
 
       // 9. POST /api/auth/login

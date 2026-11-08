@@ -15,6 +15,16 @@ db.exec('PRAGMA journal_mode = WAL;');
 
 // Initialize Tables
 db.exec(`
+  CREATE TABLE IF NOT EXISTS service_years (
+    year TEXT PRIMARY KEY,
+    label TEXT,
+    status TEXT DEFAULT 'AKTIF',
+    is_default INTEGER DEFAULT 0,
+    keterangan TEXT,
+    created_at TEXT,
+    updated_at TEXT
+  );
+
   CREATE TABLE IF NOT EXISTS submissions (
     id TEXT PRIMARY KEY,
     no_registrasi TEXT,
@@ -91,6 +101,16 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_sub_bidang ON submissions (bidang);
   CREATE INDEX IF NOT EXISTS idx_sub_tgl ON submissions (tgl_pengajuan);
 `);
+
+try {
+  const rowYear = db.prepare('SELECT COUNT(*) as count FROM service_years').get();
+  if (!rowYear || rowYear.count === 0) {
+    db.prepare(`
+      INSERT INTO service_years (year, label, status, is_default, keterangan, created_at, updated_at)
+      VALUES ('2026', 'Tahun 2026', 'AKTIF', 1, 'Tahun Berjalan 2026 (Data Otentik DINPUTARU Demak)', datetime('now'), datetime('now'))
+    `).run();
+  }
+} catch(e) {}
 
 module.exports = db;
 

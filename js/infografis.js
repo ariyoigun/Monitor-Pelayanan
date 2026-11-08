@@ -1,15 +1,27 @@
 /**
- * SIKEREN DINPUTARU DEMAK - Sistem Informasi Keterangan Pelayanan Perizinan
- * Public Infographics Module: Agregat Layanan Otentik Excel & Filter Bulanan Interaktif
+ * SIKEREN DINPUTARU DEMAK - Sistem Informasi Layanan Perizinan
+ * Public Infographics Module: Agregat Layanan Otentik Excel & Filter Multi-Tahun & 12 Bulan
  */
 
 const Infografis = {
+  currentYear: "2026",
   currentMonth: "ALL",
 
   init() {
+    this.currentYear = (typeof getActiveYear === 'function') ? getActiveYear() : "2026";
+    this.renderYearSelector();
     this.renderMonthSelector();
     this.renderInfographics();
     this.setupListeners();
+  },
+
+  setYear(yearKey) {
+    this.currentYear = String(yearKey);
+    if (typeof setActiveYear === 'function') {
+      setActiveYear(this.currentYear);
+    }
+    this.updateYearSelectorActiveState();
+    this.renderInfographics();
   },
 
   setMonth(monthKey) {
@@ -18,16 +30,79 @@ const Infografis = {
     this.renderInfographics();
   },
 
+  renderYearSelector() {
+    const container = document.getElementById('year-selector-container');
+    const years = (typeof getStoredYears === 'function') ? getStoredYears() : [{ year: "2026", label: "Tahun 2026" }];
+
+    if (container) {
+      container.innerHTML = years.map(y => `
+        <button type="button" class="year-pill-btn ${String(y.year) === this.currentYear ? 'active' : ''}" data-year-key="${y.year}">
+          <i class="fas ${String(y.year) === this.currentYear ? 'fa-check-circle' : 'fa-calendar'}"></i>
+          <span>${y.label || ('Tahun ' + y.year)}</span>
+        </button>
+      `).join('');
+    }
+
+    const selectEl = document.getElementById('mobile-year-select');
+    if (selectEl) {
+      selectEl.innerHTML = years.map(y => `
+        <option value="${y.year}" ${String(y.year) === this.currentYear ? 'selected' : ''}>${y.label || ('Tahun ' + y.year)}</option>
+      `).join('');
+    }
+  },
+
+  updateYearSelectorActiveState() {
+    document.querySelectorAll('.year-pill-btn').forEach(btn => {
+      if (btn.dataset.yearKey === this.currentYear) {
+        btn.classList.add('active');
+        const icon = btn.querySelector('i');
+        if (icon) icon.className = 'fas fa-check-circle';
+      } else {
+        btn.classList.remove('active');
+        const icon = btn.querySelector('i');
+        if (icon) icon.className = 'fas fa-calendar';
+      }
+    });
+
+    const selectEl = document.getElementById('mobile-year-select');
+    if (selectEl) {
+      selectEl.value = this.currentYear;
+    }
+  },
+
   renderMonthSelector() {
     const container = document.getElementById('month-selector-container');
-    if (!container) return;
+    const months = (typeof STANDARD_MONTHS !== 'undefined') ? STANDARD_MONTHS : [
+      { key: "ALL", label: "Sepanjang Tahun", shortLabel: "Semua" },
+      { key: "1",  label: "Januari",   shortLabel: "Jan" },
+      { key: "2",  label: "Februari",  shortLabel: "Feb" },
+      { key: "3",  label: "Maret",     shortLabel: "Mar" },
+      { key: "4",  label: "April",     shortLabel: "Apr" },
+      { key: "5",  label: "Mei",       shortLabel: "Mei" },
+      { key: "6",  label: "Juni",      shortLabel: "Jun" },
+      { key: "7",  label: "Juli",      shortLabel: "Jul" },
+      { key: "8",  label: "Agustus",   shortLabel: "Agu" },
+      { key: "9",  label: "September", shortLabel: "Sep" },
+      { key: "10", label: "Oktober",   shortLabel: "Okt" },
+      { key: "11", label: "November",  shortLabel: "Nov" },
+      { key: "12", label: "Desember",  shortLabel: "Des" }
+    ];
 
-    container.innerHTML = MONTHLY_STATS_2026.months.map(m => `
-      <button type="button" class="month-pill-btn ${m.key === this.currentMonth ? 'active' : ''}" data-month-key="${m.key}">
-        <span class="pill-full">${m.label}</span>
-        <span class="pill-short">${m.shortLabel}</span>
-      </button>
-    `).join('');
+    if (container) {
+      container.innerHTML = months.map(m => `
+        <button type="button" class="month-pill-btn ${m.key === this.currentMonth ? 'active' : ''}" data-month-key="${m.key}">
+          <span class="pill-full">${m.label}</span>
+          <span class="pill-short">${m.shortLabel}</span>
+        </button>
+      `).join('');
+    }
+
+    const selectEl = document.getElementById('mobile-month-select');
+    if (selectEl) {
+      selectEl.innerHTML = months.map(m => `
+        <option value="${m.key}" ${m.key === this.currentMonth ? 'selected' : ''}>${m.label} (${this.currentYear})</option>
+      `).join('');
+    }
   },
 
   updateMonthSelectorActiveState() {
@@ -46,7 +121,7 @@ const Infografis = {
   },
 
   renderInfographics() {
-    const data = getMonthlyInfographicData(this.currentMonth);
+    const data = getMonthlyInfographicData(this.currentMonth, this.currentYear);
     const sysTexts = getStoredSystemTexts();
 
     // 1. Update Header Badge Periode
@@ -266,10 +341,30 @@ const Infografis = {
   },
 
   setupListeners() {
+    // Delegation for Year Pill clicks
+    const yearContainer = document.getElementById('year-selector-container');
+    if (yearContainer) {
+      yearContainer.addEventListener('click', (e) => {
+        const btn = e.target.closest('.year-pill-btn');
+        if (btn) {
+          const yKey = btn.dataset.yearKey;
+          this.setYear(yKey);
+        }
+      });
+    }
+
+    // Mobile year dropdown listener
+    const mobileYearSelect = document.getElementById('mobile-year-select');
+    if (mobileYearSelect) {
+      mobileYearSelect.addEventListener('change', (e) => {
+        this.setYear(e.target.value);
+      });
+    }
+
     // Delegation for Month Pill clicks
-    const container = document.getElementById('month-selector-container');
-    if (container) {
-      container.addEventListener('click', (e) => {
+    const monthContainer = document.getElementById('month-selector-container');
+    if (monthContainer) {
+      monthContainer.addEventListener('click', (e) => {
         const btn = e.target.closest('.month-pill-btn');
         if (btn) {
           const mKey = btn.dataset.monthKey;
@@ -278,7 +373,7 @@ const Infografis = {
       });
     }
 
-    // Mobile select dropdown listener
+    // Mobile month dropdown listener
     const mobileSelect = document.getElementById('mobile-month-select');
     if (mobileSelect) {
       mobileSelect.addEventListener('change', (e) => {

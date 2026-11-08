@@ -131,10 +131,10 @@ const wsKttr = wbKttr.Sheets['PAKAI '] || wbKttr.Sheets[wbKttr.SheetNames[0]];
 const rowsKttr = XLSX.utils.sheet_to_json(wsKttr, { header: 1 });
 
 const rawRecords = {
-  KTTR: { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], 8: [], 9: [], 10: [], 11: [] },
-  OSS:  { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], 8: [], 9: [], 10: [], 11: [] },
-  PBG:  { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], 8: [], 9: [], 10: [], 11: [] },
-  SLF:  { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], 8: [], 9: [], 10: [], 11: [] }
+  KTTR: { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], 8: [], 9: [], 10: [], 11: [], 12: [] },
+  OSS:  { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], 8: [], 9: [], 10: [], 11: [], 12: [] },
+  PBG:  { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], 8: [], 9: [], 10: [], 11: [], 12: [] },
+  SLF:  { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], 8: [], 9: [], 10: [], 11: [], 12: [] }
 };
 
 let lastKttrDate = '2026-01-01';
@@ -144,7 +144,7 @@ for (let r = 4; r < rowsKttr.length; r++) {
   const d = parseKttrDate(row[1], lastKttrDate);
   lastKttrDate = d;
   const m = parseInt(d.split('-')[1], 10);
-  if (m < 1 || m > 11) continue;
+  if (m < 1 || m > 12) continue;
 
   const per = String(row[4] || '').trim().toUpperCase();
   // RTT (Rumah Tempat Tinggal) strictly classifies as KTTR (Non-Berusaha)
@@ -176,7 +176,7 @@ for (const pf of pbgFiles) {
     const parts = tgl.split('-');
     if (parts.length < 2) continue;
     const m = parseInt(parts[1], 10);
-    if (!m || m < 1 || m > 11) continue;
+    if (!m || m < 1 || m > 12) continue;
 
     const jp = String(r['Jenis Permohonan'] || '');
     if (jp.includes('Persetujuan Bangunan Gedung') || jp.includes('Perubahan Bangunan Gedung')) {
@@ -207,24 +207,26 @@ const onProgressRates = {
   8: 1.00,
   9: 1.00,
   10: 1.00,
-  11: 1.00
+  11: 1.00,
+  12: 1.00
 };
 
 // Process records and build monthly stats
 const MONTHLY_STATS_2026 = {
   months: [
-    { key: "ALL", label: "Sepanjang Tahun 2026", shortLabel: "Semua (2026)" },
-    { key: "1",  label: "Januari 2026",    shortLabel: "Jan" },
-    { key: "2",  label: "Februari 2026",   shortLabel: "Feb" },
-    { key: "3",  label: "Maret 2026",      shortLabel: "Mar" },
-    { key: "4",  label: "April 2026",      shortLabel: "Apr" },
-    { key: "5",  label: "Mei 2026",        shortLabel: "Mei" },
-    { key: "6",  label: "Juni 2026",       shortLabel: "Jun" },
-    { key: "7",  label: "Juli 2026",       shortLabel: "Jul" },
-    { key: "8",  label: "Agustus 2026",    shortLabel: "Agu" },
-    { key: "9",  label: "September 2026",  shortLabel: "Sep" },
-    { key: "10", label: "Oktober 2026",    shortLabel: "Okt" },
-    { key: "11", label: "November 2026",   shortLabel: "Nov" }
+    { key: "ALL", label: "Sepanjang Tahun", shortLabel: "Semua Bulan" },
+    { key: "1",  label: "Januari",    shortLabel: "Jan" },
+    { key: "2",  label: "Februari",   shortLabel: "Feb" },
+    { key: "3",  label: "Maret",      shortLabel: "Mar" },
+    { key: "4",  label: "April",      shortLabel: "Apr" },
+    { key: "5",  label: "Mei",        shortLabel: "Mei" },
+    { key: "6",  label: "Juni",       shortLabel: "Jun" },
+    { key: "7",  label: "Juli",       shortLabel: "Jul" },
+    { key: "8",  label: "Agustus",    shortLabel: "Agu" },
+    { key: "9",  label: "September",  shortLabel: "Sep" },
+    { key: "10", label: "Oktober",    shortLabel: "Okt" },
+    { key: "11", label: "November",   shortLabel: "Nov" },
+    { key: "12", label: "Desember",   shortLabel: "Des" }
   ],
   services: {
     KTTR: {
@@ -260,7 +262,7 @@ let subCounter = 1;
 for (const srv of ['KTTR', 'OSS', 'PBG', 'SLF']) {
   const bidang = (srv === 'KTTR' || srv === 'OSS') ? 'TRP' : 'CK';
 
-  for (let m = 1; m <= 11; m++) {
+  for (let m = 1; m <= 12; m++) {
     const list = rawRecords[srv][m];
     const total = list.length;
     const rate = onProgressRates[m];
@@ -443,17 +445,27 @@ for (const srv of ['KTTR', 'OSS', 'PBG', 'SLF']) {
 
 console.log(`Total processed submissions: ${allSubmissions.length} records.`);
 
-// 4. Default System Texts (Customizable by Superadmin)
+// 4. Master Initial Years & Default System Texts (Customizable by Superadmin)
+const INITIAL_YEARS = [
+  {
+    year: "2026",
+    label: "Tahun 2026",
+    status: "AKTIF",
+    isDefault: true,
+    keterangan: "Tahun Berjalan 2026 (Data Otentik DINPUTARU Demak)"
+  }
+];
+
 const DEFAULT_SYSTEM_TEXTS = {
   appTitle: "SIKEREN DINPUTARU",
-  appSubtitle: "Sistem Informasi Keterangan Pelayanan Perizinan - Kab. Demak",
+  appSubtitle: "Sistem Informasi Layanan Perizinan DINPUTARU Kab. Demak",
   navLandingText: "Infografis Publik",
   navDashboardText: "Monitoring Internal",
   navUsersText: "Manajemen Pengguna",
   navSettingsText: "Pengaturan Teks Sistem",
 
   heroBadge: "Portal Keterbukaan Informasi Pelayanan Publik DINPUTARU Kabupaten Demak",
-  heroTitle: "Rangkuman Layanan <span class=\"text-gold\">SIKEREN 2026</span>",
+  heroTitle: "Rangkuman Layanan Perizinan <span class=\"text-gold\">DINPUTARU</span>",
   heroSubtitle: "Infografis agregat permohonan layanan publik Dinas Pekerjaan Umum dan Penataan Ruang Kabupaten Demak. Pantau volume permohonan masuk, tingkat penyelesaian berkas, dan kepastian standar waktu pelayanan (SLA) secara terbuka.",
   sectionTitle: "Infografis & Status 4 Layanan Utama DINPUTARU",
   sectionDesc: "Data real-time jumlah permohonan masuk, berkas yang telah rampung, dan berkas dalam proses untuk masing-masing kategori layanan sesuai periode bulan yang Anda pilih.",
@@ -494,10 +506,21 @@ const db = new DatabaseSync(dbPath);
 db.exec('PRAGMA journal_mode = WAL;');
 
 db.exec(`
+  DROP TABLE IF EXISTS service_years;
   DROP TABLE IF EXISTS submissions;
   DROP TABLE IF EXISTS users;
   DROP TABLE IF EXISTS visitors;
   DROP TABLE IF EXISTS system_texts;
+
+  CREATE TABLE service_years (
+    year TEXT PRIMARY KEY,
+    label TEXT,
+    status TEXT DEFAULT 'AKTIF',
+    is_default INTEGER DEFAULT 0,
+    keterangan TEXT,
+    created_at TEXT,
+    updated_at TEXT
+  );
 
   CREATE TABLE submissions (
     id TEXT PRIMARY KEY,
@@ -562,6 +585,15 @@ db.exec(`
   CREATE INDEX idx_sub_bidang ON submissions (bidang);
   CREATE INDEX idx_sub_tgl ON submissions (tgl_pengajuan);
 `);
+
+const insertYear = db.prepare(`
+  INSERT INTO service_years (year, label, status, is_default, keterangan, created_at, updated_at)
+  VALUES (?, ?, ?, ?, ?, ?, ?)
+`);
+
+for (const y of INITIAL_YEARS) {
+  insertYear.run(y.year, y.label, y.status, y.isDefault ? 1 : 0, y.keterangan, new Date().toISOString(), new Date().toISOString());
+}
 
 const insertUser = db.prepare(`
   INSERT INTO users (id, username, password, nama, nip, role, role_label, bidang, bidang_label, jabatan, avatar, email, no_hp, status, created_at)
@@ -660,6 +692,24 @@ SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+07:00";
 SET NAMES utf8mb4;
+
+-- --------------------------------------------------------
+-- Table structure for table \`service_years\`
+-- --------------------------------------------------------
+DROP TABLE IF EXISTS \`service_years\`;
+CREATE TABLE \`service_years\` (
+  \`year\` varchar(8) NOT NULL,
+  \`label\` varchar(64) NOT NULL,
+  \`status\` varchar(32) NOT NULL DEFAULT 'AKTIF',
+  \`is_default\` tinyint(1) NOT NULL DEFAULT 0,
+  \`keterangan\` text DEFAULT NULL,
+  \`created_at\` datetime DEFAULT CURRENT_TIMESTAMP,
+  \`updated_at\` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (\`year\`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO \`service_years\` (\`year\`, \`label\`, \`status\`, \`is_default\`, \`keterangan\`, \`created_at\`, \`updated_at\`) VALUES
+('2026', 'Tahun 2026', 'AKTIF', 1, 'Tahun Berjalan 2026 (Data Otentik DINPUTARU Demak)', NOW(), NOW());
 
 -- --------------------------------------------------------
 -- Table structure for table \`system_texts\`
@@ -801,6 +851,24 @@ const dataJsContent = `/**
 
 const INITIAL_USERS = ${JSON.stringify(INITIAL_USERS, null, 2)};
 
+const INITIAL_YEARS = ${JSON.stringify(INITIAL_YEARS, null, 2)};
+
+const STANDARD_MONTHS = [
+  { key: "ALL", label: "Sepanjang Tahun", shortLabel: "Semua", fullLabel: "Sepanjang Tahun (12 Bulan)" },
+  { key: "1",  label: "Januari",    shortLabel: "Jan",  fullLabel: "Januari" },
+  { key: "2",  label: "Februari",   shortLabel: "Feb",  fullLabel: "Februari" },
+  { key: "3",  label: "Maret",      shortLabel: "Mar",  fullLabel: "Maret" },
+  { key: "4",  label: "April",      shortLabel: "Apr",  fullLabel: "April" },
+  { key: "5",  label: "Mei",        shortLabel: "Mei",  fullLabel: "Mei" },
+  { key: "6",  label: "Juni",       shortLabel: "Jun",  fullLabel: "Juni" },
+  { key: "7",  label: "Juli",       shortLabel: "Jul",  fullLabel: "Juli" },
+  { key: "8",  label: "Agustus",    shortLabel: "Agu",  fullLabel: "Agustus" },
+  { key: "9",  label: "September",  shortLabel: "Sep",  fullLabel: "September" },
+  { key: "10", label: "Oktober",    shortLabel: "Okt",  fullLabel: "Oktober" },
+  { key: "11", label: "November",   shortLabel: "Nov",  fullLabel: "November" },
+  { key: "12", label: "Desember",   shortLabel: "Des",  fullLabel: "Desember" }
+];
+
 const DEFAULT_SYSTEM_TEXTS = ${JSON.stringify(DEFAULT_SYSTEM_TEXTS, null, 2)};
 
 const LAYANAN_CONFIG = {
@@ -853,11 +921,17 @@ const MONTHLY_STATS_2026 = ${JSON.stringify(MONTHLY_STATS_2026, null, 2)};
  * Dihitung SECARA DINAMIS dari getStoredSubmissions() agar setiap perubahan
  * di dashboard internal (update status, edit, tambah) langsung tercermin di halaman publik!
  */
-function getMonthlyInfographicData(monthKey = "ALL") {
+function getMonthlyInfographicData(monthKey = "ALL", yearKey = null) {
+  const activeYear = yearKey ? String(yearKey) : ((typeof getActiveYear === 'function') ? getActiveYear() : "2026");
   const submissions = (typeof getStoredSubmissions === 'function') ? getStoredSubmissions() : (INITIAL_SUBMISSIONS || []);
   const sysTexts = (typeof getStoredSystemTexts === 'function') ? getStoredSystemTexts() : {};
 
-  let filteredSubs = submissions;
+  let filteredSubs = submissions.filter(s => {
+    if (!s.tglPengajuan) return activeYear === "2026";
+    const parts = s.tglPengajuan.split('-');
+    return parts[0] === activeYear;
+  });
+
   if (monthKey !== "ALL") {
     const m = parseInt(monthKey, 10);
     filteredSubs = filteredSubs.filter(s => {
@@ -866,9 +940,14 @@ function getMonthlyInfographicData(monthKey = "ALL") {
     });
   }
 
+  const monthObj = STANDARD_MONTHS.find(m => m.key === String(monthKey));
+  const monthName = monthObj ? monthObj.label : ("Bulan " + monthKey);
+  const monthLabel = monthKey === "ALL" ? \`Sepanjang Tahun \${activeYear}\` : \`\${monthName} \${activeYear}\`;
+
   const result = {
+    selectedYear: activeYear,
     selectedMonth: monthKey,
-    monthLabel: MONTHLY_STATS_2026.months.find(m => m.key === String(monthKey))?.label || (monthKey === "ALL" ? "Sepanjang Tahun 2026" : "Bulan " + monthKey + " 2026"),
+    monthLabel: monthLabel,
     summary: {
       total: 0,
       sudahDilayani: 0,
@@ -938,7 +1017,9 @@ const STORAGE_KEYS = {
   SUBMISSIONS_DELETED: "sikeren_deleted_v5",
   USERS: "sikeren_users_v5",
   CURRENT_USER: "sikeren_current_user_v5",
-  SYSTEM_TEXTS: "sikeren_system_texts_v5"
+  SYSTEM_TEXTS: "sikeren_system_texts_v5",
+  YEARS: "sikeren_years_v5",
+  ACTIVE_YEAR: "sikeren_active_year_v5"
 };
 
 let _activeSubmissionsCache = null;
@@ -1067,12 +1148,81 @@ function saveStoredSystemTexts(texts) {
   localStorage.setItem(STORAGE_KEYS.SYSTEM_TEXTS, JSON.stringify(texts));
 }
 
+function getStoredYears() {
+  const data = localStorage.getItem(STORAGE_KEYS.YEARS);
+  if (!data) {
+    localStorage.setItem(STORAGE_KEYS.YEARS, JSON.stringify(INITIAL_YEARS));
+    return INITIAL_YEARS;
+  }
+  try {
+    const parsed = JSON.parse(data);
+    return Array.isArray(parsed) && parsed.length > 0 ? parsed : INITIAL_YEARS;
+  } catch(e) {
+    return INITIAL_YEARS;
+  }
+}
+
+function saveStoredYears(years) {
+  localStorage.setItem(STORAGE_KEYS.YEARS, JSON.stringify(years));
+}
+
+function getActiveYear() {
+  const stored = localStorage.getItem(STORAGE_KEYS.ACTIVE_YEAR);
+  if (stored) return stored;
+  const years = getStoredYears();
+  const def = years.find(y => y.isDefault && y.status === 'AKTIF') || years[0];
+  return def ? String(def.year) : "2026";
+}
+
+function setActiveYear(year) {
+  localStorage.setItem(STORAGE_KEYS.ACTIVE_YEAR, String(year));
+}
+
+function storeAddedYear(newYear) {
+  const years = getStoredYears();
+  if (years.some(y => String(y.year) === String(newYear.year))) {
+    return { success: false, message: \`Tahun \${newYear.year} sudah ada di sistem\` };
+  }
+  if (newYear.isDefault) {
+    years.forEach(y => y.isDefault = false);
+  }
+  years.push(newYear);
+  years.sort((a, b) => parseInt(b.year, 10) - parseInt(a.year, 10));
+  saveStoredYears(years);
+  return { success: true, data: newYear };
+}
+
+function storeUpdatedYear(year, updatedData) {
+  const years = getStoredYears();
+  const idx = years.findIndex(y => String(y.year) === String(year));
+  if (idx === -1) return { success: false, message: 'Tahun tidak ditemukan' };
+  
+  if (updatedData.isDefault) {
+    years.forEach(y => y.isDefault = false);
+  }
+  years[idx] = { ...years[idx], ...updatedData };
+  saveStoredYears(years);
+  return { success: true, data: years[idx] };
+}
+
+function storeDeletedYear(year) {
+  let years = getStoredYears();
+  if (String(year) === "2026") {
+    return { success: false, message: 'Tahun 2026 adalah data tahun dasar dan tidak dapat dihapus' };
+  }
+  years = years.filter(y => String(y.year) !== String(year));
+  saveStoredYears(years);
+  return { success: true };
+}
+
 function resetToDefaultData() {
   localStorage.removeItem(STORAGE_KEYS.SUBMISSIONS_ADDED);
   localStorage.removeItem(STORAGE_KEYS.SUBMISSIONS_EDITED);
   localStorage.removeItem(STORAGE_KEYS.SUBMISSIONS_DELETED);
   localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(INITIAL_USERS));
   localStorage.setItem(STORAGE_KEYS.SYSTEM_TEXTS, JSON.stringify(DEFAULT_SYSTEM_TEXTS));
+  localStorage.setItem(STORAGE_KEYS.YEARS, JSON.stringify(INITIAL_YEARS));
+  localStorage.setItem(STORAGE_KEYS.ACTIVE_YEAR, "2026");
   localStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
   _activeSubmissionsCache = null;
 }
@@ -1151,6 +1301,23 @@ const DataAPI = {
               localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(usrData.data));
               if (typeof UserManagement !== 'undefined' && typeof UserManagement.refreshUsers === 'function') {
                 UserManagement.refreshUsers();
+              }
+            }
+          }
+        } catch(e) {}
+
+        // Pull years from database
+        try {
+          const yrRes = await fetch('/api/years');
+          if (yrRes.ok) {
+            const yrData = await yrRes.json();
+            if (yrData.success && yrData.data && yrData.data.length > 0) {
+              localStorage.setItem(STORAGE_KEYS.YEARS, JSON.stringify(yrData.data));
+              if (typeof YearManagement !== 'undefined' && typeof YearManagement.refreshYears === 'function') {
+                YearManagement.refreshYears();
+              }
+              if (typeof Infografis !== 'undefined' && typeof Infografis.renderYearSelector === 'function') {
+                Infografis.renderYearSelector();
               }
             }
           }

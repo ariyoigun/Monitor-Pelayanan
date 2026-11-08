@@ -36,6 +36,11 @@ const App = {
       UserManagement.init();
     }
 
+    // 6b. Initialize Year Management
+    if (typeof YearManagement !== 'undefined') {
+      YearManagement.init();
+    }
+
     // 7. Setup Global Navigation & Event Listeners
     this.setupNavigation();
 
@@ -45,7 +50,7 @@ const App = {
 
   showView(viewName) {
     let internalSubTab = null;
-    if (['pengajuan', 'users', 'settings'].includes(viewName)) {
+    if (['pengajuan', 'users', 'settings', 'years'].includes(viewName)) {
       internalSubTab = viewName;
       viewName = 'dashboard';
     }
@@ -64,7 +69,7 @@ const App = {
       }
       Monitoring.refreshData();
       if (internalSubTab) {
-        if ((internalSubTab === 'users' || internalSubTab === 'settings') && !Auth.isSuperAdmin()) {
+        if ((internalSubTab === 'users' || internalSubTab === 'settings' || internalSubTab === 'years') && !Auth.isSuperAdmin()) {
           alert('Akses Terbatas: Hanya role Superadmin yang dapat mengakses menu tersebut.');
           Monitoring.switchSubView('ringkasan');
         } else {
@@ -121,7 +126,7 @@ const App = {
 
   handleRouting() {
     const hash = window.location.hash.replace('#', '');
-    if (['landing', 'login', 'dashboard', 'pengajuan', 'users', 'settings'].includes(hash)) {
+    if (['landing', 'login', 'dashboard', 'pengajuan', 'users', 'settings', 'years'].includes(hash)) {
       this.showView(hash);
     } else {
       this.showView('landing');
