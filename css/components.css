@@ -1083,6 +1083,105 @@ textarea.form-control {
   margin-bottom: 0.75rem;
 }
 
+/* =========================================================
+   PUBLIC SERVICE CARDS: LARGE TITLE & ADJACENT ACTION BUTTON
+   ========================================================= */
+.service-card-top-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.25rem;
+  margin-bottom: 1.15rem;
+  padding-bottom: 0.95rem;
+  border-bottom: 1px solid var(--slate-100);
+}
+
+.service-title-container {
+  flex: 1;
+  min-width: 0;
+}
+
+.service-badge-pill-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.45rem;
+  flex-wrap: wrap;
+}
+
+.service-title-prominent {
+  font-size: 1.35rem;
+  font-weight: 850;
+  color: var(--slate-900);
+  line-height: 1.25;
+  margin: 0;
+  letter-spacing: -0.015em;
+}
+
+.service-sla-tag {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--slate-600);
+  background: var(--slate-100);
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.service-bidang-tag {
+  font-size: 0.72rem;
+  color: var(--slate-400);
+  font-weight: 500;
+}
+
+.service-action-container {
+  flex-shrink: 0;
+}
+
+.btn-service-direct {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  padding: 0.75rem 1.35rem;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #ffffff !important;
+  border-radius: 10px;
+  text-decoration: none !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  transition: all 0.22s ease;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+  border: 1px solid transparent;
+}
+
+.btn-service-direct:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
+  filter: brightness(1.08);
+}
+
+@media (max-width: 640px) {
+  .service-card-top-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.85rem;
+  }
+  .service-action-container {
+    width: 100%;
+  }
+  .btn-service-direct {
+    width: 100%;
+    text-align: center;
+  }
+  .service-title-prominent {
+    font-size: 1.15rem;
+  }
+}
+
 .service-header-left {
   display: flex;
   align-items: center;

@@ -82,10 +82,10 @@ const Infografis = {
           badgeColor: "#0284c7",
           badgeBg: "#e0f2fe",
           sla: sysTexts.slaKttr || "5 Hari Kerja",
-          desc: sysTexts.descKttr || "Keterangan kesesuaian ruang, zonasi RTRW/RDTR, Garis Sempadan Bangunan (GSB), KDB & KLB di Kabupaten Demak.",
           directUrl: "https://bit.ly/pendaftaranKTTRDemak",
           btnColor: "#0284c7",
-          actionLabel: "Buka Pendaftaran KTTR (bit.ly)"
+          actionBtnText: "Daftar KTTR",
+          titleText: "Keterangan Rencana Tata Ruang (KTTR)"
         },
         {
           key: "OSS",
@@ -94,10 +94,10 @@ const Infografis = {
           badgeColor: "#16a34a",
           badgeBg: "#dcfce7",
           sla: sysTexts.slaOss || "5 Hari Kerja",
-          desc: sysTexts.descOss || "Validasi Kesesuaian Kegiatan Pemanfaatan Ruang (KKPR) terintegrasi sistem perizinan berusaha OSS RBA & poligon SHP.",
           directUrl: "https://bit.ly/validasioss",
           btnColor: "#16a34a",
-          actionLabel: "Buka Validasi OSS (bit.ly)"
+          actionBtnText: "Validasi OSS",
+          titleText: "Validasi Kesesuaian Tata Ruang (OSS)"
         },
         {
           key: "PBG",
@@ -106,10 +106,10 @@ const Infografis = {
           badgeColor: "#d97706",
           badgeBg: "#fef3c7",
           sla: sysTexts.slaPbg || "28 Hari Kerja",
-          desc: sysTexts.descPbg || "Persetujuan Bangunan Gedung (pengganti IMB) untuk bangunan baru atau renovasi dengan standar arsitektur & struktur TPA.",
           directUrl: "https://simbg.pu.go.id",
           btnColor: "#d97706",
-          actionLabel: "Buka Portal SIMBG (simbg.pu.go.id)"
+          actionBtnText: "Daftar PBG",
+          titleText: "Persetujuan Bangunan Gedung (PBG)"
         },
         {
           key: "SLF",
@@ -118,10 +118,10 @@ const Infografis = {
           badgeColor: "#9333ea",
           badgeBg: "#f3e8ff",
           sla: sysTexts.slaSlf || "28 Hari Kerja",
-          desc: sysTexts.descSlf || "Sertifikat Laik Fungsi pembuktian kelaikan gedung selesai terbangun dari aspek keselamatan kebakaran & kenyamanan.",
           directUrl: "https://simbg.pu.go.id",
           btnColor: "#9333ea",
-          actionLabel: "Buka Portal SIMBG (simbg.pu.go.id)"
+          actionBtnText: "Daftar SLF",
+          titleText: "Sertifikat Laik Fungsi (SLF)"
         }
       ];
 
@@ -141,24 +141,33 @@ const Infografis = {
 
         return `
           <div class="infographic-service-card ${cfg.colorClass}">
-            <div class="service-card-header">
-              <div class="service-header-left">
-                <div class="service-icon-box" style="background: ${cfg.badgeBg}; color: ${cfg.badgeColor};">
-                  <i class="fas ${cfg.icon}"></i>
+            <!-- Top Row: Big Title on Left & Action Button on Right (Di Samping Judul) -->
+            <div class="service-card-top-header">
+              <div class="service-title-container">
+                <div class="service-badge-pill-row">
+                  <span class="service-badge-pill" style="color: ${cfg.badgeColor}; background: ${cfg.badgeBg}; border: 1.5px solid ${cfg.badgeColor}40;">
+                    <i class="fas ${cfg.icon}"></i> ${item.kode}
+                  </span>
+                  <span class="service-sla-tag">
+                    <i class="fas fa-clock"></i> SLA: <strong>${cfg.sla}</strong>
+                  </span>
+                  <span class="service-bidang-tag">
+                    ${item.bidang}
+                  </span>
                 </div>
-                <div>
-                  <h3 class="service-title">${item.nama}</h3>
-                  <div class="service-subtitle">${item.bidang} &bull; <span class="sla-text"><i class="fas fa-clock"></i> SLA: ${cfg.sla}</span></div>
-                </div>
+                <h3 class="service-title-prominent">${cfg.titleText || item.nama}</h3>
               </div>
-              <div class="service-badge-pill" style="color: ${cfg.badgeColor}; background: ${cfg.badgeBg};">
-                ${item.kode}
+
+              <!-- Action Link Button (Kotak Link Bersebelahan dengan Judul) -->
+              <div class="service-action-container">
+                <a href="${cfg.directUrl}" target="_blank" rel="noopener noreferrer" class="btn-service-direct" style="background: ${cfg.btnColor}; border-color: ${cfg.btnColor};" title="Buka ${cfg.actionBtnText}">
+                  <span>${cfg.actionBtnText}</span>
+                  <i class="fas fa-external-link-alt"></i>
+                </a>
               </div>
             </div>
 
-            <p class="service-brief-desc">${cfg.desc}</p>
-
-            <!-- Metrics Figures Row (5 Indikator Lengkap) -->
+            <!-- Status & Metrics Row (5 Indikator Lengkap di Bawah Judul & Tombol Link) -->
             <div class="service-stat-row service-stat-5-grid">
               <div class="stat-box stat-total">
                 <span class="stat-label">Total Masuk</span>
@@ -198,13 +207,6 @@ const Infografis = {
                 <div class="progress-bar-fill" style="width: ${pKembali}%; background: #6366f1;" title="Berkas Dikembalikan (Dianggap Selesai): ${berkasDikembalikan}"></div>
                 <div class="progress-bar-fill fill-belum" style="width: ${pProgress}%;" title="On Progress: ${onProgress}"></div>
               </div>
-            </div>
-
-            <!-- Tombol Tautan Langsung Publik (Direct Destination) -->
-            <div style="margin-top: 1.15rem; padding-top: 0.85rem; border-top: 1px dashed var(--slate-200);">
-              <a href="${cfg.directUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem; text-decoration: none; font-weight: 700; background: ${cfg.btnColor}; border-color: ${cfg.btnColor};">
-                <i class="fas fa-external-link-alt"></i> ${cfg.actionLabel}
-              </a>
             </div>
           </div>
         `;
