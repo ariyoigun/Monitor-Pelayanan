@@ -50,11 +50,10 @@ for (let m = 1; m <= 11; m++) {
   const selesaiPct = s.total > 0 ? (((s.SELESAI + s.BERKAS_DIKEMBALIKAN) / s.total) * 100).toFixed(1) : '0';
   console.log(`   Bulan ${m}: Total=${s.total}, OnProgress=${s.PROSES} (${onProgPct}%), Selesai/Kembali=${s.SELESAI + s.BERKAS_DIKEMBALIKAN} (${selesaiPct}%)`);
 }
-// Validate August - November is 100% On Progress
-for (let m = 8; m <= 11; m++) {
-  assert.strictEqual(monthlyStats[m].SELESAI, 0, `Month ${m} must have 0 selesai`);
-  assert.strictEqual(monthlyStats[m].BERKAS_DIKEMBALIKAN, 0, `Month ${m} must have 0 berkas dikembalikan`);
-  assert.strictEqual(monthlyStats[m].PROSES, monthlyStats[m].total, `Month ${m} must be 100% on progress`);
+// Validate July - November is 100% Selesai / Sudah Terbit (sesuai instruksi user terbaru)
+for (let m = 7; m <= 11; m++) {
+  assert.strictEqual(monthlyStats[m].PROSES, 0, `Month ${m} must have 0 on progress`);
+  assert.strictEqual(monthlyStats[m].SELESAI, monthlyStats[m].total, `Month ${m} must be 100% selesai/sudah terbit`);
 }
 
 // 4. Verify Users from Akun dan Role Silan
