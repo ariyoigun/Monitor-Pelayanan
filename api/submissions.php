@@ -73,12 +73,22 @@ if ($method === 'GET') {
     $bidang  = $_GET['bidang'] ?? 'ALL';
     $layanan = $_GET['layanan'] ?? 'ALL';
     $status  = $_GET['status'] ?? 'ALL';
+    $year    = $_GET['year'] ?? 'ALL';
+    $month   = $_GET['month'] ?? 'ALL';
     $search  = trim($_GET['search'] ?? '');
     $limit   = isset($_GET['limit']) ? (int)$_GET['limit'] : 5000;
 
     $where = ["1=1"];
     $params = [];
 
+    if ($year !== 'ALL' && !empty($year)) {
+        $where[] = "SUBSTRING(`tgl_pengajuan`, 1, 4) = ?";
+        $params[] = $year;
+    }
+    if ($month !== 'ALL' && !empty($month)) {
+        $where[] = "CAST(SUBSTRING(`tgl_pengajuan`, 6, 2) AS UNSIGNED) = ?";
+        $params[] = (int)$month;
+    }
     if ($bidang !== 'ALL') {
         $where[] = "`bidang` = ?";
         $params[] = $bidang;

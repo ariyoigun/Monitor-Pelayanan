@@ -19,6 +19,22 @@
 
     # Route /api/stats to api/stats.php
     RewriteRule ^api/stats/?$ api/stats.php [L,QSA]
+
+    # Route /api/years to api/years.php
+    RewriteRule ^api/years/?$ api/years.php [L,QSA]
+    RewriteRule ^api/years/([A-Za-z0-9\-_]+)/?$ api/years.php?year=$1 [L,QSA]
+</IfModule>
+
+# Cache Control: Ensure browser and LiteSpeed always fetch fresh HTML and CSS/JS
+<IfModule mod_headers.c>
+    <FilesMatch "\.(html|htm|php)$">
+        Header set Cache-Control "no-cache, no-store, must-revalidate, max-age=0"
+        Header set Pragma "no-cache"
+        Header set Expires "0"
+    </FilesMatch>
+    <FilesMatch "\.(css|js)$">
+        Header set Cache-Control "no-cache, must-revalidate, max-age=0"
+    </FilesMatch>
 </IfModule>
 
 # Security: Deny direct access to sensitive files
