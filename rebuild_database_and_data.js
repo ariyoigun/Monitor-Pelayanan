@@ -192,10 +192,14 @@ for (const pf of pbgFiles) {
 // Februari: 6% on progress
 // Maret: 7.5% on progress
 // April: 6% on progress
+// Aturan Status Pelayanan SIKEREN DINPUTARU DEMAK 2026:
+// Januari: 7% on progress
+// Februari: 6% on progress
+// Maret: 7.5% on progress
+// April: 6% on progress
 // Mei: 8% on progress
 // Juni: 2% on progress
-// Juli: 1% on progress
-// Agustus s/d saat ini: 100% on progress
+// Juli s/d November: 100% SUDAH TERBIT (0% on progress, 0 dikembalikan)
 const onProgressRates = {
   1: 0.07,
   2: 0.06,
@@ -203,12 +207,12 @@ const onProgressRates = {
   4: 0.06,
   5: 0.08,
   6: 0.02,
-  7: 0.01,
-  8: 1.00,
-  9: 1.00,
-  10: 1.00,
-  11: 1.00,
-  12: 1.00
+  7: 0.00,
+  8: 0.00,
+  9: 0.00,
+  10: 0.00,
+  11: 0.00,
+  12: 0.00
 };
 
 // Process records and build monthly stats
@@ -272,7 +276,12 @@ for (const srv of ['KTTR', 'OSS', 'PBG', 'SLF']) {
     let dilayaniCount = 0;
 
     if (total > 0) {
-      if (rate === 1.00) {
+      if (m >= 7 && m <= 11) {
+        // Juli s.d. November: SEMUA pengajuan sudah terbit (100% Selesai)
+        onProgCount = 0;
+        dikembalikanCount = 0;
+        dilayaniCount = total;
+      } else if (rate === 1.00) {
         onProgCount = total;
         dilayaniCount = 0;
         dikembalikanCount = 0;
@@ -303,7 +312,15 @@ for (const srv of ['KTTR', 'OSS', 'PBG', 'SLF']) {
       let posisi = srv.startsWith('P') || srv === 'SLF' ? 'Penerbitan Dokumen (CK)' : 'Loket Pelayanan Terpadu TRP';
       let kendala = 'Dokumen telah selesai diproses dan terbit sesuai standar pelayanan.';
 
-      if (rate === 1.00 || i < onProgCount) {
+      if (m >= 7 && m <= 11) {
+        // Juli s.d. November: 100% SUDAH TERBIT
+        status = 'SELESAI';
+        slaStatus = 'ON_TRACK';
+        statusLabel = 'Sudah Dilayani / Terbit';
+        tahap = 'Pengesahan & Penerbitan Dokumen (Selesai)';
+        posisi = srv.startsWith('P') || srv === 'SLF' ? 'Penerbitan Dokumen (CK)' : 'Loket Pelayanan Terpadu TRP';
+        kendala = 'Dokumen perizinan telah selesai diproses dan terbit sesuai standar pelayanan.';
+      } else if (rate === 1.00 || i < onProgCount) {
         status = 'PROSES';
         slaStatus = m <= 7 ? 'ON_TRACK' : 'ON_TRACK';
         statusLabel = 'On Progress';
@@ -1012,14 +1029,14 @@ function getMonthlyInfographicData(monthKey = "ALL", yearKey = null) {
 const INITIAL_SUBMISSIONS = ${JSON.stringify(allSubmissions)};
 
 const STORAGE_KEYS = {
-  SUBMISSIONS_ADDED: "sikeren_added_v5",
-  SUBMISSIONS_EDITED: "sikeren_edited_v5",
-  SUBMISSIONS_DELETED: "sikeren_deleted_v5",
-  USERS: "sikeren_users_v5",
-  CURRENT_USER: "sikeren_current_user_v5",
-  SYSTEM_TEXTS: "sikeren_system_texts_v5",
-  YEARS: "sikeren_years_v5",
-  ACTIVE_YEAR: "sikeren_active_year_v5"
+  SUBMISSIONS_ADDED: "sikeren_added_v6",
+  SUBMISSIONS_EDITED: "sikeren_edited_v6",
+  SUBMISSIONS_DELETED: "sikeren_deleted_v6",
+  USERS: "sikeren_users_v6",
+  CURRENT_USER: "sikeren_current_user_v6",
+  SYSTEM_TEXTS: "sikeren_system_texts_v6",
+  YEARS: "sikeren_years_v6",
+  ACTIVE_YEAR: "sikeren_active_year_v6"
 };
 
 let _activeSubmissionsCache = null;
