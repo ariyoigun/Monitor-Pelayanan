@@ -1187,10 +1187,10 @@ textarea.form-control {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 1.25rem;
-  margin-bottom: 1.15rem;
-  padding-bottom: 0.95rem;
-  border-bottom: 1px solid var(--slate-100);
+  gap: 1.5rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 1.1rem;
+  border-bottom: 2px solid var(--slate-100);
 }
 
 .service-title-container {
@@ -1202,17 +1202,17 @@ textarea.form-control {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin-bottom: 0.45rem;
+  margin-bottom: 0.5rem;
   flex-wrap: wrap;
 }
 
 .service-title-prominent {
-  font-size: 1.35rem;
-  font-weight: 850;
+  font-size: 1.85rem;
+  font-weight: 900;
   color: var(--slate-900);
-  line-height: 1.25;
+  line-height: 1.2;
   margin: 0;
-  letter-spacing: -0.015em;
+  letter-spacing: -0.02em;
 }
 
 .service-sla-tag {
@@ -1241,31 +1241,36 @@ textarea.form-control {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.55rem;
-  padding: 0.75rem 1.35rem;
-  font-size: 0.95rem;
-  font-weight: 800;
+  gap: 0.75rem;
+  padding: 0.95rem 2.2rem;
+  font-size: 1.45rem;
+  font-weight: 850;
   color: #ffffff !important;
-  border-radius: 10px;
+  border-radius: 14px;
   text-decoration: none !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16);
   transition: all 0.22s ease;
   white-space: nowrap;
   letter-spacing: 0.01em;
   border: 1px solid transparent;
+  min-height: 60px;
+}
+
+.btn-service-direct i {
+  font-size: 1.25rem;
 }
 
 .btn-service-direct:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.22);
   filter: brightness(1.08);
 }
 
 @media (max-width: 640px) {
   .service-card-top-header {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 0.85rem;
+    align-items: stretch;
+    gap: 1rem;
   }
   .service-action-container {
     width: 100%;
@@ -1273,9 +1278,15 @@ textarea.form-control {
   .btn-service-direct {
     width: 100%;
     text-align: center;
+    font-size: 1.25rem;
+    padding: 0.85rem 1.5rem;
+    min-height: 52px;
   }
   .service-title-prominent {
-    font-size: 1.15rem;
+    font-size: 1.45rem;
+  }
+  .stat-number {
+    font-size: 1.15rem !important;
   }
 }
 
@@ -1357,11 +1368,11 @@ textarea.form-control {
 }
 
 .stat-number {
-  font-size: 1.75rem;
-  font-weight: 900;
+  font-size: 1.25rem;
+  font-weight: 850;
   color: var(--slate-900);
-  line-height: 1;
-  margin-bottom: 0.25rem;
+  line-height: 1.15;
+  margin-bottom: 0.2rem;
 }
 
 .stat-number.text-success { color: #059669; }

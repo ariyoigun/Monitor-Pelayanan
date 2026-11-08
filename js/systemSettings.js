@@ -25,7 +25,13 @@ const SystemSettings = {
 
     // 1. Branding & Header
     const brandTitles = document.querySelectorAll('.dynamic-app-title');
-    brandTitles.forEach(el => el.innerHTML = t.appTitle || 'SIKEREN <span class="highlight">DINPUTARU</span>');
+    brandTitles.forEach(el => {
+      if (!t.appTitle || t.appTitle === 'SILAN/SIKEREN - SATUPUTARU' || t.appTitle === 'SIKEREN DINPUTARU') {
+        el.innerHTML = 'SILAN/SIKEREN - <span class="highlight">SATUPUTARU</span>';
+      } else {
+        el.innerHTML = t.appTitle;
+      }
+    });
 
     const brandSubs = document.querySelectorAll('.dynamic-app-subtitle');
     brandSubs.forEach(el => el.textContent = t.appSubtitle || 'Sistem Informasi Layanan Perizinan DINPUTARU Kab. Demak');

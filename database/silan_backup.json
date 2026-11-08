@@ -1,6 +1,6 @@
 {
   "version": "2.2.0",
-  "exported_at": "2026-11-08T02:31:52.255Z",
+  "exported_at": "2026-11-08T03:38:21.245Z",
   "counts": {
     "submissions": 3319,
     "users": 7,
@@ -205721,7 +205721,7 @@
       }
     ],
     "system_texts": {
-      "appTitle": "SIKEREN DINPUTARU",
+      "appTitle": "SILAN/SIKEREN - SATUPUTARU",
       "appSubtitle": "Sistem Informasi Layanan Perizinan DINPUTARU Kab. Demak",
       "navLandingText": "Infografis Publik",
       "navDashboardText": "Monitoring Internal",
@@ -205753,7 +205753,7 @@
       "footerEmail": "dinputaru@demakkab.go.id",
       "footerWebsite": "dinputaru.demakkab.go.id",
       "footerCopyright": "© 2026 Dinas Pekerjaan Umum dan Penataan Ruang Kabupaten Demak. Hak Cipta Dilindungi.",
-      "footerTagline": "SIKEREN - Sistem Informasi Keterangan Pelayanan Perizinan DINPUTARU Demak Bermartabat",
+      "footerTagline": "SILAN/SIKEREN - SATUPUTARU | Sistem Informasi Layanan Perizinan DINPUTARU Demak",
       "dashboardTitle": "Dashboard Pemantauan Pelayanan",
       "leadershipFocusTitle": "Sorotan Pimpinan: Berkas Tertahan & Perlu Perhatian Segera",
       "leadershipFocusDesc": "Daftar pengajuan belum selesai yang membutuhkan tindak lanjut, koordinasi lintas instansi, atau kelengkapan pemohon."

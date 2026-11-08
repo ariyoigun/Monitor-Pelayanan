@@ -6,7 +6,7 @@
 -- Target Host: localhost (sikeren.satuputarudemak.id)
 -- Target Database: u490770675_sikeren
 -- Target User: u490770675_adminsikeren
--- Generated on: 2026-11-08T02:31:52.255Z
+-- Generated on: 2026-11-08T03:38:21.245Z
 -- ========================================================
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -116,7 +116,7 @@ CREATE TABLE `submissions` (
 -- Dumping data for table `system_texts`
 -- --------------------------------------------------------
 INSERT INTO `system_texts` (`setting_key`, `setting_val`, `updated_at`) VALUES
-  ('appTitle', 'SIKEREN DINPUTARU', NOW()),
+  ('appTitle', 'SILAN/SIKEREN - SATUPUTARU', NOW()),
   ('appSubtitle', 'Sistem Informasi Layanan Perizinan DINPUTARU Kab. Demak', NOW()),
   ('navLandingText', 'Infografis Publik', NOW()),
   ('navDashboardText', 'Monitoring Internal', NOW()),
@@ -148,7 +148,7 @@ INSERT INTO `system_texts` (`setting_key`, `setting_val`, `updated_at`) VALUES
   ('footerEmail', 'dinputaru@demakkab.go.id', NOW()),
   ('footerWebsite', 'dinputaru.demakkab.go.id', NOW()),
   ('footerCopyright', '© 2026 Dinas Pekerjaan Umum dan Penataan Ruang Kabupaten Demak. Hak Cipta Dilindungi.', NOW()),
-  ('footerTagline', 'SIKEREN - Sistem Informasi Keterangan Pelayanan Perizinan DINPUTARU Demak Bermartabat', NOW()),
+  ('footerTagline', 'SILAN/SIKEREN - SATUPUTARU | Sistem Informasi Layanan Perizinan DINPUTARU Demak', NOW()),
   ('dashboardTitle', 'Dashboard Pemantauan Pelayanan', NOW()),
   ('leadershipFocusTitle', 'Sorotan Pimpinan: Berkas Tertahan & Perlu Perhatian Segera', NOW()),
   ('leadershipFocusDesc', 'Daftar pengajuan belum selesai yang membutuhkan tindak lanjut, koordinasi lintas instansi, atau kelengkapan pemohon.', NOW());
