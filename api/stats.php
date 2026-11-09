@@ -1,6 +1,6 @@
 <?php
 /**
- * SILAN/SIKEREN - SATUPUTARU DINPUTARU DEMAK
+ * SILAN/SIKEREN - SATU PUTARU DINPUTARU DEMAK
  * API Stats - Aggregated Real-time Statistics
  * Endpoint: /api/stats.php (atau /api/stats)
  */

@@ -1,6 +1,6 @@
 <?php
 /**
- * SILAN/SIKEREN - SATUPUTARU DINPUTARU DEMAK
+ * SILAN/SIKEREN - SATU PUTARU DINPUTARU DEMAK
  * API Years Management (CRUD)
  * Endpoint: /api/years.php (atau /api/years)
  */

@@ -474,7 +474,7 @@ const INITIAL_YEARS = [
 ];
 
 const DEFAULT_SYSTEM_TEXTS = {
-  appTitle: "SILAN/SIKEREN - SATUPUTARU",
+  appTitle: "SILAN/SIKEREN - SATU PUTARU",
   appSubtitle: "Sistem Informasi Layanan Perizinan DINPUTARU Kab. Demak",
   navLandingText: "Infografis Publik",
   navDashboardText: "Monitoring Internal",
@@ -511,7 +511,7 @@ const DEFAULT_SYSTEM_TEXTS = {
   footerEmail: "dinputaru@demakkab.go.id",
   footerWebsite: "dinputaru.demakkab.go.id",
   footerCopyright: "© 2026 Dinas Pekerjaan Umum dan Penataan Ruang Kabupaten Demak. Hak Cipta Dilindungi.",
-  footerTagline: "SILAN/SIKEREN - SATUPUTARU | Sistem Informasi Layanan Perizinan DINPUTARU Demak",
+  footerTagline: "SILAN/SIKEREN - SATU PUTARU | Sistem Informasi Layanan Perizinan DINPUTARU Demak",
 
   dashboardTitle: "Dashboard Pemantauan Pelayanan",
   leadershipFocusTitle: "Sorotan Pimpinan: Berkas Tertahan & Perlu Perhatian Segera",

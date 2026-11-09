@@ -26,8 +26,8 @@ const SystemSettings = {
     // 1. Branding & Header
     const brandTitles = document.querySelectorAll('.dynamic-app-title');
     brandTitles.forEach(el => {
-      if (!t.appTitle || t.appTitle === 'SILAN/SIKEREN - SATUPUTARU' || t.appTitle === 'SIKEREN DINPUTARU') {
-        el.innerHTML = 'SILAN/SIKEREN - <span class="highlight">SATUPUTARU</span>';
+      if (!t.appTitle || t.appTitle === 'SILAN/SIKEREN - SATU PUTARU' || t.appTitle === 'SILAN/SIKEREN - SATUPUTARU' || t.appTitle === 'SIKEREN DINPUTARU') {
+        el.innerHTML = 'SILAN/SIKEREN - <span class="highlight">SATU PUTARU</span>';
       } else {
         el.innerHTML = t.appTitle;
       }
